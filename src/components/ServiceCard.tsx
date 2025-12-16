@@ -2,17 +2,17 @@ import React from 'react';
 import CheckmarkIcon from './icons/CheckmarkIcon';
 
 interface ServiceCardProps {
-  icon: React.ReactNode;
+  icon: React.ComponentType<{ className?: string }>;
   title: string;
   description: string;
   features: string[];
 }
 
-const ServiceCard: React.FC<ServiceCardProps> = ({ icon, title, description, features }) => {
+const ServiceCard: React.FC<ServiceCardProps> = ({ icon: IconComponent, title, description, features }) => {
   return (
     <div className="glass-card p-8 rounded-2xl group cursor-default hover:bg-gray-50 dark:hover:bg-white/5 transition-all duration-500 ease-fluid hover:-translate-y-2 hover:shadow-xl hover:border-brand-lime/50">
       <div className="w-12 h-12 bg-brand-lime/10 rounded-lg flex items-center justify-center text-brand-lime mb-6 transition-all duration-500 ease-fluid group-hover:scale-110 group-hover:bg-brand-lime group-hover:text-black">
-        {icon}
+        <IconComponent />
       </div>
 
       <h3 className="text-2xl font-semibold mb-3 transition-colors text-gray-900 dark:text-white">

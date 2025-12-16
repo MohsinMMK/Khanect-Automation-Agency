@@ -1,3 +1,5 @@
+import React from 'react';
+
 export enum ViewState {
   LANDING = 'LANDING',
   DEMO = 'DEMO',
@@ -22,7 +24,7 @@ export interface Service {
   title: string;
   description: string;
   features: string[];
-  icon: React.ReactNode;
+  icon: React.ComponentType<{ className?: string }>;
 }
 
 export interface Industry extends Service {}
