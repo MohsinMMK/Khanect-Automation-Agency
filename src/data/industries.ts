@@ -17,7 +17,7 @@ export const industries: Industry[] = [
       'Insurance verification workflows',
       'HIPAA-compliant chatbots for inquiries'
     ],
-    icon: HealthcareIcon({})
+    icon: <HealthcareIcon />
   },
   {
     id: 'automobile',
@@ -29,7 +29,7 @@ export const industries: Industry[] = [
       'Service appointment booking automation',
       'Vehicle maintenance reminder campaigns'
     ],
-    icon: AutomobileIcon({})
+    icon: <AutomobileIcon />
   },
   {
     id: 'ecommerce',
@@ -41,7 +41,7 @@ export const industries: Industry[] = [
       'Abandoned cart recovery sequences',
       'Customer support chatbots for orders'
     ],
-    icon: EcommerceIcon({})
+    icon: <EcommerceIcon />
   },
   {
     id: 'real-estate',
@@ -53,7 +53,7 @@ export const industries: Industry[] = [
       'Property showing scheduling',
       'Drip campaigns for buyer and seller leads'
     ],
-    icon: RealEstateIcon({})
+    icon: <RealEstateIcon />
   },
   {
     id: 'coaching',
@@ -65,7 +65,7 @@ export const industries: Industry[] = [
       'Session booking and reminder systems',
       'Invoice generation and payment collection'
     ],
-    icon: CoachingIcon({})
+    icon: <CoachingIcon />
   },
   {
     id: 'agency',
@@ -77,6 +77,6 @@ export const industries: Industry[] = [
       'Client reporting with branded templates',
       'Time tracking and billing automation'
     ],
-    icon: AgencyIcon({})
+    icon: <AgencyIcon />
   }
 ];

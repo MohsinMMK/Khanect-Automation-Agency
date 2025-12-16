@@ -20,5 +20,11 @@ export const getEnv = (key: string): string | undefined => {
 
 export const getApiKey = (): string => {
     // Check for API_KEY or VITE_API_KEY
-    return getEnv('API_KEY') || getEnv('VITE_API_KEY') || '';
+    const key = getEnv('API_KEY') || getEnv('VITE_API_KEY');
+
+    if (!key) {
+        console.warn('⚠️ Missing API key (API_KEY or VITE_API_KEY). AI features will not work properly.');
+    }
+
+    return key || '';
 };

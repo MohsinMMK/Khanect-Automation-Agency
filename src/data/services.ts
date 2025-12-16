@@ -15,7 +15,7 @@ export const services: Service[] = [
       'Custom API integrations for any web service',
       'Real-time reporting and automated analytics'
     ],
-    icon: WorkflowIcon({})
+    icon: <WorkflowIcon />
   },
   {
     id: 'ai-chatbots',
@@ -27,7 +27,7 @@ export const services: Service[] = [
       'FAQ answering from custom knowledge base',
       'CRM integration with automatic contact creation'
     ],
-    icon: ChatbotIcon({})
+    icon: <ChatbotIcon />
   },
   {
     id: 'crm-integrations',
@@ -39,7 +39,7 @@ export const services: Service[] = [
       'Automated follow-up sequences',
       'Customer lifecycle automation'
     ],
-    icon: CRMIcon({})
+    icon: <CRMIcon />
   },
   {
     id: 'lead-generation',
@@ -51,6 +51,6 @@ export const services: Service[] = [
       'Social media lead capture automation',
       'Analytics dashboards to track performance'
     ],
-    icon: LeadGenIcon({})
+    icon: <LeadGenIcon />
   }
 ];

@@ -25,7 +25,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ icon, title, description, fea
 
       <ul className="space-y-3">
         {features.map((feature, index) => (
-          <li key={index} className="flex items-start gap-3">
+          <li key={`${title}-feature-${index}`} className="flex items-start gap-3">
             <div className="flex-shrink-0 mt-0.5">
               <CheckmarkIcon className="text-brand-lime" />
             </div>
