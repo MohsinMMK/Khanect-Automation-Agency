@@ -1,0 +1,7 @@
+{
+  "name": "Khanect Ai",
+  "description": "A high-performance AI Automation Agency website featuring a Gemini-powered business consultant agent and a client ROI dashboard.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}

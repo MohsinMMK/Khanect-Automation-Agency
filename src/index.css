@@ -1,0 +1,136 @@
+@import "tailwindcss";
+@config "../tailwind.config.js";
+
+@layer base {
+    body {
+        background-color: #f9fafb; /* Light mode default */
+        color: #111827;
+        overflow-x: hidden;
+        transition: background-color 0.5s cubic-bezier(0.16, 1, 0.3, 1), color 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    
+    .dark body {
+        background-color: #050505;
+        color: #ffffff;
+    }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: transparent; 
+}
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1; 
+    border-radius: 4px;
+}
+.dark ::-webkit-scrollbar-thumb {
+    background: #222; 
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #D3F36B; 
+}
+
+.spotlight-glow {
+    /* Increased opacity for light mode */
+    background: radial-gradient(circle at 50% 0%, rgba(211, 243, 107, 0.25) 0%, rgba(255, 255, 255, 0) 60%);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 0;
+    transition: opacity 0.8s ease-in-out;
+}
+
+.dark .spotlight-glow {
+        background: radial-gradient(circle at 50% 0%, rgba(211, 243, 107, 0.08) 0%, rgba(5, 5, 5, 0) 60%);
+}
+
+.glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: border-color 0.3s ease;
+}
+
+.dark .glass {
+    background: rgba(20, 20, 20, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    will-change: transform, box-shadow;
+}
+
+.dark .glass-card {
+    background: linear-gradient(180deg, rgba(26, 26, 26, 1) 0%, rgba(15, 15, 15, 1) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: none;
+}
+
+.glass-card:hover {
+    border-color: rgba(211, 243, 107, 0.5);
+    transform: translateY(-4px) scale(1.005);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.dark .glass-card:hover {
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+}
+
+/* Orb Gradient for Hero */
+.orb-visual {
+    /* Stronger opacity for light mode */
+    background: radial-gradient(circle at center, rgba(211, 243, 107, 0.6) 0%, rgba(255,255,255,0) 70%);
+    filter: blur(60px);
+}
+
+.dark .orb-visual {
+    background: radial-gradient(circle at center, rgba(211, 243, 107, 0.2) 0%, rgba(5,5,5,0) 70%);
+    filter: blur(40px);
+}
+
+/* Smooth inputs */
+input, button {
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Stagger Fade Animation - GPU-Optimized */
+.stagger-fade > * {
+    animation: fadeUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+    will-change: opacity, transform;
+}
+.stagger-fade > *:nth-child(1) { animation-delay: 0.05s; }
+.stagger-fade > *:nth-child(2) { animation-delay: 0.12s; }
+.stagger-fade > *:nth-child(3) { animation-delay: 0.20s; }
+.stagger-fade > *:nth-child(4) { animation-delay: 0.28s; }
+.stagger-fade > *:nth-child(5) { animation-delay: 0.36s; }
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .stagger-fade > * {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
