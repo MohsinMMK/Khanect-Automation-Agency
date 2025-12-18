@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { ChatMessage, ViewState } from '../types';
 import { sendChatMessage } from '../services/chatbotService';
+import KhanectBoltIcon from './icons/KhanectBoltIcon';
 
 interface AiConsultantProps {
     onNavigate?: (view: ViewState) => void;
@@ -93,9 +94,7 @@ const AiConsultant: React.FC<AiConsultantProps> = ({ onNavigate }) => {
         <div className="px-5 py-4 flex items-center justify-between border-b border-gray-100/50 dark:border-white/5 z-10 transition-colors">
             <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-lime/20 to-brand-lime/5 flex items-center justify-center border border-brand-lime/20">
-                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" className="fill-brand-lime stroke-brand-lime" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                     </svg>
+                     <KhanectBoltIcon size={20} />
                 </div>
                 <div>
                     <h3 className="font-bold text-gray-900 dark:text-white leading-tight">Khanect AI</h3>
