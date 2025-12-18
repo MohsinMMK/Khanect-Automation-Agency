@@ -2,13 +2,15 @@
   <!-- Background -->
   <rect width="32" height="32" rx="6" fill="#0F0F11"/>
 
-  <!-- Main lightning bolt - unique angular design -->
-  <path d="M18.5 3L8 17H14L11.5 29L23 15H17L18.5 3Z" fill="#CDEA68"/>
-
-  <!-- Connection node at strike point -->
-  <circle cx="17" cy="15" r="2.5" fill="#CDEA68" stroke="#0F0F11" stroke-width="1"/>
-
-  <!-- Energy arc accents -->
-  <path d="M5 15C5 15 7 12.5 8 12.5" stroke="#CDEA68" stroke-width="1.5" stroke-linecap="round" fill="none"/>
-  <path d="M23 17C23 17 25 14.5 27 14.5" stroke="#CDEA68" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+  <!-- Khanect K Logo -->
+  <g fill="#CDEA68">
+    <!-- Vertical bar -->
+    <path d="M6 4H10V28H6V4Z"/>
+    <!-- Upper diagonal stripes -->
+    <path d="M10 14L18 4H23L13 16L10 14Z"/>
+    <path d="M10 18L21 6H26L13 20L10 18Z"/>
+    <!-- Lower diagonal stripes -->
+    <path d="M13 16L26 28H21L10 18L13 16Z"/>
+    <path d="M13 20L23 28H18L10 22L13 20Z"/>
+  </g>
 </svg>

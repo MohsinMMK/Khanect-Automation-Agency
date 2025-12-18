@@ -8,14 +8,13 @@ interface KhanectBoltIconProps {
 }
 
 /**
- * Unique Khanect lightning bolt icon with connection node
- * Represents power + connectivity (Khanect = Connect)
+ * Unique Khanect "K" logo icon
+ * Geometric K design with angular stripes
  */
 const KhanectBoltIcon: React.FC<KhanectBoltIconProps> = ({
   size = 24,
   className = '',
   fillClassName = 'fill-brand-lime',
-  strokeClassName = 'stroke-brand-lime'
 }) => {
   return (
     <svg
@@ -26,34 +25,30 @@ const KhanectBoltIcon: React.FC<KhanectBoltIconProps> = ({
       xmlns="http://www.w3.org/2000/svg"
       className={className}
     >
-      {/* Main lightning bolt - unique angular design */}
+      {/* Vertical bar of K */}
       <path
-        d="M14.5 2L6 13H11L9 22L18 11H13L14.5 2Z"
+        d="M4 2H7V22H4V2Z"
         className={fillClassName}
-        strokeWidth="0"
       />
-      {/* Connection node at the strike point */}
-      <circle
-        cx="13.5"
-        cy="11"
-        r="2"
-        className={`${fillClassName} ${strokeClassName}`}
-        strokeWidth="1.5"
-      />
-      {/* Energy arc lines */}
+      {/* Upper diagonal */}
       <path
-        d="M4 11C4 11 5.5 9 6 9"
-        className={strokeClassName}
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        fill="none"
+        d="M7 10L14 2H18L9 12L7 10Z"
+        className={fillClassName}
       />
+      {/* Middle diagonal */}
       <path
-        d="M18 13C18 13 19.5 11 20 11"
-        className={strokeClassName}
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        fill="none"
+        d="M7 14L16 4H20L9 16L7 14Z"
+        className={fillClassName}
+      />
+      {/* Lower diagonal */}
+      <path
+        d="M9 12L20 22H16L7 14L9 12Z"
+        className={fillClassName}
+      />
+      {/* Bottom diagonal */}
+      <path
+        d="M9 16L18 22H14L7 18L9 16Z"
+        className={fillClassName}
       />
     </svg>
   );
