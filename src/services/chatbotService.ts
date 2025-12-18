@@ -7,14 +7,15 @@ const N8N_CHATBOT_WEBHOOK_URL = import.meta.env.VITE_N8N_CHATBOT_WEBHOOK_URL;
 
 /**
  * Generate or retrieve a session ID for chat memory persistence.
+ * Uses localStorage so the session persists across browser sessions.
  * This allows the n8n Postgres Chat Memory to maintain conversation context.
  */
 const getSessionId = (): string => {
-  const storageKey = 'khanect_chat_session_id';
-  let sessionId = sessionStorage.getItem(storageKey);
+  const storageKey = 'khanect_chat_session';
+  let sessionId = localStorage.getItem(storageKey);
   if (!sessionId) {
-    sessionId = `session_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
-    sessionStorage.setItem(storageKey, sessionId);
+    sessionId = crypto.randomUUID();
+    localStorage.setItem(storageKey, sessionId);
   }
   return sessionId;
 };
