@@ -21,8 +21,9 @@ export const sendChatMessage = async (
   message: string,
   history: ChatHistory[]
 ): Promise<ChatResponse> => {
-  if (!N8N_CHATBOT_WEBHOOK_URL) {
-    throw new Error("Chatbot webhook URL is not configured");
+  if (!N8N_CHATBOT_WEBHOOK_URL || N8N_CHATBOT_WEBHOOK_URL === 'your_n8n_chatbot_webhook_url') {
+    console.error("Chatbot webhook URL is not configured. Please set VITE_N8N_CHATBOT_WEBHOOK_URL in your .env file");
+    throw new Error("Chatbot webhook URL is not configured. Please check your environment variables.");
   }
 
   try {
@@ -41,7 +42,9 @@ export const sendChatMessage = async (
     });
 
     if (!response.ok) {
-      throw new Error(`Webhook error: ${response.status}`);
+      const errorText = await response.text().catch(() => 'Unknown error');
+      console.error(`Webhook error: ${response.status} ${response.statusText}`, errorText);
+      throw new Error(`Webhook returned status ${response.status}: ${response.statusText}`);
     }
 
     const data = await response.json();
@@ -55,6 +58,17 @@ export const sendChatMessage = async (
     };
   } catch (error) {
     console.error("Chatbot API Error:", error);
-    throw new Error("Failed to connect to the AI consultant.");
+
+    // Provide more specific error messages
+    if (error instanceof TypeError && error.message.includes('fetch')) {
+      throw new Error("Unable to connect to the chatbot service. Please check your network connection and webhook URL.");
+    }
+
+    // Re-throw with original message if it's already user-friendly
+    if (error instanceof Error && error.message.includes('webhook')) {
+      throw error;
+    }
+
+    throw new Error("Failed to connect to the AI consultant. Please try again later.");
   }
 };
