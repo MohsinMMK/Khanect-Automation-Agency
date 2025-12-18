@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ViewState } from '../types';
+import KhanectBoltIcon from './icons/KhanectBoltIcon';
 
 interface NavbarProps {
   currentView: ViewState;
@@ -74,10 +75,11 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, theme, toggleT
           className="flex items-center gap-3 group focus:outline-none z-50 relative"
         >
           <div className="w-8 h-8 bg-black dark:bg-white rounded-md flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
-             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" fill="white" className="dark:fill-black" stroke="none" />
-                <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="white" className="dark:stroke-black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-             </svg>
+             <KhanectBoltIcon
+               size={18}
+               fillClassName="fill-white dark:fill-black"
+               strokeClassName="stroke-white dark:stroke-black"
+             />
           </div>
           <span className="font-bold text-xl tracking-tight text-gray-900 dark:text-white">Khanect</span>
         </button>

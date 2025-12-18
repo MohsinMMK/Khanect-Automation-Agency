@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Background -->
+  <rect width="32" height="32" rx="6" fill="#0F0F11"/>
+
+  <!-- Main lightning bolt - unique angular design -->
+  <path d="M18.5 3L8 17H14L11.5 29L23 15H17L18.5 3Z" fill="#CDEA68"/>
+
+  <!-- Connection node at strike point -->
+  <circle cx="17" cy="15" r="2.5" fill="#CDEA68" stroke="#0F0F11" stroke-width="1"/>
+
+  <!-- Energy arc accents -->
+  <path d="M5 15C5 15 7 12.5 8 12.5" stroke="#CDEA68" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+  <path d="M23 17C23 17 25 14.5 27 14.5" stroke="#CDEA68" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+</svg>
