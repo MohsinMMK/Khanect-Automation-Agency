@@ -2,15 +2,25 @@
   <!-- Background -->
   <rect width="32" height="32" rx="6" fill="#0F0F11"/>
 
-  <!-- Khanect K Logo -->
   <g fill="#CDEA68">
-    <!-- Vertical bar -->
-    <path d="M6 4H10V28H6V4Z"/>
-    <!-- Upper diagonal stripes -->
-    <path d="M10 14L18 4H23L13 16L10 14Z"/>
-    <path d="M10 18L21 6H26L13 20L10 18Z"/>
-    <!-- Lower diagonal stripes -->
-    <path d="M13 16L26 28H21L10 18L13 16Z"/>
-    <path d="M13 20L23 28H18L10 22L13 20Z"/>
+    <!-- Vertical bar with triangular cutout -->
+    <path d="M4 3H9V11L4 6V3Z"/>
+    <path d="M4 6L9 11V29H4V6Z"/>
+
+    <!-- Top chevron stripes (4 lines) -->
+    <path d="M11 3L18 10L16 12L9 5L11 3Z"/>
+    <path d="M14 3L21 10L19 12L12 5L14 3Z"/>
+    <path d="M17 3L24 10L22 12L15 5L17 3Z"/>
+    <path d="M20 3L27 10L25 12L18 5L20 3Z"/>
+
+    <!-- Circuit line upper with nodes -->
+    <path d="M9 13L17 21" stroke="#CDEA68" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+    <circle cx="10.5" cy="14.5" r="2"/>
+    <circle cx="15.5" cy="19.5" r="2"/>
+
+    <!-- Circuit line lower with nodes -->
+    <path d="M9 18L15 24L22 28" stroke="#CDEA68" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+    <circle cx="10.5" cy="19.5" r="2"/>
+    <circle cx="15" cy="24" r="2"/>
   </g>
 </svg>
