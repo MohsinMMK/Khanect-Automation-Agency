@@ -5,6 +5,20 @@
 
 const N8N_CHATBOT_WEBHOOK_URL = import.meta.env.VITE_N8N_CHATBOT_WEBHOOK_URL;
 
+/**
+ * Generate or retrieve a session ID for chat memory persistence.
+ * This allows the n8n Postgres Chat Memory to maintain conversation context.
+ */
+const getSessionId = (): string => {
+  const storageKey = 'khanect_chat_session_id';
+  let sessionId = sessionStorage.getItem(storageKey);
+  if (!sessionId) {
+    sessionId = `session_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
+    sessionStorage.setItem(storageKey, sessionId);
+  }
+  return sessionId;
+};
+
 export interface ChatHistory {
   role: string;
   parts: { text: string }[];
@@ -86,12 +100,19 @@ export const sendChatMessage = async (
   }
 
   try {
+    const sessionId = getSessionId();
+
     const response = await fetch(N8N_CHATBOT_WEBHOOK_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
+        // n8n AI Agent expects 'chatInput' for the user message
+        chatInput: message,
+        // Include sessionId for Postgres Chat Memory to maintain context
+        sessionId,
+        // Keep 'message' for backwards compatibility
         message,
         history: history.map(h => ({
           role: h.role,
