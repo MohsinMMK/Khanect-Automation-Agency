@@ -88,7 +88,7 @@ const AiConsultant: React.FC<AiConsultantProps> = ({ onNavigate }) => {
   };
 
   return (
-    <div className="w-full h-full bg-white/92 dark:bg-[#0F0F11]/92 backdrop-blur-[100px] rounded-2xl flex flex-col relative overflow-hidden font-sans border border-white/20 dark:border-white/5 transition-all duration-300">
+    <div className="w-full h-full bg-white/98 dark:bg-[#0F0F11]/98 backdrop-blur-[100px] rounded-2xl flex flex-col relative overflow-hidden font-sans border border-white/20 dark:border-white/5 transition-all duration-300">
 
         {/* Header */}
         <div className="px-5 py-4 flex items-center justify-between border-b border-gray-100/50 dark:border-white/5 z-10 transition-colors">
