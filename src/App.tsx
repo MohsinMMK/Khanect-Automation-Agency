@@ -50,6 +50,18 @@ const App: React.FC = () => {
     }
   }, [currentView]);
 
+  // Prevent body scroll when AI assistant is open (mobile experience)
+  useEffect(() => {
+    if (currentView === ViewState.DEMO) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [currentView]);
+
   return (
     <div className="min-h-screen font-sans selection:bg-brand-lime/30 selection:text-black dark:selection:text-brand-lime dark:text-white transition-colors duration-300 relative">
       <div className="spotlight-glow"></div>
