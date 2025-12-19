@@ -153,7 +153,7 @@ const Pricing: React.FC<PricingProps> = ({ onNavigate }) => {
             {[
               {
                 q: 'Can I change plans at any time?',
-                a: 'Yes! You can upgrade or downgrade your plan at any time. Changes take effect immediately, and we'll prorate the billing.'
+                a: 'Yes! You can upgrade or downgrade your plan at any time. Changes take effect immediately, and we\'ll prorate the billing.'
               },
               {
                 q: 'What payment methods do you accept?',
