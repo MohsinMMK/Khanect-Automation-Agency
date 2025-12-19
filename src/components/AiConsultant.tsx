@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { ChatMessage, ViewState } from '../types';
 import { sendChatMessage } from '../services/chatbotService';
 import KhanectBoltIcon from './icons/KhanectBoltIcon';
+import { formatMessage } from '../utils/formatMessage';
 
 interface AiConsultantProps {
     onNavigate?: (view: ViewState) => void;
@@ -124,7 +125,7 @@ const AiConsultant: React.FC<AiConsultantProps> = ({ onNavigate }) => {
                         ? 'bg-brand-lime text-black rounded-[20px] rounded-tr-sm font-medium'
                         : 'bg-white dark:bg-white/5 text-gray-800 dark:text-gray-200 rounded-[20px] rounded-tl-sm border border-gray-100 dark:border-white/5 backdrop-blur-sm'
                     } ${msg.isError ? 'bg-red-50 text-red-600 border border-red-100 dark:bg-red-900/10 dark:text-red-300 dark:border-red-900/20' : ''}`}>
-                        {msg.text}
+                        {msg.role === 'user' ? msg.text : formatMessage(msg.text)}
                     </div>
                 </div>
             ))}
