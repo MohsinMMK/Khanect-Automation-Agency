@@ -13,10 +13,10 @@ const Pricing: React.FC<PricingProps> = ({ onNavigate }) => {
 
   const handleStartFreeTrial = () => {
     onNavigate(ViewState.LANDING);
-    // Wait for view change and DOM update, then scroll to contact form
+    // Wait for view change, DOM update, and scroll reset, then scroll to contact form
     setTimeout(() => {
       document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
-    }, 100);
+    }, 200);
   };
 
   const pricingFAQs = [
