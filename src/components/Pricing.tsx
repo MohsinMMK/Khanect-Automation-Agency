@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ViewState } from '../types';
 import PricingCard from './PricingCard';
+import FAQItem from './FAQItem';
 import { pricingPackages } from '../data/pricing';
 
 interface PricingProps {
@@ -8,6 +9,44 @@ interface PricingProps {
 }
 
 const Pricing: React.FC<PricingProps> = ({ onNavigate }) => {
+  const [openFAQ, setOpenFAQ] = useState<number | null>(null);
+
+  const handleStartFreeTrial = () => {
+    onNavigate(ViewState.LANDING);
+    // Scroll to contact form after navigation
+    setTimeout(() => {
+      document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  };
+
+  const pricingFAQs = [
+    {
+      id: 1,
+      question: 'Can I change plans at any time?',
+      answer: 'Yes! You can upgrade or downgrade your plan at any time. Changes take effect immediately, and we\'ll prorate the billing.'
+    },
+    {
+      id: 2,
+      question: 'What payment methods do you accept?',
+      answer: 'We accept all major credit cards (Visa, MasterCard, American Express), PayPal, and bank transfers for Enterprise plans.'
+    },
+    {
+      id: 3,
+      question: 'Is there a setup fee?',
+      answer: 'No setup fees for any plan. We believe in transparent pricing with no hidden costs.'
+    },
+    {
+      id: 4,
+      question: 'Do you offer refunds?',
+      answer: 'Yes, we offer a 30-day money-back guarantee for all paid plans. No questions asked.'
+    },
+    {
+      id: 5,
+      question: 'Can I get a custom plan?',
+      answer: 'Absolutely! Enterprise clients can work with us to create a fully customized plan that fits their exact needs.'
+    }
+  ];
+
   return (
     <div className="min-h-screen pt-24 md:pt-32 lg:pt-40 pb-12 md:pb-20 lg:pb-24">
       {/* Hero Section */}
@@ -67,7 +106,7 @@ const Pricing: React.FC<PricingProps> = ({ onNavigate }) => {
               <div key={pkg.id} className="flex">
                 <PricingCard
                   {...pkg}
-                  onCTAClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+                  onCTAClick={handleStartFreeTrial}
                 />
               </div>
             ))}
@@ -109,7 +148,7 @@ const Pricing: React.FC<PricingProps> = ({ onNavigate }) => {
                   { feature: 'CRM Integration', values: ['Basic', 'Advanced', 'Full Ecosystem', 'Multi-department'] },
                   { feature: 'AI Chatbot', values: ['—', '✓', 'Custom + KB', 'Custom Dev'] },
                   { feature: 'Lead Generation', values: ['—', 'Automation', 'Complete System', 'Custom'] },
-                  { feature: 'Support Period', values: ['30 days', '60 days', '90 days', '24/7'] },
+                  { feature: 'Support', values: ['24/7', '24/7', '24/7', '24/7'] },
                   { feature: 'Strategy Calls', values: ['—', 'Monthly', 'Bi-weekly', 'Quarterly Reviews'] },
                   { feature: 'Customer Portal', values: ['—', '—', '✓', '✓'] },
                   { feature: 'Dedicated Engineer', values: ['—', '—', '—', '✓'] },
@@ -138,58 +177,33 @@ const Pricing: React.FC<PricingProps> = ({ onNavigate }) => {
       </section>
 
       {/* FAQ Section */}
-      <section className="px-4 sm:px-6 mb-16 md:mb-20">
+      <section className="px-4 sm:px-6 mb-16 md:mb-20 bg-gray-50/50 dark:bg-brand-card/30 py-12 md:py-16 lg:py-20 transition-colors duration-500">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-10 md:mb-12">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-gray-900 dark:text-white">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6 text-gray-900 dark:text-white transition-colors">
               Pricing FAQs
             </h2>
-            <p className="text-base md:text-lg text-gray-600 dark:text-gray-400">
+            <p className="text-base md:text-lg text-gray-600 dark:text-gray-400 transition-colors">
               Common questions about our pricing plans
             </p>
           </div>
 
-          <div className="space-y-4">
-            {[
-              {
-                q: 'Can I change plans at any time?',
-                a: 'Yes! You can upgrade or downgrade your plan at any time. Changes take effect immediately, and we\'ll prorate the billing.'
-              },
-              {
-                q: 'What payment methods do you accept?',
-                a: 'We accept all major credit cards (Visa, MasterCard, American Express), PayPal, and bank transfers for Enterprise plans.'
-              },
-              {
-                q: 'Is there a setup fee?',
-                a: 'No setup fees for any plan. We believe in transparent pricing with no hidden costs.'
-              },
-              {
-                q: 'Do you offer refunds?',
-                a: 'Yes, we offer a 30-day money-back guarantee for all paid plans. No questions asked.'
-              },
-              {
-                q: 'Can I get a custom plan?',
-                a: 'Absolutely! Enterprise clients can work with us to create a fully customized plan that fits their exact needs.'
-              }
-            ].map((faq, idx) => (
-              <details key={idx} className="group bg-white dark:bg-black/40 rounded-xl border border-gray-200 dark:border-white/10 overflow-hidden">
-                <summary className="px-6 py-4 cursor-pointer font-semibold text-gray-900 dark:text-white flex items-center justify-between hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
-                  {faq.q}
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="group-open:rotate-180 transition-transform">
-                    <polyline points="6 9 12 15 18 9"></polyline>
-                  </svg>
-                </summary>
-                <div className="px-6 pb-4 text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
-                  {faq.a}
-                </div>
-              </details>
+          <div className="space-y-3 md:space-y-4">
+            {pricingFAQs.map(faq => (
+              <FAQItem
+                key={faq.id}
+                question={faq.question}
+                answer={faq.answer}
+                isOpen={openFAQ === faq.id}
+                onToggle={() => setOpenFAQ(openFAQ === faq.id ? null : faq.id)}
+              />
             ))}
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section id="contact" className="px-4 sm:px-6">
+      <section className="px-4 sm:px-6">
         <div className="max-w-4xl mx-auto glass-card p-8 md:p-12 rounded-2xl md:rounded-3xl text-center">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-gray-900 dark:text-white">
             Ready to Get Started?
@@ -197,20 +211,12 @@ const Pricing: React.FC<PricingProps> = ({ onNavigate }) => {
           <p className="text-base md:text-lg text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto">
             Join hundreds of businesses already automating their workflows with Khanect AI
           </p>
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-4">
-            <button
-              onClick={() => onNavigate(ViewState.LANDING)}
-              className="px-8 py-4 bg-brand-lime text-black rounded-xl font-bold text-lg transition-all duration-300 hover:bg-brand-limeHover active:scale-95 shadow-lg shadow-brand-lime/20 touch-manipulation"
-            >
-              Start Free Trial
-            </button>
-            <button
-              onClick={() => onNavigate(ViewState.DEMO)}
-              className="px-8 py-4 border-2 border-gray-300 dark:border-white/20 text-gray-900 dark:text-white rounded-xl font-bold text-lg transition-all duration-300 hover:bg-white dark:hover:bg-white/10 active:scale-95 touch-manipulation"
-            >
-              Talk to Sales
-            </button>
-          </div>
+          <button
+            onClick={handleStartFreeTrial}
+            className="px-10 py-4 bg-brand-lime text-black rounded-xl font-bold text-lg transition-all duration-300 ease-fluid hover:bg-brand-limeHover hover:scale-105 active:scale-95 shadow-lg shadow-brand-lime/20 hover:shadow-[0_10px_40px_-10px_rgba(211,243,107,0.6)] touch-manipulation"
+          >
+            Start Free Trial
+          </button>
         </div>
       </section>
     </div>
