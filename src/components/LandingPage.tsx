@@ -5,12 +5,10 @@ import { validateEmail, validatePhone, validateUrl, validateName } from '../util
 import { supabase } from '../lib/supabase';
 import TabSwitch from './TabSwitch';
 import ServiceCard from './ServiceCard';
-import PricingCard from './PricingCard';
 import ProcessStep from './ProcessStep';
 import FAQItem from './FAQItem';
 import { services } from '../data/services';
 import { industries } from '../data/industries';
-import { pricingPackages } from '../data/pricing';
 import { processSteps } from '../data/process';
 import { faqs } from '../data/faqs';
 
@@ -397,29 +395,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
               ? services.map(service => <ServiceCard key={service.id} {...service} />)
               : industries.map(industry => <ServiceCard key={industry.id} {...industry} />)
             }
-          </div>
-        </div>
-      </section>
-
-      <section id="pricing" className="py-12 md:py-20 lg:py-24 px-4 sm:px-6 relative z-10 bg-gray-50/50 dark:bg-brand-card/30 transition-colors duration-500">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-10 md:mb-16">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6 text-gray-900 dark:text-white transition-colors">
-              Simple, Transparent Pricing
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-base md:text-lg transition-colors px-4">
-              Choose the perfect plan to scale your automation journey
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6">
-            {pricingPackages.map(pkg => (
-              <PricingCard
-                key={pkg.id}
-                {...pkg}
-                onCTAClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
-              />
-            ))}
           </div>
         </div>
       </section>

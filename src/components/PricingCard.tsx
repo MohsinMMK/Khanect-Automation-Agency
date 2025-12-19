@@ -22,9 +22,9 @@ const PricingCard: React.FC<PricingCardProps> = ({
 }) => {
   return (
     <div className={`
-      glass-card p-8 rounded-2xl relative transition-all duration-500 ease-fluid flex flex-col
+      glass-card p-8 rounded-2xl relative transition-all duration-500 ease-fluid flex flex-col w-full
       ${isPopular
-        ? 'border-brand-lime border-2 transform scale-105 shadow-2xl shadow-brand-lime/20'
+        ? 'border-brand-lime border-2 shadow-2xl shadow-brand-lime/20'
         : 'hover:border-brand-lime/50 hover:-translate-y-2 hover:shadow-xl'
       }
     `}>

@@ -62,9 +62,9 @@ const Pricing: React.FC<PricingProps> = ({ onNavigate }) => {
       {/* Pricing Cards */}
       <section className="px-4 sm:px-6 mb-16 md:mb-20 lg:mb-24">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 items-stretch">
             {pricingPackages.map(pkg => (
-              <div key={pkg.id} className="transform transition-all duration-300 hover:scale-105">
+              <div key={pkg.id} className="flex">
                 <PricingCard
                   {...pkg}
                   onCTAClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
@@ -95,26 +95,26 @@ const Pricing: React.FC<PricingProps> = ({ onNavigate }) => {
                   <th className="px-4 sm:px-6 py-4 text-center text-sm font-semibold text-gray-900 dark:text-white">Starter</th>
                   <th className="px-4 sm:px-6 py-4 text-center text-sm font-semibold text-gray-900 dark:text-white">
                     <div className="flex items-center justify-center gap-2">
-                      Professional
+                      Growth
                       <span className="px-2 py-0.5 bg-brand-lime text-black text-xs font-bold rounded-full">Popular</span>
                     </div>
                   </th>
-                  <th className="px-4 sm:px-6 py-4 text-center text-sm font-semibold text-gray-900 dark:text-white">Business</th>
+                  <th className="px-4 sm:px-6 py-4 text-center text-sm font-semibold text-gray-900 dark:text-white">Scale</th>
                   <th className="px-4 sm:px-6 py-4 text-center text-sm font-semibold text-gray-900 dark:text-white">Enterprise</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-white/10">
                 {[
-                  { feature: 'AI Workflows', values: ['3', '10', '50', 'Unlimited'] },
-                  { feature: 'Monthly Tasks', values: ['1,000', '10,000', '100,000', 'Unlimited'] },
-                  { feature: 'Team Members', values: ['1', '5', '20', 'Unlimited'] },
-                  { feature: 'Data Retention', values: ['30 days', '90 days', '1 year', 'Forever'] },
-                  { feature: 'Support', values: ['Email', 'Email + Chat', 'Priority', '24/7 Dedicated'] },
-                  { feature: 'Custom Integrations', values: ['—', '✓', '✓', '✓'] },
-                  { feature: 'Advanced Analytics', values: ['—', '—', '✓', '✓'] },
-                  { feature: 'API Access', values: ['—', '—', '✓', '✓'] },
-                  { feature: 'White Label', values: ['—', '—', '—', '✓'] },
-                  { feature: 'SLA Guarantee', values: ['—', '—', '—', '99.9%'] },
+                  { feature: 'Workflow Automations', values: ['Up to 3', 'Up to 7', 'Up to 15', 'Unlimited'] },
+                  { feature: 'CRM Integration', values: ['Basic', 'Advanced', 'Full Ecosystem', 'Multi-department'] },
+                  { feature: 'AI Chatbot', values: ['—', '✓', 'Custom + KB', 'Custom Dev'] },
+                  { feature: 'Lead Generation', values: ['—', 'Automation', 'Complete System', 'Custom'] },
+                  { feature: 'Support Period', values: ['30 days', '60 days', '90 days', '24/7'] },
+                  { feature: 'Strategy Calls', values: ['—', 'Monthly', 'Bi-weekly', 'Quarterly Reviews'] },
+                  { feature: 'Customer Portal', values: ['—', '—', '✓', '✓'] },
+                  { feature: 'Dedicated Engineer', values: ['—', '—', '—', '✓'] },
+                  { feature: 'SLA Guarantees', values: ['—', '—', '—', '✓'] },
+                  { feature: 'Documentation & Training', values: ['✓', '✓', '✓', '✓'] },
                 ].map((row, idx) => (
                   <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
                     <td className="px-4 sm:px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">{row.feature}</td>
