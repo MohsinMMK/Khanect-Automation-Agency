@@ -12,11 +12,17 @@ const Pricing: React.FC<PricingProps> = ({ onNavigate }) => {
   const [openFAQ, setOpenFAQ] = useState<number | null>(null);
 
   const handleStartFreeTrial = () => {
+    // First scroll to top immediately
+    window.scrollTo(0, 0);
+    // Then navigate
     onNavigate(ViewState.LANDING);
-    // Scroll to contact form after navigation
+    // Wait for navigation and DOM update, then scroll to contact form
     setTimeout(() => {
-      document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
-    }, 100);
+      window.scrollTo(0, 0); // Ensure we're at top
+      setTimeout(() => {
+        document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    }, 50);
   };
 
   const pricingFAQs = [
