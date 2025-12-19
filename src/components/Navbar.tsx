@@ -178,7 +178,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, theme, toggleT
 
       {/* Mobile Menu Overlay */}
       <div
-        className={`fixed inset-0 bg-white/95 dark:bg-black/95 backdrop-blur-xl z-40 transition-transform duration-300 md:hidden flex flex-col items-center justify-center space-y-8 ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}
+        className={`fixed inset-0 bg-white/95 dark:bg-black/95 backdrop-blur-xl z-40 transition-all duration-300 ease-in-out md:hidden flex flex-col items-center justify-center space-y-8 ${isMobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
         aria-hidden={!isMobileMenuOpen}
       >
             <button

@@ -97,7 +97,7 @@ const App: React.FC = () => {
           onClick={scrollToTop}
           className={`fixed z-40 w-12 h-12 rounded-full bg-white dark:bg-white/10 text-gray-900 dark:text-white border border-gray-200 dark:border-white/10 shadow-lg backdrop-blur-md transition-all duration-500 ease-fluid transform hover:scale-110 hover:bg-gray-50 dark:hover:bg-white/20 focus:outline-none flex items-center justify-center ${
               showScrollTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'
-          } ${currentView === ViewState.LANDING ? 'bottom-24 right-8' : currentView === ViewState.DEMO ? 'bottom-6 left-6' : 'bottom-6 right-6'}`}
+          } ${currentView === ViewState.LANDING || currentView === ViewState.PRICING ? 'bottom-24 right-8' : currentView === ViewState.DEMO ? 'bottom-6 left-6' : 'bottom-6 right-6'}`}
           aria-label="Scroll to top"
       >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
