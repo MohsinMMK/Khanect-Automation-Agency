@@ -285,7 +285,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
 
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mb-12 md:mb-16 animate-fade-in-up delay-300">
               <button
-                  onClick={() => onNavigate(ViewState.DEMO)}
+                  onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
                   className="w-full sm:w-auto px-6 sm:px-8 py-3.5 sm:py-4 bg-brand-lime text-black rounded-xl font-bold text-base sm:text-lg transition-all duration-300 ease-fluid hover:bg-brand-limeHover active:scale-95 hover:shadow-[0_10px_40px_-10px_rgba(211,243,107,0.6)] flex items-center justify-center gap-2 shadow-lg shadow-brand-lime/20 touch-manipulation"
               >
                 Book a Demo
