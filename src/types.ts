@@ -3,7 +3,8 @@ import React from 'react';
 export enum ViewState {
   LANDING = 'LANDING',
   DEMO = 'DEMO',
-  PORTAL = 'PORTAL'
+  PORTAL = 'PORTAL',
+  PRICING = 'PRICING'
 }
 
 export interface ChatMessage {
