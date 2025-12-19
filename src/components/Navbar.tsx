@@ -178,43 +178,50 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, theme, toggleT
 
       {/* Mobile Menu Overlay */}
       <div
-        className={`fixed inset-0 bg-white/95 dark:bg-black/95 backdrop-blur-xl z-40 transition-all duration-300 ease-in-out md:hidden flex flex-col items-center justify-center space-y-8 ${isMobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
+        className={`fixed inset-0 bg-white/95 dark:bg-black/95 backdrop-blur-xl z-40 transition-all duration-300 ease-in-out md:hidden ${isMobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
         aria-hidden={!isMobileMenuOpen}
       >
+        <div className="flex flex-col items-center justify-center h-full space-y-8">
             <button
               onClick={handleLandingClick}
-              className={`text-3xl font-medium transition-all hover:scale-105 ${currentView === ViewState.LANDING ? 'text-black dark:text-white' : 'text-gray-500 hover:text-brand-lime'}`}
+              className={`text-3xl font-medium transition-all duration-300 hover:scale-105 ${currentView === ViewState.LANDING ? 'text-black dark:text-white' : 'text-gray-500 hover:text-brand-lime'} ${isMobileMenuOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}
+              style={{ transitionDelay: isMobileMenuOpen ? '50ms' : '0ms' }}
             >
               Get Started
             </button>
             <button
               onClick={handlePricingClick}
-              className={`text-3xl font-medium transition-all hover:scale-105 ${currentView === ViewState.PRICING ? 'text-black dark:text-white' : 'text-gray-500 hover:text-brand-lime'}`}
+              className={`text-3xl font-medium transition-all duration-300 hover:scale-105 ${currentView === ViewState.PRICING ? 'text-black dark:text-white' : 'text-gray-500 hover:text-brand-lime'} ${isMobileMenuOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}
+              style={{ transitionDelay: isMobileMenuOpen ? '100ms' : '0ms' }}
             >
               Pricing
             </button>
              <button
               onClick={handlePortalClick}
-              className={`text-3xl font-medium transition-all hover:scale-105 ${currentView === ViewState.PORTAL ? 'text-black dark:text-white' : 'text-gray-500 hover:text-brand-lime'}`}
+              className={`text-3xl font-medium transition-all duration-300 hover:scale-105 ${currentView === ViewState.PORTAL ? 'text-black dark:text-white' : 'text-gray-500 hover:text-brand-lime'} ${isMobileMenuOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}
+              style={{ transitionDelay: isMobileMenuOpen ? '150ms' : '0ms' }}
             >
               Client Portal
             </button>
             <button
               onClick={handleContactClick}
-              className="text-3xl font-medium text-gray-500 hover:text-brand-lime transition-all hover:scale-105"
+              className={`text-3xl font-medium text-gray-500 hover:text-brand-lime transition-all duration-300 hover:scale-105 ${isMobileMenuOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}
+              style={{ transitionDelay: isMobileMenuOpen ? '200ms' : '0ms' }}
             >
               Contact Us
             </button>
 
-            <div className="w-12 h-1 bg-gray-200 dark:bg-white/10 rounded-full my-4"></div>
+            <div className={`w-12 h-1 bg-gray-200 dark:bg-white/10 rounded-full my-4 transition-all duration-300 ${isMobileMenuOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`} style={{ transitionDelay: isMobileMenuOpen ? '250ms' : '0ms' }}></div>
 
              <button
                 onClick={() => handleNavigate(ViewState.DEMO)}
-                className="bg-brand-lime hover:bg-brand-limeHover text-black text-xl font-bold px-8 py-4 rounded-xl transition-all duration-200 flex items-center gap-3 mt-4 hover:shadow-[0_0_20px_rgba(211,243,107,0.4)]"
+                className={`bg-brand-lime hover:bg-brand-limeHover text-black text-xl font-bold px-8 py-4 rounded-xl transition-all duration-300 flex items-center gap-3 mt-4 hover:shadow-[0_0_20px_rgba(211,243,107,0.4)] ${isMobileMenuOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
+                style={{ transitionDelay: isMobileMenuOpen ? '300ms' : '0ms' }}
             >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                 <span>Try Demo</span>
             </button>
+        </div>
       </div>
     </nav>
   );
