@@ -46,7 +46,7 @@ const App: React.FC = () => {
 
   // Reset scroll position when view changes
   useEffect(() => {
-    if (currentView === ViewState.PORTAL || currentView === ViewState.PRICING) {
+    if (currentView === ViewState.LANDING || currentView === ViewState.PORTAL || currentView === ViewState.PRICING) {
        window.scrollTo(0, 0);
     }
   }, [currentView]);
