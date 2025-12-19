@@ -47,6 +47,24 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, theme, toggleT
       setIsMobileMenuOpen(false);
   };
 
+  const handlePricingClick = () => {
+      if (currentView === ViewState.PRICING) {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+          onNavigate(ViewState.PRICING);
+      }
+      setIsMobileMenuOpen(false);
+  };
+
+  const handlePortalClick = () => {
+      if (currentView === ViewState.PORTAL) {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+          onNavigate(ViewState.PORTAL);
+      }
+      setIsMobileMenuOpen(false);
+  };
+
   const handleContactClick = () => {
     if (currentView === ViewState.LANDING) {
         document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
@@ -94,13 +112,13 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, theme, toggleT
               Get Started
             </button>
             <button
-              onClick={() => onNavigate(ViewState.PRICING)}
+              onClick={handlePricingClick}
               className={`hover:text-black dark:hover:text-white transition-colors ${currentView === ViewState.PRICING ? 'text-black dark:text-white' : ''}`}
             >
               Pricing
             </button>
              <button
-              onClick={() => onNavigate(ViewState.PORTAL)}
+              onClick={handlePortalClick}
               className={`hover:text-black dark:hover:text-white transition-colors ${currentView === ViewState.PORTAL ? 'text-black dark:text-white' : ''}`}
             >
               Client Portal
@@ -170,13 +188,13 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, theme, toggleT
               Get Started
             </button>
             <button
-              onClick={() => handleNavigate(ViewState.PRICING)}
+              onClick={handlePricingClick}
               className={`text-3xl font-medium transition-all hover:scale-105 ${currentView === ViewState.PRICING ? 'text-black dark:text-white' : 'text-gray-500 hover:text-brand-lime'}`}
             >
               Pricing
             </button>
              <button
-              onClick={() => handleNavigate(ViewState.PORTAL)}
+              onClick={handlePortalClick}
               className={`text-3xl font-medium transition-all hover:scale-105 ${currentView === ViewState.PORTAL ? 'text-black dark:text-white' : 'text-gray-500 hover:text-brand-lime'}`}
             >
               Client Portal
@@ -187,10 +205,10 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, theme, toggleT
             >
               Contact Us
             </button>
-            
+
             <div className="w-12 h-1 bg-gray-200 dark:bg-white/10 rounded-full my-4"></div>
 
-             <button 
+             <button
                 onClick={() => handleNavigate(ViewState.DEMO)}
                 className="bg-brand-lime hover:bg-brand-limeHover text-black text-xl font-bold px-8 py-4 rounded-xl transition-all duration-200 flex items-center gap-3 mt-4 hover:shadow-[0_0_20px_rgba(211,243,107,0.4)]"
             >
