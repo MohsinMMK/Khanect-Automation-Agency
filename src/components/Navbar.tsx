@@ -70,10 +70,10 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, theme, toggleT
         document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
     } else {
         onNavigate(ViewState.LANDING);
-        // Allow brief time for view transition before scrolling
+        // Allow time for view transition, DOM update, and scroll reset before scrolling
         setTimeout(() => {
              document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
-        }, 100);
+        }, 200);
     }
     setIsMobileMenuOpen(false);
   };
