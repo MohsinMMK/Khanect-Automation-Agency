@@ -11,7 +11,9 @@ interface AiConsultantProps {
 const SUGGESTIONS = [
   "How can I save costs?",
   "Automate my workflow",
-  "Book a demo"
+  "Book a demo",
+  "What industries do you serve?",
+  "Tell me about AI automation"
 ];
 
 const AiConsultant: React.FC<AiConsultantProps> = ({ onNavigate }) => {
@@ -57,6 +59,20 @@ const AiConsultant: React.FC<AiConsultantProps> = ({ onNavigate }) => {
     const userMsg: ChatMessage = { role: 'user', text: textToSend };
     setMessages((prev) => [...prev, userMsg]);
     setInput('');
+
+    // Handle "Book a demo" request with custom response
+    if (textToSend.toLowerCase().includes('book a demo') || textToSend.toLowerCase().includes('book demo')) {
+      setIsTextLoading(true);
+      setTimeout(() => {
+        setMessages((prev) => [...prev, {
+          role: 'model',
+          text: "Great choice! 🎉\n\nTo book a demo with our team, please **scroll down to the contact form** on our homepage and fill in your details.\n\nOur team will get back to you within 24 hours to schedule a personalized demo session.\n\n**What you'll get:**\n- Personalized walkthrough of our AI automation solutions\n- ROI analysis for your business\n- Custom automation recommendations\n- Q&A session with our experts\n\nLooking forward to helping you transform your business! 🚀"
+        }]);
+        setIsTextLoading(false);
+      }, 800);
+      return;
+    }
+
     setIsTextLoading(true);
 
     try {
