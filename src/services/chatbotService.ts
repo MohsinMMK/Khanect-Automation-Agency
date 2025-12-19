@@ -91,70 +91,110 @@ const extractResponseText = (data: unknown): string | null => {
 
 /**
  * Sends a message to the n8n chatbot webhook and returns the response.
+ * Includes timeout and retry logic for mobile reliability.
  */
 export const sendChatMessage = async (
   message: string,
-  history: ChatHistory[]
+  history: ChatHistory[],
+  retryCount = 0
 ): Promise<ChatResponse> => {
   if (!N8N_CHATBOT_WEBHOOK_URL) {
     throw new Error("Chatbot webhook URL is not configured");
   }
 
+  const MAX_RETRIES = 2;
+  const TIMEOUT_MS = 30000; // 30 seconds for mobile networks
+
   try {
     const sessionId = getSessionId();
 
-    const response = await fetch(N8N_CHATBOT_WEBHOOK_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        // n8n AI Agent expects 'chatInput' for the user message
-        chatInput: message,
-        // Include sessionId for Postgres Chat Memory to maintain context
-        sessionId,
-        // Keep 'message' for backwards compatibility
-        message,
-        history: history.map(h => ({
-          role: h.role,
-          text: h.parts[0]?.text || ''
-        }))
-      }),
-    });
+    // Create abort controller for timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
-    if (!response.ok) {
-      const errorText = await response.text().catch(() => 'Unknown error');
-      console.error(`Webhook error ${response.status}:`, errorText);
-      throw new Error(`Webhook error: ${response.status}`);
-    }
+    try {
+      const response = await fetch(N8N_CHATBOT_WEBHOOK_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          // n8n AI Agent expects 'chatInput' for the user message
+          chatInput: message,
+          // Include sessionId for Postgres Chat Memory to maintain context
+          sessionId,
+          // Keep 'message' for backwards compatibility
+          message,
+          history: history.map(h => ({
+            role: h.role,
+            text: h.parts[0]?.text || ''
+          }))
+        }),
+        signal: controller.signal,
+      });
 
-    // Try to parse as JSON, fall back to text
-    let data: unknown;
-    const contentType = response.headers.get('content-type');
+      clearTimeout(timeoutId);
 
-    if (contentType?.includes('application/json')) {
-      data = await response.json();
-    } else {
-      // Handle plain text response
-      const textResponse = await response.text();
-      data = textResponse;
-    }
+      if (!response.ok) {
+        const errorText = await response.text().catch(() => 'Unknown error');
+        console.error(`Webhook error ${response.status}:`, errorText);
+        throw new Error(`Webhook error: ${response.status}`);
+      }
 
-    // Extract response text from various possible formats
-    const responseText = extractResponseText(data);
+      // Try to parse as JSON, fall back to text
+      let data: unknown;
+      const contentType = response.headers.get('content-type');
 
-    if (!responseText) {
-      console.error('Could not extract response from webhook data:', data);
+      if (contentType?.includes('application/json')) {
+        data = await response.json();
+      } else {
+        // Handle plain text response
+        const textResponse = await response.text();
+        data = textResponse;
+      }
+
+      // Extract response text from various possible formats
+      const responseText = extractResponseText(data);
+
+      if (!responseText) {
+        console.error('Could not extract response from webhook data:', data);
+        return {
+          text: "I apologize, but I couldn't generate a response at this time. Please try again.",
+        };
+      }
+
       return {
-        text: "I apologize, but I couldn't generate a response at this time. Please try again.",
+        text: responseText,
       };
+    } catch (fetchError) {
+      clearTimeout(timeoutId);
+      throw fetchError;
     }
-
-    return {
-      text: responseText,
-    };
   } catch (error) {
     console.error("Chatbot API Error:", error);
-    throw new Error("Failed to connect to the AI consultant.");
+
+    // Handle timeout errors
+    if (error instanceof Error && error.name === 'AbortError') {
+      // Retry on timeout for mobile networks
+      if (retryCount < MAX_RETRIES) {
+        console.log(`Retrying request (attempt ${retryCount + 1}/${MAX_RETRIES})...`);
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1s before retry
+        return sendChatMessage(message, history, retryCount + 1);
+      }
+      throw new Error("The request took too long. Please check your connection and try again.");
+    }
+
+    // Handle network errors
+    if (error instanceof TypeError && error.message.includes('fetch')) {
+      if (retryCount < MAX_RETRIES) {
+        console.log(`Retrying after network error (attempt ${retryCount + 1}/${MAX_RETRIES})...`);
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1s before retry
+        return sendChatMessage(message, history, retryCount + 1);
+      }
+      throw new Error("Network connection failed. Please check your internet and try again.");
+    }
+
+    // Generic error
+    throw new Error("Failed to connect to the AI consultant. Please try again.");
   }
 };
