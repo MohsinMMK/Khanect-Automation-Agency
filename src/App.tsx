@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import LandingPage from './components/LandingPage';
+import Pricing from './components/Pricing';
 import AiConsultant from './components/AiConsultant';
 import ClientPortal from './components/ClientPortal';
 import KhanectBoltIcon from './components/icons/KhanectBoltIcon';
@@ -43,9 +44,9 @@ const App: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Reset scroll position when view changes to Portal
+  // Reset scroll position when view changes
   useEffect(() => {
-    if (currentView === ViewState.PORTAL) {
+    if (currentView === ViewState.PORTAL || currentView === ViewState.PRICING) {
        window.scrollTo(0, 0);
     }
   }, [currentView]);
@@ -74,9 +75,13 @@ const App: React.FC = () => {
       />
 
       <main>
-        {/* Always render Landing Page unless we are in Portal. This allows DEMO widget to float over Landing Page. */}
+        {/* Always render Landing Page unless we are in Portal or Pricing. This allows DEMO widget to float over Landing Page. */}
         {(currentView === ViewState.LANDING || currentView === ViewState.DEMO) && (
           <LandingPage onNavigate={setCurrentView} />
+        )}
+
+        {currentView === ViewState.PRICING && (
+          <Pricing onNavigate={setCurrentView} />
         )}
 
         {currentView === ViewState.PORTAL && (
@@ -97,8 +102,8 @@ const App: React.FC = () => {
           </svg>
       </button>
 
-      {/* Floating Action Button - Only visible on Landing View (Hidden when chat is open) */}
-      {currentView === ViewState.LANDING && (
+      {/* Floating Action Button - Only visible on Landing and Pricing Views (Hidden when chat is open) */}
+      {(currentView === ViewState.LANDING || currentView === ViewState.PRICING) && (
         <button
           onClick={() => setCurrentView(ViewState.DEMO)}
           className="fixed bottom-6 right-6 z-50 w-16 h-16 bg-[#0F0F11] hover:bg-black border border-white/10 hover:border-brand-lime/50 text-brand-lime rounded-full shadow-2xl flex items-center justify-center transition-all duration-300 hover:scale-110 group animate-fade-in-up hover:shadow-[0_0_30px_rgba(211,243,107,0.3)]"

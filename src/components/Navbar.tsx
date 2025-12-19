@@ -87,14 +87,20 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, theme, toggleT
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-6 md:gap-8">
           <div className="flex items-center gap-6 text-sm font-medium text-gray-600 dark:text-gray-400">
-            <button 
-              onClick={handleLandingClick} 
+            <button
+              onClick={handleLandingClick}
               className={`hover:text-black dark:hover:text-white transition-colors ${currentView === ViewState.LANDING ? 'text-black dark:text-white' : ''}`}
             >
               Get Started
             </button>
-             <button 
-              onClick={() => onNavigate(ViewState.PORTAL)} 
+            <button
+              onClick={() => onNavigate(ViewState.PRICING)}
+              className={`hover:text-black dark:hover:text-white transition-colors ${currentView === ViewState.PRICING ? 'text-black dark:text-white' : ''}`}
+            >
+              Pricing
+            </button>
+             <button
+              onClick={() => onNavigate(ViewState.PORTAL)}
               className={`hover:text-black dark:hover:text-white transition-colors ${currentView === ViewState.PORTAL ? 'text-black dark:text-white' : ''}`}
             >
               Client Portal
@@ -153,24 +159,30 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, theme, toggleT
       </div>
 
       {/* Mobile Menu Overlay */}
-      <div 
+      <div
         className={`fixed inset-0 bg-white/95 dark:bg-black/95 backdrop-blur-xl z-40 transition-transform duration-300 md:hidden flex flex-col items-center justify-center space-y-8 ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}
         aria-hidden={!isMobileMenuOpen}
       >
-            <button 
-              onClick={handleLandingClick} 
+            <button
+              onClick={handleLandingClick}
               className={`text-3xl font-medium transition-all hover:scale-105 ${currentView === ViewState.LANDING ? 'text-black dark:text-white' : 'text-gray-500 hover:text-brand-lime'}`}
             >
               Get Started
             </button>
-             <button 
-              onClick={() => handleNavigate(ViewState.PORTAL)} 
+            <button
+              onClick={() => handleNavigate(ViewState.PRICING)}
+              className={`text-3xl font-medium transition-all hover:scale-105 ${currentView === ViewState.PRICING ? 'text-black dark:text-white' : 'text-gray-500 hover:text-brand-lime'}`}
+            >
+              Pricing
+            </button>
+             <button
+              onClick={() => handleNavigate(ViewState.PORTAL)}
               className={`text-3xl font-medium transition-all hover:scale-105 ${currentView === ViewState.PORTAL ? 'text-black dark:text-white' : 'text-gray-500 hover:text-brand-lime'}`}
             >
               Client Portal
             </button>
-            <button 
-              onClick={handleContactClick} 
+            <button
+              onClick={handleContactClick}
               className="text-3xl font-medium text-gray-500 hover:text-brand-lime transition-all hover:scale-105"
             >
               Contact Us
