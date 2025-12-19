@@ -84,7 +84,9 @@ const AiConsultant: React.FC<AiConsultantProps> = ({ onNavigate }) => {
       const { text } = await sendChatMessage(textToSend, history);
       setMessages((prev) => [...prev, { role: 'model', text: text }]);
     } catch (error) {
-      setMessages((prev) => [...prev, { role: 'model', text: "I'm having trouble connecting right now. Please check your internet connection.", isError: true }]);
+      // Show specific error message from the service
+      const errorMessage = error instanceof Error ? error.message : "I'm having trouble connecting right now. Please check your internet connection.";
+      setMessages((prev) => [...prev, { role: 'model', text: errorMessage, isError: true }]);
     } finally {
       setIsTextLoading(false);
     }
