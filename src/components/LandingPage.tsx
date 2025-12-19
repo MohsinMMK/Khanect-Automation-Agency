@@ -118,7 +118,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
   };
 
   const getInputClassName = (fieldName: keyof FormData) => {
-    const baseClasses = "w-full bg-gray-50 dark:bg-black/40 border rounded-lg px-4 py-3 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-600 focus:outline-none transition-all duration-300 focus:ring-1";
+    const baseClasses = "w-full bg-gray-50 dark:bg-black/40 border rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-600 focus:outline-none transition-all duration-300 focus:ring-2 touch-manipulation";
 
     const hasError = touchedFields.has(fieldName) && formErrors[fieldName];
 
@@ -263,37 +263,37 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
 
   return (
     <>
-      <header className="relative pt-28 md:pt-40 pb-12 md:pb-20 px-6 min-h-screen flex items-center overflow-hidden">
-        <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
+      <header className="relative pt-24 md:pt-32 lg:pt-40 pb-12 md:pb-16 lg:pb-20 px-4 sm:px-6 min-h-screen flex items-center overflow-hidden">
+        <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center relative z-10">
           
           {/* Left Content */}
           <div className="text-left">
             
 
 
-            <h1 className="text-5xl md:text-8xl font-bold tracking-tight mb-8 leading-[0.95] text-gray-900 dark:text-white transition-colors duration-500 animate-fade-in-up delay-100">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold tracking-tight mb-6 md:mb-8 leading-[1.1] md:leading-[0.95] text-gray-900 dark:text-white transition-colors duration-500 animate-fade-in-up delay-100">
               Deep <span className="inline-block relative">
                 <span className="relative z-10">Work</span>
-                <span className="absolute bottom-2 left-0 w-full h-3 bg-brand-lime/30 dark:bg-brand-lime/20 -rotate-2 z-0"></span>
+                <span className="absolute bottom-1 md:bottom-2 left-0 w-full h-2 md:h-3 bg-brand-lime/30 dark:bg-brand-lime/20 -rotate-2 z-0"></span>
               </span> <br />
               Made Possible.
             </h1>
 
-            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-lg mb-10 leading-relaxed font-light transition-colors duration-500 animate-fade-in-up delay-200">
+            <p className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-400 max-w-lg mb-8 md:mb-10 leading-relaxed font-light transition-colors duration-500 animate-fade-in-up delay-200">
               Our platform is designed with predictive AI in mind, making focus automatic and mitigating overload risk for your business.
             </p>
 
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 mb-16 animate-fade-in-up delay-300">
-              <button 
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mb-12 md:mb-16 animate-fade-in-up delay-300">
+              <button
                   onClick={() => onNavigate(ViewState.DEMO)}
-                  className="w-full sm:w-auto px-8 py-4 bg-brand-lime text-black rounded-lg font-bold text-lg transition-all duration-300 ease-fluid hover:bg-brand-limeHover hover:scale-105 active:scale-95 hover:shadow-[0_10px_40px_-10px_rgba(211,243,107,0.6)] flex items-center justify-center gap-2 shadow-lg shadow-brand-lime/20"
+                  className="w-full sm:w-auto px-6 sm:px-8 py-3.5 sm:py-4 bg-brand-lime text-black rounded-xl font-bold text-base sm:text-lg transition-all duration-300 ease-fluid hover:bg-brand-limeHover active:scale-95 hover:shadow-[0_10px_40px_-10px_rgba(211,243,107,0.6)] flex items-center justify-center gap-2 shadow-lg shadow-brand-lime/20 touch-manipulation"
               >
                 Book a Demo
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
               </button>
               <button
                 onClick={() => document.getElementById('solutions')?.scrollIntoView({ behavior: 'smooth' })}
-                className="w-full sm:w-auto px-6 py-4 rounded-lg text-gray-900 dark:text-white font-medium border border-gray-300 dark:border-white/20 hover:bg-white dark:hover:bg-white/10 hover:border-gray-400 dark:hover:border-white/40 transition-all duration-300 ease-fluid hover:scale-105 active:scale-95 hover:shadow-xl dark:hover:shadow-white/5"
+                className="w-full sm:w-auto px-6 py-3.5 sm:py-4 rounded-xl text-gray-900 dark:text-white font-medium border-2 border-gray-300 dark:border-white/20 hover:bg-white dark:hover:bg-white/10 hover:border-gray-400 dark:hover:border-white/40 transition-all duration-300 ease-fluid active:scale-95 hover:shadow-xl dark:hover:shadow-white/5 touch-manipulation"
               >
                 Discover Khanect
               </button>
@@ -372,13 +372,13 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
         </div>
       </header>
 
-      <section id="solutions" className="py-16 md:py-24 px-6 relative z-10">
+      <section id="solutions" className="py-12 md:py-20 lg:py-24 px-4 sm:px-6 relative z-10">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-5xl font-bold mb-6 text-gray-900 dark:text-white transition-colors">
+          <div className="text-center mb-10 md:mb-12">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6 text-gray-900 dark:text-white transition-colors">
               Comprehensive Automation Solutions
             </h2>
-            <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-lg transition-colors">
+            <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-base md:text-lg transition-colors px-4">
               Tailored to your business needs and industry requirements
             </p>
           </div>
@@ -392,7 +392,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
             onTabChange={(id) => setActiveTab(id as 'services' | 'industries')}
           />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12 animate-fade-in-up">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 mt-8 md:mt-12 animate-fade-in-up">
             {activeTab === 'services'
               ? services.map(service => <ServiceCard key={service.id} {...service} />)
               : industries.map(industry => <ServiceCard key={industry.id} {...industry} />)
@@ -401,18 +401,18 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
         </div>
       </section>
 
-      <section id="pricing" className="py-16 md:py-24 px-6 relative z-10 bg-gray-50/50 dark:bg-brand-card/30 transition-colors duration-500">
+      <section id="pricing" className="py-12 md:py-20 lg:py-24 px-4 sm:px-6 relative z-10 bg-gray-50/50 dark:bg-brand-card/30 transition-colors duration-500">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold mb-6 text-gray-900 dark:text-white transition-colors">
+          <div className="text-center mb-10 md:mb-16">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6 text-gray-900 dark:text-white transition-colors">
               Simple, Transparent Pricing
             </h2>
-            <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-lg transition-colors">
+            <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-base md:text-lg transition-colors px-4">
               Choose the perfect plan to scale your automation journey
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6">
             {pricingPackages.map(pkg => (
               <PricingCard
                 key={pkg.id}
@@ -424,18 +424,18 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
         </div>
       </section>
 
-      <section id="process" className="py-16 md:py-24 px-6 relative z-10">
+      <section id="process" className="py-12 md:py-20 lg:py-24 px-4 sm:px-6 relative z-10">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold mb-6 text-gray-900 dark:text-white transition-colors">
+          <div className="text-center mb-10 md:mb-16">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6 text-gray-900 dark:text-white transition-colors">
               Our Proven Process
             </h2>
-            <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-lg transition-colors">
+            <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-base md:text-lg transition-colors px-4">
               From discovery to deployment, we guide you every step of the way
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {processSteps.map((step, index) => (
               <ProcessStep
                 key={step.number}
@@ -447,18 +447,18 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
         </div>
       </section>
 
-      <section id="faq" className="py-16 md:py-24 px-6 relative z-10 bg-gray-50/50 dark:bg-brand-card/30 transition-colors duration-500">
+      <section id="faq" className="py-12 md:py-20 lg:py-24 px-4 sm:px-6 relative z-10 bg-gray-50/50 dark:bg-brand-card/30 transition-colors duration-500">
         <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-5xl font-bold mb-6 text-gray-900 dark:text-white transition-colors">
+          <div className="text-center mb-10 md:mb-12">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6 text-gray-900 dark:text-white transition-colors">
               Frequently Asked Questions
             </h2>
-            <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-lg transition-colors">
+            <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-base md:text-lg transition-colors px-4">
               Everything you need to know about our automation services
             </p>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-3 md:space-y-4">
             {faqs.map(faq => (
               <FAQItem
                 key={faq.id}
@@ -471,12 +471,12 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
           </div>
         </div>
       </section>
-      
-      <section id="contact" className="py-16 md:py-24 px-6 relative z-10">
-        <div className="max-w-3xl mx-auto glass-card p-6 md:p-12 rounded-3xl">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900 dark:text-white transition-colors">Ready to Automate?</h2>
-            <p className="text-gray-600 dark:text-gray-400 transition-colors">Tell us about your business, and we'll reach out with a custom plan.</p>
+
+      <section id="contact" className="py-12 md:py-20 lg:py-24 px-4 sm:px-6 relative z-10">
+        <div className="max-w-3xl mx-auto glass-card p-6 md:p-10 lg:p-12 rounded-2xl md:rounded-3xl">
+          <div className="text-center mb-8 md:mb-10">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 md:mb-4 text-gray-900 dark:text-white transition-colors">Ready to Automate?</h2>
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 transition-colors">Tell us about your business, and we'll reach out with a custom plan.</p>
           </div>
 
           {/* Success Message */}
@@ -495,10 +495,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
             </div>
           )}
 
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label htmlFor="fullName" className="text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors">Full Name</label>
+          <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+              <div className="space-y-1.5 md:space-y-2">
+                <label htmlFor="fullName" className="text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors block">Full Name</label>
                 <input
                   type="text"
                   id="fullName"
@@ -511,8 +511,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                   disabled={isSubmitting}
                 />
                 {touchedFields.has('fullName') && formErrors.fullName && (
-                  <p className="text-sm text-red-500 dark:text-red-400 flex items-center gap-1 mt-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <p className="text-xs sm:text-sm text-red-500 dark:text-red-400 flex items-center gap-1 mt-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0">
                       <circle cx="12" cy="12" r="10"></circle>
                       <line x1="12" y1="8" x2="12" y2="12"></line>
                       <line x1="12" y1="16" x2="12.01" y2="16"></line>
@@ -521,8 +521,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                   </p>
                 )}
               </div>
-              <div className="space-y-2">
-                <label htmlFor="email" className="text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors">Email Address</label>
+              <div className="space-y-1.5 md:space-y-2">
+                <label htmlFor="email" className="text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors block">Email Address</label>
                 <input
                   type="email"
                   id="email"
@@ -535,8 +535,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                   disabled={isSubmitting}
                 />
                 {touchedFields.has('email') && formErrors.email && (
-                  <p className="text-sm text-red-500 dark:text-red-400 flex items-center gap-1 mt-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <p className="text-xs sm:text-sm text-red-500 dark:text-red-400 flex items-center gap-1 mt-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0">
                       <circle cx="12" cy="12" r="10"></circle>
                       <line x1="12" y1="8" x2="12" y2="12"></line>
                       <line x1="12" y1="16" x2="12.01" y2="16"></line>
@@ -547,9 +547,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label htmlFor="phone" className="text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors">Phone</label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+              <div className="space-y-1.5 md:space-y-2">
+                <label htmlFor="phone" className="text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors block">Phone</label>
                 <input
                   type="tel"
                   id="phone"
@@ -562,8 +562,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                   disabled={isSubmitting}
                 />
                 {touchedFields.has('phone') && formErrors.phone && (
-                  <p className="text-sm text-red-500 dark:text-red-400 flex items-center gap-1 mt-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <p className="text-xs sm:text-sm text-red-500 dark:text-red-400 flex items-center gap-1 mt-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0">
                       <circle cx="12" cy="12" r="10"></circle>
                       <line x1="12" y1="8" x2="12" y2="12"></line>
                       <line x1="12" y1="16" x2="12.01" y2="16"></line>
@@ -572,8 +572,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                   </p>
                 )}
               </div>
-              <div className="space-y-2">
-                <label htmlFor="businessName" className="text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors">Business Name</label>
+              <div className="space-y-1.5 md:space-y-2">
+                <label htmlFor="businessName" className="text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors block">Business Name</label>
                 <input
                   type="text"
                   id="businessName"
@@ -586,8 +586,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                   disabled={isSubmitting}
                 />
                 {touchedFields.has('businessName') && formErrors.businessName && (
-                  <p className="text-sm text-red-500 dark:text-red-400 flex items-center gap-1 mt-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <p className="text-xs sm:text-sm text-red-500 dark:text-red-400 flex items-center gap-1 mt-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0">
                       <circle cx="12" cy="12" r="10"></circle>
                       <line x1="12" y1="8" x2="12" y2="12"></line>
                       <line x1="12" y1="16" x2="12.01" y2="16"></line>
@@ -598,8 +598,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <label htmlFor="website" className="text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors">Website URL <span className="text-gray-400 dark:text-gray-500">(Optional)</span></label>
+            <div className="space-y-1.5 md:space-y-2">
+              <label htmlFor="website" className="text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors block">Website URL <span className="text-gray-400 dark:text-gray-500">(Optional)</span></label>
               <input
                 type="url"
                 id="website"
@@ -611,8 +611,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                 disabled={isSubmitting}
               />
               {touchedFields.has('website') && formErrors.website && (
-                <p className="text-sm text-red-500 dark:text-red-400 flex items-center gap-1 mt-1">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <p className="text-xs sm:text-sm text-red-500 dark:text-red-400 flex items-center gap-1 mt-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0">
                     <circle cx="12" cy="12" r="10"></circle>
                     <line x1="12" y1="8" x2="12" y2="12"></line>
                     <line x1="12" y1="16" x2="12.01" y2="16"></line>
@@ -622,10 +622,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
               )}
             </div>
 
-            <button 
+            <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-brand-lime hover:bg-brand-limeHover text-black font-bold py-4 rounded-lg transition-all duration-300 ease-fluid hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(211,243,107,0.3)] mt-4 shadow-lg shadow-brand-lime/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2"
+              className="w-full bg-brand-lime hover:bg-brand-limeHover text-black font-bold py-3.5 sm:py-4 rounded-xl transition-all duration-300 ease-fluid active:scale-95 hover:shadow-[0_0_20px_rgba(211,243,107,0.3)] mt-4 md:mt-6 shadow-lg shadow-brand-lime/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 flex items-center justify-center gap-2 text-base sm:text-lg touch-manipulation"
             >
               {isSubmitting ? (
                 <>
