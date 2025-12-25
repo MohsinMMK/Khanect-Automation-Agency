@@ -6,6 +6,7 @@ import TabSwitch from './TabSwitch';
 import ServiceCard from './ServiceCard';
 import ProcessStep from './ProcessStep';
 import FAQItem from './FAQItem';
+import StaggerContainer from './StaggerContainer';
 import { services } from '../data/services';
 import { industries } from '../data/industries';
 import { processSteps } from '../data/process';
@@ -57,23 +58,18 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
       case 'fullName':
         const nameResult = validateName(value, 'Full name');
         return nameResult.isValid ? undefined : nameResult.error;
-
       case 'email':
         const emailResult = validateEmail(value);
         return emailResult.isValid ? undefined : emailResult.error;
-
       case 'phone':
         const phoneResult = validatePhone(value);
         return phoneResult.isValid ? undefined : phoneResult.error;
-
       case 'businessName':
         const businessResult = validateName(value, 'Business name');
         return businessResult.isValid ? undefined : businessResult.error;
-
       case 'website':
         const urlResult = validateUrl(value);
         return urlResult.isValid ? undefined : urlResult.error;
-
       default:
         return undefined;
     }
@@ -82,51 +78,32 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
   const handleInputChangeWithValidation = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     const fieldName = id as keyof FormData;
-
-    // Update form data
     setFormData(prev => ({ ...prev, [fieldName]: value }));
-
-    // Validate field if it has been touched
     if (touchedFields.has(fieldName)) {
       const error = validateField(fieldName, value);
-      setFormErrors(prev => ({
-        ...prev,
-        [fieldName]: error
-      }));
+      setFormErrors(prev => ({ ...prev, [fieldName]: error }));
     }
   };
 
   const handleFieldBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     const fieldName = id as keyof FormData;
-
-    // Mark field as touched
     setTouchedFields(prev => new Set(prev).add(fieldName));
-
-    // Validate on blur
     const error = validateField(fieldName, value);
-    setFormErrors(prev => ({
-      ...prev,
-      [fieldName]: error
-    }));
+    setFormErrors(prev => ({ ...prev, [fieldName]: error }));
   };
 
   const getInputClassName = (fieldName: keyof FormData) => {
-    const baseClasses = "w-full bg-gray-50 dark:bg-black/40 border rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-600 focus:outline-none transition-all duration-300 focus:ring-2 touch-manipulation";
-
+    const baseClasses = "w-full bg-gray-50 dark:bg-white/[0.03] border rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none transition-all duration-180 focus:ring-2";
     const hasError = touchedFields.has(fieldName) && formErrors[fieldName];
-
     if (hasError) {
-      return `${baseClasses} border-red-500 dark:border-red-500 focus:border-red-500 focus:ring-red-500/50`;
+      return `${baseClasses} border-red-500 dark:border-red-500 focus:border-red-500 focus:ring-red-500/30`;
     }
-
-    return `${baseClasses} border-gray-300 dark:border-white/10 focus:border-brand-lime focus:ring-brand-lime/50`;
+    return `${baseClasses} border-gray-200 dark:border-white/[0.08] focus:border-brand-lime focus:ring-brand-lime/30`;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Validate all fields before submission
     const errors: FormErrors = {
       fullName: validateField('fullName', formData.fullName),
       email: validateField('email', formData.email),
@@ -134,20 +111,14 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
       businessName: validateField('businessName', formData.businessName),
       website: validateField('website', formData.website),
     };
-
-    // Mark all fields as touched
     setTouchedFields(new Set(['fullName', 'email', 'phone', 'businessName', 'website']));
-
-    // Check if any errors exist
     const hasErrors = Object.values(errors).some(error => error !== undefined);
-
     if (hasErrors) {
       setFormErrors(errors);
       setSubmitStatus('error');
       setErrorMessage('Please fix the errors above before submitting.');
       return;
     }
-
     setIsSubmitting(true);
     setSubmitStatus('idle');
     setErrorMessage('');
@@ -157,7 +128,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
       let supabaseId = `backup-id-${Date.now()}`;
       let supabaseSuccess = false;
 
-      // 1. Save to Supabase
       if (supabase) {
         try {
           const { data: supabaseData, error: supabaseError } = await supabase
@@ -174,7 +144,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
 
           if (supabaseError) {
             console.error('Supabase error:', supabaseError);
-            // If RLS policy is still not fixed, provide helpful error
             if (supabaseError.message.includes('policy')) {
               throw new Error('Database configuration error. Please contact support.');
             }
@@ -189,16 +158,12 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
         }
       } else {
         console.warn('Supabase not configured. Skipping database save.');
-        // In production, this should be an error
         if (!import.meta.env.DEV) {
           throw new Error('Service temporarily unavailable. Please try again later.');
         }
       }
 
-      // 2. Process lead with AI agent (non-blocking)
-      // The AI will qualify and score the lead, then schedule follow-up emails
       if (supabaseSuccess && supabase) {
-        // Fire and forget - don't wait for AI processing to complete
         supabase.functions.invoke('process-lead', {
           body: {
             submissionId: supabaseId,
@@ -209,41 +174,23 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
             website: formData.website,
           }
         }).then(({ data, error }) => {
-          if (error) {
-            console.warn('Lead processing error (non-blocking):', error);
-          } else {
-            console.log('Lead processed:', data);
-          }
-        }).catch(err => {
-          console.warn('Lead processing failed (non-blocking):', err);
-        });
+          if (error) console.warn('Lead processing error (non-blocking):', error);
+          else console.log('Lead processed:', data);
+        }).catch(err => console.warn('Lead processing failed (non-blocking):', err));
       }
 
-      // Only Supabase success is required now
       if (!supabaseSuccess) {
         throw new Error('Unable to process your submission. Please try again.');
       }
 
-      // Success!
       setSubmitStatus('success');
-      setFormData({
-        fullName: '',
-        email: '',
-        phone: '',
-        businessName: '',
-        website: '',
-      });
+      setFormData({ fullName: '', email: '', phone: '', businessName: '', website: '' });
       setFormErrors({});
       setTouchedFields(new Set());
-
     } catch (error) {
       console.error('Form submission error:', error);
       setSubmitStatus('error');
-      setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : 'Something went wrong. Please try again.'
-      );
+      setErrorMessage(error instanceof Error ? error.message : 'Something went wrong. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -251,72 +198,66 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
 
   return (
     <>
-      <header className="relative pt-24 md:pt-32 lg:pt-40 pb-12 md:pb-16 lg:pb-20 px-4 sm:px-6 min-h-screen flex items-center overflow-hidden">
-        <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center relative z-10">
-          
+      {/* Hero Section */}
+      <header className="relative pt-32 lg:pt-40 pb-20 lg:pb-32 px-6 min-h-screen flex items-center overflow-hidden">
+        <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center relative z-10">
+
           {/* Left Content */}
           <div className="text-left">
-            
-
-
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold tracking-tight mb-6 md:mb-8 leading-[1.1] md:leading-[0.95] text-gray-900 dark:text-white transition-colors duration-500 animate-fade-in-up delay-100">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-8 leading-[1.05] text-gray-900 dark:text-white">
               Deep <span className="inline-block relative">
                 <span className="relative z-10">Work</span>
-                <span className="absolute bottom-1 md:bottom-2 left-0 w-full h-2 md:h-3 bg-brand-lime/30 dark:bg-brand-lime/20 -rotate-2 z-0"></span>
-              </span> <br />
-              Made Possible.
+                <span className="absolute bottom-2 left-0 w-full h-2 bg-brand-lime/20 -rotate-1 z-0"></span>
+              </span>
+              <br />Made Possible.
             </h1>
 
-            <p className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-400 max-w-lg mb-8 md:mb-10 leading-relaxed font-light transition-colors duration-500 animate-fade-in-up delay-200">
+            <p className="text-lg text-gray-500 dark:text-gray-400 max-w-lg mb-12 leading-relaxed">
               Our platform is designed with predictive AI in mind, making focus automatic and mitigating overload risk for your business.
             </p>
 
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mb-12 md:mb-16 animate-fade-in-up delay-300">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mb-16">
               <button
-                  onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
-                  className="w-full sm:w-auto px-6 sm:px-8 py-3.5 sm:py-4 bg-brand-lime text-black rounded-xl font-bold text-base sm:text-lg transition-all duration-300 ease-fluid hover:bg-brand-limeHover active:scale-95 hover:shadow-[0_10px_40px_-10px_rgba(211,243,107,0.6)] flex items-center justify-center gap-2 shadow-lg shadow-brand-lime/20 touch-manipulation"
+                onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+                className="btn-primary text-lg px-8 py-4"
               >
                 Book a Demo
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
               </button>
               <button
                 onClick={() => document.getElementById('solutions')?.scrollIntoView({ behavior: 'smooth' })}
-                className="w-full sm:w-auto px-6 py-3.5 sm:py-4 rounded-xl text-gray-900 dark:text-white font-medium border-2 border-gray-300 dark:border-white/20 hover:bg-white dark:hover:bg-white/10 hover:border-gray-400 dark:hover:border-white/40 transition-all duration-300 ease-fluid active:scale-95 hover:shadow-xl dark:hover:shadow-white/5 touch-manipulation"
+                className="btn-secondary text-lg px-8 py-4"
               >
                 Discover Khanect
               </button>
             </div>
 
-            <div className="flex items-center gap-4 animate-fade-in-up delay-500">
+            <div className="flex items-center gap-4">
                <div className="flex -space-x-3">
                   {[1,2,3].map(i => (
-                      <div key={i} className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 border-2 border-white dark:border-black flex items-center justify-center overflow-hidden relative z-0 transition-transform hover:z-10 hover:scale-110 duration-300">
+                      <div key={i} className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 border-2 border-white dark:border-gray-950 flex items-center justify-center overflow-hidden relative z-0 transition-transform hover:z-10 hover:scale-110 duration-300">
                           <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${i*135}`} alt="User" />
                       </div>
                   ))}
                </div>
                <div>
-                  <div className="text-2xl font-bold text-gray-900 dark:text-white transition-colors">15+</div>
-                  <div className="text-xs text-gray-500 dark:text-gray-500 transition-colors">people joined us and <br/> choose simplicity</div>
+                  <div className="text-2xl font-bold text-gray-900 dark:text-white">15+</div>
+                  <div className="text-xs text-gray-500">people joined us and <br/> choose simplicity</div>
                </div>
             </div>
           </div>
 
           {/* Right Visuals */}
-          <div className="relative h-[600px] w-full hidden lg:block perspective-1000 animate-fade-in delay-200">
-             
-             {/* Main Central Visual - Organic Blob mimicking the glass object */}
+          <div className="relative h-[600px] w-full hidden lg:block perspective-1000 animate-fade-in">
+
+             {/* Main Central Visual */}
              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[450px] h-[450px] opacity-80">
-                 {/* Back Glow */}
                  <div className="absolute inset-0 bg-brand-lime/10 blur-[100px] rounded-full animate-pulse-slow"></div>
-                 
-                 {/* Organic Shapes simulating the glass orb */}
                  <div className="absolute inset-0 animate-morph" style={{
                     background: 'radial-gradient(circle at 30% 30%, rgba(211,243,107,0.1) 0%, rgba(0,0,0,0) 70%)',
                     boxShadow: 'inset 0 0 20px rgba(211,243,107,0.05), inset 10px 10px 40px rgba(255,255,255,0.05), 0 0 0 1px rgba(255,255,255,0.05)',
                     backdropFilter: 'blur(8px)',
                  }}></div>
-                 
                  <div className="absolute inset-4 animate-morph" style={{
                     animationDelay: '-2s',
                     background: 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(211,243,107,0.05) 50%, rgba(0,0,0,0) 100%)',
@@ -324,49 +265,48 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                     borderRadius: '50% 50% 50% 50% / 50% 50% 50% 50%',
                     transform: 'rotate(45deg)'
                  }}></div>
-                 
                  <div className="absolute top-1/4 left-1/4 w-1/2 h-1/2 bg-brand-lime/20 rounded-full blur-[40px] mix-blend-screen animate-pulse-slow"></div>
              </div>
 
-             {/* Floating Card 1 - Top Right */}
-             <div className="absolute top-[10%] right-[5%] animate-float hover:pause-animation z-20">
-                <div className="bg-[#0A0A0B]/90 dark:bg-[#0A0A0B]/90 backdrop-blur-md p-5 rounded-2xl w-64 border border-white/5 shadow-2xl">
+             {/* Floating Card 1 */}
+             <div className="absolute top-[10%] right-[5%] animate-float z-20">
+                <div className="glass-card p-5 rounded-2xl w-64">
                     <div className="flex justify-between items-start mb-6">
-                        <div className="w-10 h-10 rounded-lg bg-[#1A1A1C] border border-white/5 flex items-center justify-center text-white">
+                        <div className="w-10 h-10 rounded-xl bg-white/[0.06] flex items-center justify-center text-white">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
                         </div>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
                     </div>
-                    <div className="text-4xl font-semibold text-white mb-1">-75%</div>
+                    <div className="text-4xl font-semibold text-gray-900 dark:text-white mb-1">-75%</div>
                     <div className="text-xs text-gray-500 font-medium">Avg. Risk Mitigation Score</div>
                 </div>
              </div>
 
-             {/* Floating Card 2 - Bottom Left */}
-             <div className="absolute bottom-[15%] left-[0%] animate-float-delayed hover:pause-animation z-20">
-                <div className="bg-[#0A0A0B]/90 dark:bg-[#0A0A0B]/90 backdrop-blur-md p-5 rounded-2xl w-64 border border-white/5 shadow-2xl">
+             {/* Floating Card 2 */}
+             <div className="absolute bottom-[15%] left-[0%] animate-float-delayed z-20">
+                <div className="glass-card p-5 rounded-2xl w-64">
                      <div className="flex justify-between items-start mb-6">
-                        <div className="w-10 h-10 rounded-lg bg-[#1A1A1C] border border-white/5 flex items-center justify-center text-white">
+                        <div className="w-10 h-10 rounded-xl bg-white/[0.06] flex items-center justify-center text-white">
                              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
                         </div>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
                     </div>
-                    <div className="text-4xl font-semibold text-white mb-1">+2.3h</div>
+                    <div className="text-4xl font-semibold text-gray-900 dark:text-white mb-1">+2.3h</div>
                     <div className="text-xs text-gray-500 font-medium">Weekly Focus Hours Recovered</div>
                 </div>
              </div>
-
           </div>
         </div>
       </header>
 
-      <section id="solutions" className="py-12 md:py-20 lg:py-24 px-4 sm:px-6 relative z-10">
+      {/* Solutions Section */}
+      <section id="solutions" className="py-24 lg:py-32 px-6 relative z-10">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-10 md:mb-12">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6 text-gray-900 dark:text-white transition-colors">
+          <div className="text-center mb-16 lg:mb-20">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-gray-900 dark:text-white tracking-tight">
               Comprehensive Automation Solutions
             </h2>
-            <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-base md:text-lg transition-colors px-4">
+            <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto text-lg leading-relaxed">
               Tailored to your business needs and industry requirements
             </p>
           </div>
@@ -380,27 +320,28 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
             onTabChange={(id) => setActiveTab(id as 'services' | 'industries')}
           />
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 mt-8 md:mt-12 animate-fade-in-up">
+          <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-12">
             {activeTab === 'services'
               ? services.map(service => <ServiceCard key={service.id} {...service} />)
               : industries.map(industry => <ServiceCard key={industry.id} {...industry} />)
             }
-          </div>
+          </StaggerContainer>
         </div>
       </section>
 
-      <section id="process" className="py-12 md:py-20 lg:py-24 px-4 sm:px-6 relative z-10">
+      {/* Process Section */}
+      <section id="process" className="py-24 lg:py-32 px-6 relative z-10">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-10 md:mb-16">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6 text-gray-900 dark:text-white transition-colors">
+          <div className="text-center mb-16 lg:mb-20">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-gray-900 dark:text-white tracking-tight">
               Our Proven Process
             </h2>
-            <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-base md:text-lg transition-colors px-4">
+            <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto text-lg leading-relaxed">
               From discovery to deployment, we guide you every step of the way
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+          <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {processSteps.map((step, index) => (
               <ProcessStep
                 key={step.number}
@@ -408,22 +349,23 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                 isLast={index === processSteps.length - 1}
               />
             ))}
-          </div>
+          </StaggerContainer>
         </div>
       </section>
 
-      <section id="faq" className="py-12 md:py-20 lg:py-24 px-4 sm:px-6 relative z-10 bg-gray-50/50 dark:bg-brand-card/30 transition-colors duration-500">
+      {/* FAQ Section */}
+      <section id="faq" className="py-24 lg:py-32 px-6 relative z-10 bg-gray-50/50 dark:bg-white/[0.02]">
         <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-10 md:mb-12">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6 text-gray-900 dark:text-white transition-colors">
+          <div className="text-center mb-16 lg:mb-20">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-gray-900 dark:text-white tracking-tight">
               Frequently Asked Questions
             </h2>
-            <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-base md:text-lg transition-colors px-4">
+            <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto text-lg leading-relaxed">
               Everything you need to know about our automation services
             </p>
           </div>
 
-          <div className="space-y-3 md:space-y-4">
+          <div className="space-y-0">
             {faqs.map(faq => (
               <FAQItem
                 key={faq.id}
@@ -437,33 +379,32 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
         </div>
       </section>
 
-      <section id="contact" className="py-12 md:py-20 lg:py-24 px-4 sm:px-6 relative z-10">
-        <div className="max-w-3xl mx-auto glass-card p-6 md:p-10 lg:p-12 rounded-2xl md:rounded-3xl">
-          <div className="text-center mb-8 md:mb-10">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 md:mb-4 text-gray-900 dark:text-white transition-colors">Ready to Automate?</h2>
-            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 transition-colors">Tell us about your business, and we'll reach out with a custom plan.</p>
+      {/* Contact Section */}
+      <section id="contact" className="py-24 lg:py-32 px-6 relative z-10">
+        <div className="max-w-3xl mx-auto glass-card p-8 md:p-12 rounded-3xl">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900 dark:text-white tracking-tight">Ready to Automate?</h2>
+            <p className="text-gray-500 dark:text-gray-400">Tell us about your business, and we'll reach out with a custom plan.</p>
           </div>
 
-          {/* Success Message */}
           {submitStatus === 'success' && (
-            <div className="mb-6 p-4 bg-green-500/10 border border-green-500/30 rounded-lg text-green-400 text-center">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="inline-block mr-2 mb-1"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            <div className="mb-6 p-4 bg-green-500/10 border border-green-500/20 rounded-xl text-green-600 dark:text-green-400 text-center text-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="inline-block mr-2 mb-0.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
               Thank you! We've received your submission and will be in touch soon.
             </div>
           )}
 
-          {/* Error Message */}
           {submitStatus === 'error' && (
-            <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-center">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="inline-block mr-2 mb-1"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+            <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-600 dark:text-red-400 text-center text-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="inline-block mr-2 mb-0.5"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
               {errorMessage}
             </div>
           )}
 
-          <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-              <div className="space-y-1.5 md:space-y-2">
-                <label htmlFor="fullName" className="text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors block">Full Name</label>
+          <form className="space-y-6" onSubmit={handleSubmit}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label htmlFor="fullName" className="text-sm font-medium text-gray-600 dark:text-gray-300 block">Full Name</label>
                 <input
                   type="text"
                   id="fullName"
@@ -476,18 +417,14 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                   disabled={isSubmitting}
                 />
                 {touchedFields.has('fullName') && formErrors.fullName && (
-                  <p className="text-xs sm:text-sm text-red-500 dark:text-red-400 flex items-center gap-1 mt-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0">
-                      <circle cx="12" cy="12" r="10"></circle>
-                      <line x1="12" y1="8" x2="12" y2="12"></line>
-                      <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                    </svg>
+                  <p className="text-xs text-red-500 dark:text-red-400 flex items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
                     {formErrors.fullName}
                   </p>
                 )}
               </div>
-              <div className="space-y-1.5 md:space-y-2">
-                <label htmlFor="email" className="text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors block">Email Address</label>
+              <div className="space-y-2">
+                <label htmlFor="email" className="text-sm font-medium text-gray-600 dark:text-gray-300 block">Email Address</label>
                 <input
                   type="email"
                   id="email"
@@ -500,21 +437,17 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                   disabled={isSubmitting}
                 />
                 {touchedFields.has('email') && formErrors.email && (
-                  <p className="text-xs sm:text-sm text-red-500 dark:text-red-400 flex items-center gap-1 mt-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0">
-                      <circle cx="12" cy="12" r="10"></circle>
-                      <line x1="12" y1="8" x2="12" y2="12"></line>
-                      <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                    </svg>
+                  <p className="text-xs text-red-500 dark:text-red-400 flex items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
                     {formErrors.email}
                   </p>
                 )}
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-              <div className="space-y-1.5 md:space-y-2">
-                <label htmlFor="phone" className="text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors block">Phone</label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label htmlFor="phone" className="text-sm font-medium text-gray-600 dark:text-gray-300 block">Phone</label>
                 <input
                   type="tel"
                   id="phone"
@@ -527,18 +460,14 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                   disabled={isSubmitting}
                 />
                 {touchedFields.has('phone') && formErrors.phone && (
-                  <p className="text-xs sm:text-sm text-red-500 dark:text-red-400 flex items-center gap-1 mt-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0">
-                      <circle cx="12" cy="12" r="10"></circle>
-                      <line x1="12" y1="8" x2="12" y2="12"></line>
-                      <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                    </svg>
+                  <p className="text-xs text-red-500 dark:text-red-400 flex items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
                     {formErrors.phone}
                   </p>
                 )}
               </div>
-              <div className="space-y-1.5 md:space-y-2">
-                <label htmlFor="businessName" className="text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors block">Business Name</label>
+              <div className="space-y-2">
+                <label htmlFor="businessName" className="text-sm font-medium text-gray-600 dark:text-gray-300 block">Business Name</label>
                 <input
                   type="text"
                   id="businessName"
@@ -551,20 +480,18 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                   disabled={isSubmitting}
                 />
                 {touchedFields.has('businessName') && formErrors.businessName && (
-                  <p className="text-xs sm:text-sm text-red-500 dark:text-red-400 flex items-center gap-1 mt-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0">
-                      <circle cx="12" cy="12" r="10"></circle>
-                      <line x1="12" y1="8" x2="12" y2="12"></line>
-                      <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                    </svg>
+                  <p className="text-xs text-red-500 dark:text-red-400 flex items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
                     {formErrors.businessName}
                   </p>
                 )}
               </div>
             </div>
 
-            <div className="space-y-1.5 md:space-y-2">
-              <label htmlFor="website" className="text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors block">Website URL <span className="text-gray-400 dark:text-gray-500">(Optional)</span></label>
+            <div className="space-y-2">
+              <label htmlFor="website" className="text-sm font-medium text-gray-600 dark:text-gray-300 block">
+                Website URL <span className="text-gray-400">(Optional)</span>
+              </label>
               <input
                 type="url"
                 id="website"
@@ -576,12 +503,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                 disabled={isSubmitting}
               />
               {touchedFields.has('website') && formErrors.website && (
-                <p className="text-xs sm:text-sm text-red-500 dark:text-red-400 flex items-center gap-1 mt-1">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="12" y1="8" x2="12" y2="12"></line>
-                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                  </svg>
+                <p className="text-xs text-red-500 dark:text-red-400 flex items-center gap-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
                   {formErrors.website}
                 </p>
               )}
@@ -590,7 +513,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-brand-lime hover:bg-brand-limeHover text-black font-bold py-3.5 sm:py-4 rounded-xl transition-all duration-300 ease-fluid active:scale-95 hover:shadow-[0_0_20px_rgba(211,243,107,0.3)] mt-4 md:mt-6 shadow-lg shadow-brand-lime/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 flex items-center justify-center gap-2 text-base sm:text-lg touch-manipulation"
+              className="btn-primary w-full text-lg py-4 mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? (
                 <>
@@ -607,7 +530,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
           </form>
         </div>
       </section>
-
     </>
   );
 };

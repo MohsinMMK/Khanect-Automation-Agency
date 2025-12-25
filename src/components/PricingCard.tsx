@@ -22,35 +22,35 @@ const PricingCard: React.FC<PricingCardProps> = ({
 }) => {
   return (
     <div className={`
-      glass-card p-8 rounded-2xl relative transition-all duration-500 ease-fluid flex flex-col w-full
+      glass-card p-8 rounded-3xl relative transition-all duration-300 ease-out flex flex-col w-full
       ${isPopular
-        ? 'border-brand-lime border-2 shadow-2xl shadow-brand-lime/20'
-        : 'hover:border-brand-lime/50 hover:-translate-y-2 hover:shadow-xl'
+        ? 'border-brand-lime/50 border shadow-glow-lime'
+        : 'hover:-translate-y-1'
       }
     `}>
       {isPopular && (
-        <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-brand-lime text-black px-4 py-1 rounded-full text-xs font-bold uppercase">
+        <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-brand-lime text-black px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide">
           Most Popular
         </div>
       )}
 
-      <div className="text-center mb-6">
-        <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+      <div className="text-center mb-8">
+        <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 tracking-tight">
           {title}
         </h3>
 
-        <div className="mb-2">
+        <div className="mb-3">
           {typeof price === 'number' ? (
             <>
-              <span className="text-4xl font-bold text-gray-900 dark:text-white">
+              <span className="text-5xl font-bold text-gray-900 dark:text-white tracking-tight">
                 ${price}
               </span>
-              <span className="text-gray-600 dark:text-gray-400 text-sm">
+              <span className="text-gray-500 dark:text-gray-400 text-sm ml-1">
                 /{period}
               </span>
             </>
           ) : (
-            <span className="text-4xl font-bold text-gray-900 dark:text-white">
+            <span className="text-4xl font-bold text-gray-900 dark:text-white tracking-tight">
               {price}
             </span>
           )}
@@ -65,9 +65,9 @@ const PricingCard: React.FC<PricingCardProps> = ({
         {features.map((feature, index) => (
           <li key={`${title}-feature-${index}`} className="flex items-start gap-3">
             <div className="flex-shrink-0 mt-0.5">
-              <CheckmarkIcon className="text-brand-lime" />
+              <CheckmarkIcon className="text-brand-lime w-4 h-4" />
             </div>
-            <span className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+            <span className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
               {feature}
             </span>
           </li>
@@ -77,10 +77,10 @@ const PricingCard: React.FC<PricingCardProps> = ({
       <button
         onClick={onCTAClick}
         className={`
-          w-full py-3 rounded-lg font-bold transition-all duration-300 ease-fluid hover:scale-105 active:scale-95
+          w-full py-3.5 rounded-xl font-semibold transition-all duration-180
           ${isPopular
-            ? 'bg-brand-lime hover:bg-brand-limeHover text-black shadow-lg shadow-brand-lime/20'
-            : 'border-2 border-gray-300 dark:border-white/20 text-gray-900 dark:text-white hover:border-brand-lime hover:text-brand-lime'
+            ? 'btn-primary justify-center'
+            : 'btn-secondary justify-center'
           }
         `}
       >
