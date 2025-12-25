@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { ViewState } from '../types';
-import { getEnv } from '../utils/env';
 import { validateEmail, validatePhone, validateUrl, validateName } from '../utils/validation';
 import { supabase } from '../lib/supabase';
 import TabSwitch from './TabSwitch';
@@ -11,9 +10,6 @@ import { services } from '../data/services';
 import { industries } from '../data/industries';
 import { processSteps } from '../data/process';
 import { faqs } from '../data/faqs';
-
-// n8n Webhook URL
-const N8N_WEBHOOK_URL = getEnv('VITE_N8N_WEBHOOK_URL');
 
 interface LandingPageProps {
   onNavigate: (view: ViewState) => void;
@@ -199,38 +195,32 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
         }
       }
 
-      // 2. Send webhook notification
-      let webhookSuccess = false;
-      if (N8N_WEBHOOK_URL && N8N_WEBHOOK_URL.startsWith('http')) {
-        try {
-          const webhookResponse = await fetch(N8N_WEBHOOK_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              id: supabaseId,
-              fullName: formData.fullName,
-              email: formData.email,
-              phone: formData.phone,
-              businessName: formData.businessName,
-              website: formData.website,
-              submittedAt: new Date().toISOString(),
-            }),
-          });
-
-          if (!webhookResponse.ok) {
-            console.warn('Webhook failed:', webhookResponse.status);
-            // Don't fail the entire submission if webhook fails
-          } else {
-            webhookSuccess = true;
+      // 2. Process lead with AI agent (non-blocking)
+      // The AI will qualify and score the lead, then schedule follow-up emails
+      if (supabaseSuccess && supabase) {
+        // Fire and forget - don't wait for AI processing to complete
+        supabase.functions.invoke('process-lead', {
+          body: {
+            submissionId: supabaseId,
+            fullName: formData.fullName,
+            email: formData.email,
+            phone: formData.phone,
+            businessName: formData.businessName,
+            website: formData.website,
           }
-        } catch (webhookErr) {
-          console.warn('Webhook error:', webhookErr);
-          // Don't fail the entire submission if webhook fails
-        }
+        }).then(({ data, error }) => {
+          if (error) {
+            console.warn('Lead processing error (non-blocking):', error);
+          } else {
+            console.log('Lead processed:', data);
+          }
+        }).catch(err => {
+          console.warn('Lead processing failed (non-blocking):', err);
+        });
       }
 
-      // Require at least one backend to succeed
-      if (!supabaseSuccess && !webhookSuccess) {
+      // Only Supabase success is required now
+      if (!supabaseSuccess) {
         throw new Error('Unable to process your submission. Please try again.');
       }
 

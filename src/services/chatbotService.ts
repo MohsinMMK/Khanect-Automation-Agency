@@ -1,14 +1,13 @@
 /**
- * Chatbot service using n8n webhook
- * Sends messages to n8n workflow for AI processing
+ * Chatbot service using Supabase Edge Functions with OpenAI GPT-4
+ * Replaces the previous n8n webhook implementation with AI-powered agentic workflow
  */
 
-const N8N_CHATBOT_WEBHOOK_URL = import.meta.env.VITE_N8N_CHATBOT_WEBHOOK_URL;
+import { supabase } from '../lib/supabase';
 
 /**
  * Generate or retrieve a session ID for chat memory persistence.
  * Uses localStorage so the session persists across browser sessions.
- * This allows the n8n Postgres Chat Memory to maintain conversation context.
  */
 const getSessionId = (): string => {
   const storageKey = 'khanect_chat_session';
@@ -27,174 +26,111 @@ export interface ChatHistory {
 
 export interface ChatResponse {
   text: string;
+  model?: string;
 }
 
 /**
- * Extracts text response from various n8n response formats.
- * n8n can return responses in many different structures depending on the workflow.
- */
-const extractResponseText = (data: unknown): string | null => {
-  // Handle null/undefined
-  if (data == null) {
-    return null;
-  }
-
-  // Handle direct string response
-  if (typeof data === 'string') {
-    return data.trim() || null;
-  }
-
-  // Handle array responses (n8n often returns arrays)
-  if (Array.isArray(data)) {
-    if (data.length === 0) return null;
-    // Try to extract from first item
-    return extractResponseText(data[0]);
-  }
-
-  // Handle object responses
-  if (typeof data === 'object') {
-    const obj = data as Record<string, unknown>;
-
-    // Check common n8n response fields (in order of likelihood)
-    const commonFields = [
-      'output',      // n8n AI Agent output
-      'response',    // Common response field
-      'text',        // Text field
-      'message',     // Message field
-      'content',     // Content field
-      'answer',      // Answer field
-      'result',      // Result field
-      'data',        // Nested data field
-      'json',        // n8n json output wrapper
-    ];
-
-    for (const field of commonFields) {
-      if (field in obj && obj[field] != null) {
-        const extracted = extractResponseText(obj[field]);
-        if (extracted) return extracted;
-      }
-    }
-
-    // Check for nested output structures (e.g., { output: { text: "..." } })
-    if (obj.output && typeof obj.output === 'object') {
-      const outputObj = obj.output as Record<string, unknown>;
-      for (const field of ['text', 'message', 'content', 'response']) {
-        if (field in outputObj && typeof outputObj[field] === 'string') {
-          return (outputObj[field] as string).trim() || null;
-        }
-      }
-    }
-  }
-
-  return null;
-};
-
-/**
- * Sends a message to the n8n chatbot webhook and returns the response.
- * Includes timeout and retry logic for mobile reliability.
+ * Sends a message to the chat-agent edge function and returns the response.
+ * Uses OpenAI GPT-4 for intelligent, context-aware conversations.
  */
 export const sendChatMessage = async (
   message: string,
   history: ChatHistory[],
   retryCount = 0
 ): Promise<ChatResponse> => {
-  if (!N8N_CHATBOT_WEBHOOK_URL) {
-    throw new Error("Chatbot webhook URL is not configured");
+  if (!supabase) {
+    throw new Error("Supabase client is not configured. Please check your environment variables.");
   }
 
   const MAX_RETRIES = 2;
-  const TIMEOUT_MS = 30000; // 30 seconds for mobile networks
 
   try {
     const sessionId = getSessionId();
 
-    // Create abort controller for timeout
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
+    // Convert history to the format expected by the edge function
+    const formattedHistory = history.map(h => ({
+      role: h.role === 'model' ? 'assistant' : h.role,
+      content: h.parts[0]?.text || ''
+    }));
 
-    try {
-      const response = await fetch(N8N_CHATBOT_WEBHOOK_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          // n8n AI Agent expects 'chatInput' for the user message
-          chatInput: message,
-          // Include sessionId for Postgres Chat Memory to maintain context
-          sessionId,
-          // Keep 'message' for backwards compatibility
-          message,
-          history: history.map(h => ({
-            role: h.role,
-            text: h.parts[0]?.text || ''
-          }))
-        }),
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!response.ok) {
-        const errorText = await response.text().catch(() => 'Unknown error');
-        console.error(`Webhook error ${response.status}:`, errorText);
-        throw new Error(`Webhook error: ${response.status}`);
+    // Call the chat-agent edge function
+    const { data, error } = await supabase.functions.invoke('chat-agent', {
+      body: {
+        message,
+        sessionId,
+        history: formattedHistory
       }
+    });
 
-      // Try to parse as JSON, fall back to text
-      let data: unknown;
-      const contentType = response.headers.get('content-type');
-
-      if (contentType?.includes('application/json')) {
-        data = await response.json();
-      } else {
-        // Handle plain text response
-        const textResponse = await response.text();
-        data = textResponse;
-      }
-
-      // Extract response text from various possible formats
-      const responseText = extractResponseText(data);
-
-      if (!responseText) {
-        console.error('Could not extract response from webhook data:', data);
-        return {
-          text: "I apologize, but I couldn't generate a response at this time. Please try again.",
-        };
-      }
-
-      return {
-        text: responseText,
-      };
-    } catch (fetchError) {
-      clearTimeout(timeoutId);
-      throw fetchError;
+    if (error) {
+      console.error('Edge function error:', error);
+      throw new Error(error.message || 'Failed to get response from AI');
     }
+
+    // Extract response from edge function data
+    const responseText = data?.response || data?.text || data?.message;
+
+    if (!responseText) {
+      console.error('Could not extract response from edge function data:', data);
+      return {
+        text: "I apologize, but I couldn't generate a response at this time. Please try again.",
+      };
+    }
+
+    return {
+      text: responseText,
+      model: data?.model,
+    };
   } catch (error) {
     console.error("Chatbot API Error:", error);
 
-    // Handle timeout errors
-    if (error instanceof Error && error.name === 'AbortError') {
-      // Retry on timeout for mobile networks
-      if (retryCount < MAX_RETRIES) {
+    // Retry logic for transient errors
+    if (retryCount < MAX_RETRIES) {
+      const isRetryable =
+        error instanceof Error && (
+          error.message.includes('timeout') ||
+          error.message.includes('network') ||
+          error.message.includes('fetch') ||
+          error.message.includes('ECONNRESET')
+        );
+
+      if (isRetryable) {
         console.log(`Retrying request (attempt ${retryCount + 1}/${MAX_RETRIES})...`);
         await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1s before retry
         return sendChatMessage(message, history, retryCount + 1);
       }
-      throw new Error("The request took too long. Please check your connection and try again.");
     }
 
-    // Handle network errors
-    if (error instanceof TypeError && error.message.includes('fetch')) {
-      if (retryCount < MAX_RETRIES) {
-        console.log(`Retrying after network error (attempt ${retryCount + 1}/${MAX_RETRIES})...`);
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1s before retry
-        return sendChatMessage(message, history, retryCount + 1);
+    // User-friendly error messages
+    if (error instanceof Error) {
+      if (error.message.includes('timeout') || error.message.includes('took too long')) {
+        throw new Error("The request took too long. Please check your connection and try again.");
       }
-      throw new Error("Network connection failed. Please check your internet and try again.");
+      if (error.message.includes('network') || error.message.includes('fetch')) {
+        throw new Error("Network connection failed. Please check your internet and try again.");
+      }
+      if (error.message.includes('not configured')) {
+        throw new Error("The AI service is not properly configured. Please contact support.");
+      }
     }
 
     // Generic error
     throw new Error("Failed to connect to the AI consultant. Please try again.");
   }
+};
+
+/**
+ * Clear the chat session and start fresh
+ */
+export const clearChatSession = (): void => {
+  const storageKey = 'khanect_chat_session';
+  localStorage.removeItem(storageKey);
+};
+
+/**
+ * Get the current session ID (for debugging/analytics)
+ */
+export const getCurrentSessionId = (): string | null => {
+  const storageKey = 'khanect_chat_session';
+  return localStorage.getItem(storageKey);
 };
