@@ -83,22 +83,11 @@ export function calculateCost(
 
 /**
  * Select the appropriate model based on query complexity
+ * Currently using GPT-4o-mini for all queries to optimize costs
  */
-export function selectModel(message: string, conversationLength: number): string {
-  // Use GPT-4o-mini for simple queries to save costs
-  const simplePatterns = [
-    /^(hi|hello|hey|thanks|thank you|bye|goodbye|ok|okay)/i,
-    /^(what is|how does|can you|do you|tell me about)/i,
-  ];
-
-  const isSimpleQuery = simplePatterns.some((p) => p.test(message.trim()));
-  const isShortConversation = conversationLength < 5;
-
-  if (isSimpleQuery || isShortConversation) {
-    return MODELS.GPT4O_MINI;
-  }
-
-  return MODELS.GPT4O;
+export function selectModel(_message: string, _conversationLength: number): string {
+  // Always use GPT-4o-mini for cost optimization (~$8/month vs $35/month)
+  return MODELS.GPT4O_MINI;
 }
 
 /**

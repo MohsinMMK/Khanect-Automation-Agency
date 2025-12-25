@@ -167,9 +167,9 @@ Analyze this lead and provide your assessment as a JSON object with the followin
     // Get OpenAI client
     const openai = new OpenAIClient();
 
-    // Call GPT-4 for lead qualification (use full model for quality)
+    // Call GPT-4o-mini for lead qualification (cost-optimized)
     const response = await openai.createChatCompletion({
-      model: MODELS.GPT4O,
+      model: MODELS.GPT4O_MINI,
       messages: [
         { role: 'system', content: LEAD_QUALIFICATION_PROMPT },
         { role: 'user', content: leadInfo },
@@ -251,11 +251,11 @@ Analyze this lead and provide your assessment as a JSON object with the followin
       .eq('id', leadData.submissionId);
 
     // Track interaction for cost monitoring
-    const cost = calculateCost(MODELS.GPT4O, inputTokens, outputTokens);
+    const cost = calculateCost(MODELS.GPT4O_MINI, inputTokens, outputTokens);
     await supabase.from('agent_interactions').insert({
       interaction_type: 'lead_processing',
       contact_submission_id: leadData.submissionId,
-      model_used: MODELS.GPT4O,
+      model_used: MODELS.GPT4O_MINI,
       input_tokens: inputTokens,
       output_tokens: outputTokens,
       total_cost_usd: cost,
@@ -278,7 +278,7 @@ Analyze this lead and provide your assessment as a JSON object with the followin
     try {
       await supabase.from('agent_interactions').insert({
         interaction_type: 'lead_processing',
-        model_used: MODELS.GPT4O,
+        model_used: MODELS.GPT4O_MINI,
         success: false,
         error_message: error.message,
       });
