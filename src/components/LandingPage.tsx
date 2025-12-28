@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ViewState } from '../types';
 import { validateEmail, validatePhone, validateUrl, validateName } from '../utils/validation';
 import { supabase } from '../lib/supabase';
+import { processLead } from '../services/n8nService';
 import TabSwitch from './TabSwitch';
 import ServiceCard from './ServiceCard';
 import ProcessStep from './ProcessStep';
@@ -163,20 +164,22 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
         }
       }
 
-      if (supabaseSuccess && supabase) {
-        supabase.functions.invoke('process-lead', {
-          body: {
-            submissionId: supabaseId,
-            fullName: formData.fullName,
-            email: formData.email,
-            phone: formData.phone,
-            businessName: formData.businessName,
-            website: formData.website,
+      // Process lead via N8N webhook (non-blocking)
+      if (supabaseSuccess) {
+        processLead({
+          submissionId: supabaseId,
+          fullName: formData.fullName,
+          email: formData.email,
+          phone: formData.phone,
+          businessName: formData.businessName,
+          website: formData.website,
+        }).then((result) => {
+          if (result.success) {
+            console.log('Lead processed via N8N');
+          } else {
+            console.warn('Lead processing error (non-blocking):', result.error);
           }
-        }).then(({ data, error }) => {
-          if (error) console.warn('Lead processing error (non-blocking):', error);
-          else console.log('Lead processed:', data);
-        }).catch(err => console.warn('Lead processing failed (non-blocking):', err));
+        });
       }
 
       if (!supabaseSuccess) {
