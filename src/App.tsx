@@ -12,9 +12,9 @@ const App: React.FC = () => {
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     if (typeof window !== 'undefined') {
         const savedTheme = localStorage.getItem('theme');
-        return (savedTheme as 'light' | 'dark') || 'dark';
+        return (savedTheme as 'light' | 'dark') || 'light';
     }
-    return 'dark';
+    return 'light';
   });
   const [showScrollTop, setShowScrollTop] = useState(false);
 
