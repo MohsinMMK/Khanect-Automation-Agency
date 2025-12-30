@@ -21,10 +21,10 @@ interface StaggerContainerProps {
 const StaggerContainer: React.FC<StaggerContainerProps> = ({
   children,
   className = '',
-  stagger = 0.08,
-  duration = 0.5,
-  y = 20,
-  delay = 0,
+  stagger = 0.12,
+  duration = 0.6,
+  y = 24,
+  delay = 0.1,
   as: Component = 'div',
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -45,7 +45,7 @@ const StaggerContainer: React.FC<StaggerContainerProps> = ({
       opacity: 1,
       duration,
       delay,
-      ease: 'power3.out',
+      ease: 'power2.out',
       stagger,
       scrollTrigger: {
         trigger: container,

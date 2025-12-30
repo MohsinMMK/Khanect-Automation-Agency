@@ -337,7 +337,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
             onTabChange={(id) => setActiveTab(id as 'services' | 'industries')}
           />
 
-          <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-12">
+          <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 gap-0 mt-12">
             {activeTab === 'services'
               ? services.map(service => <ServiceCard key={service.id} {...service} />)
               : industries.map(industry => <ServiceCard key={industry.id} {...industry} />)
