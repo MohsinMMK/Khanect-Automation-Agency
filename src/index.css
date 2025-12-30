@@ -299,13 +299,69 @@ button {
     }
 }
 
+/* ==========================================
+   PROCESS STEP ANIMATIONS
+   ========================================== */
+
+/* Pulse ring animation for number badges */
+@keyframes pulse-ring {
+    0% { box-shadow: 0 0 0 0 rgba(20, 184, 166, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(20, 184, 166, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(20, 184, 166, 0); }
+}
+
+/* Subtle glowing dot animation for timeline */
+@keyframes glow-travel {
+    0% { left: 0; opacity: 0; }
+    15% { opacity: 0.6; }
+    85% { opacity: 0.6; }
+    100% { left: 100%; opacity: 0; }
+}
+
+/* Process badge styling */
+.process-badge {
+    animation: pulse-ring 2.5s ease-out infinite;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+}
+
+.process-badge:hover {
+    animation: none;
+    box-shadow: 0 0 0 8px rgba(20, 184, 166, 0.15);
+}
+
+/* Card hover effects on badge and duration */
+.process-card:hover .process-badge {
+    transform: scale(1.1);
+}
+
+.process-card:hover .duration-tag {
+    transform: translateX(4px);
+}
+
+/* Duration tag transition */
+.duration-tag {
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Timeline connector */
+.timeline-connector {
+    position: relative;
+    overflow: hidden;
+}
+
+.timeline-dot {
+    animation: glow-travel 4s ease-in-out infinite;
+}
+
 /* Respect prefers-reduced-motion */
 @media (prefers-reduced-motion: reduce) {
     .stagger-fade > *,
     .glass-card,
     .btn-primary,
     .btn-secondary,
-    .btn-tertiary {
+    .btn-tertiary,
+    .process-badge,
+    .timeline-dot {
         animation: none !important;
         transition: none !important;
         transform: none !important;
