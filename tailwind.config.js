@@ -9,14 +9,15 @@ export default {
     extend: {
       fontFamily: {
         sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+        display: ['"Space Grotesk"', 'sans-serif'],
       },
       colors: {
         brand: {
           dark: '#050505',
           card: '#0A0A0B',
-          lime: '#D3F36B',
-          limeHover: '#bce055',
-          limeMuted: 'rgba(211,243,107,0.08)',
+          lime: '#14B8A6',
+          limeHover: '#0D9488',
+          limeMuted: 'rgba(20,184,166,0.08)',
         },
         gray: {
           750: '#2e2e33',
@@ -56,15 +57,15 @@ export default {
       },
       animation: {
         'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-        'fade-in-up': 'fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-        'fade-in': 'fadeIn 0.6s ease-out forwards',
+        'fade-in-up': 'fadeInUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'fade-in': 'fadeIn 1s ease-out forwards',
         'spin-slow': 'spin 12s linear infinite',
         'float': 'float 8s ease-in-out infinite',
         'float-delayed': 'float 8s ease-in-out 4s infinite',
-        'scale-up': 'scaleUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'scale-up': 'scaleUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards',
         'morph': 'morph 8s ease-in-out infinite',
-        'claude-fade': 'claudeFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-        'stagger-reveal': 'staggerReveal 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'claude-fade': 'claudeFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'stagger-reveal': 'staggerReveal 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards',
       },
       keyframes: {
         fadeInUp: {

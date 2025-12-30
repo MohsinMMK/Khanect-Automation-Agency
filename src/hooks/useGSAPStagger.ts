@@ -25,8 +25,8 @@ export function useGSAPStagger<T extends HTMLElement = HTMLDivElement>(
   const animationRef = useRef<gsap.core.Tween | null>(null);
 
   const {
-    stagger = 0.08,
-    duration = 0.5,
+    stagger = 0.12,
+    duration = 0.8,
     y = 20,
     ease = 'power3.out',
     start = 'top 85%',
@@ -81,7 +81,7 @@ export function useGSAPFadeIn<T extends HTMLElement = HTMLDivElement>(
 ) {
   const ref = useRef<T>(null);
 
-  const { duration = 0.6, y = 16, delay = 0 } = options;
+  const { duration = 0.9, y = 16, delay = 0 } = options;
 
   useEffect(() => {
     const element = ref.current;

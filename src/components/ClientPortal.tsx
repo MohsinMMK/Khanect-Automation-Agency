@@ -355,8 +355,8 @@ const ClientPortal: React.FC = () => {
             >
               <defs>
                 <linearGradient id="colorSavings" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#D3F36B" stopOpacity={0.8}/>
-                  <stop offset="95%" stopColor="#D3F36B" stopOpacity={0}/>
+                  <stop offset="5%" stopColor="#14B8A6" stopOpacity={0.8}/>
+                  <stop offset="95%" stopColor="#14B8A6" stopOpacity={0}/>
                 </linearGradient>
                 <linearGradient id="colorCost" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#333" stopOpacity={0.8}/>
@@ -374,13 +374,13 @@ const ClientPortal: React.FC = () => {
                   border: '1px solid rgba(255, 255, 255, 0.08)',
                   padding: '12px'
                 }}
-                itemStyle={{ color: '#D3F36B' }}
+                itemStyle={{ color: '#14B8A6' }}
                 labelStyle={{ color: '#fff', marginBottom: '8px' }}
               />
               <Area
                 type="monotone"
                 dataKey="savings"
-                stroke="#D3F36B"
+                stroke="#14B8A6"
                 fillOpacity={1}
                 fill="url(#colorSavings)"
                 name="Operational Savings ($)"

@@ -8,6 +8,7 @@ import ServiceCard from './ServiceCard';
 import ProcessStep from './ProcessStep';
 import FAQItem from './FAQItem';
 import StaggerContainer from './StaggerContainer';
+import CountryCodeSelect from './CountryCodeSelect';
 import { services } from '../data/services';
 import { industries } from '../data/industries';
 import { processSteps } from '../data/process';
@@ -23,6 +24,7 @@ interface FormData {
   phone: string;
   businessName: string;
   website: string;
+  message: string;
 }
 
 interface FormErrors {
@@ -31,6 +33,7 @@ interface FormErrors {
   phone?: string;
   businessName?: string;
   website?: string;
+  message?: string;
 }
 
 const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
@@ -40,7 +43,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
     phone: '',
     businessName: '',
     website: '',
+    message: '',
   });
+  const [countryCode, setCountryCode] = useState('+1');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
@@ -69,8 +74,13 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
         const businessResult = validateName(value, 'Business name');
         return businessResult.isValid ? undefined : businessResult.error;
       case 'website':
+        // Website is optional - only validate if not empty
+        if (!value.trim()) return undefined;
         const urlResult = validateUrl(value);
         return urlResult.isValid ? undefined : urlResult.error;
+      case 'message':
+        // Message is optional, no validation needed
+        return undefined;
       default:
         return undefined;
     }
@@ -111,8 +121,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
       phone: validateField('phone', formData.phone),
       businessName: validateField('businessName', formData.businessName),
       website: validateField('website', formData.website),
+      message: validateField('message', formData.message),
     };
-    setTouchedFields(new Set(['fullName', 'email', 'phone', 'businessName', 'website']));
+    setTouchedFields(new Set(['fullName', 'email', 'phone', 'businessName', 'website', 'message']));
     const hasErrors = Object.values(errors).some(error => error !== undefined);
     if (hasErrors) {
       setFormErrors(errors);
@@ -131,14 +142,16 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
 
       if (supabase) {
         try {
+          const fullPhoneNumber = `${countryCode} ${formData.phone}`;
           const { data: supabaseData, error: supabaseError } = await supabase
             .from('contact_submissions')
             .insert([{
               full_name: formData.fullName,
               email: formData.email,
-              phone: formData.phone,
+              phone: fullPhoneNumber,
               business_name: formData.businessName,
               website: formData.website || null,
+              message: formData.message || null,
             }])
             .select()
             .single();
@@ -170,9 +183,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
           submissionId: supabaseId,
           fullName: formData.fullName,
           email: formData.email,
-          phone: formData.phone,
+          phone: `${countryCode} ${formData.phone}`,
           businessName: formData.businessName,
           website: formData.website,
+          message: formData.message,
         }).then((result) => {
           if (result.success) {
             console.log('Lead processed via N8N');
@@ -187,7 +201,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
       }
 
       setSubmitStatus('success');
-      setFormData({ fullName: '', email: '', phone: '', businessName: '', website: '' });
+      setFormData({ fullName: '', email: '', phone: '', businessName: '', website: '', message: '' });
       setFormErrors({});
       setTouchedFields(new Set());
     } catch (error) {
@@ -384,153 +398,242 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
 
       {/* Contact Section */}
       <section id="contact" className="py-24 lg:py-32 px-6 relative z-10">
-        <div className="max-w-3xl mx-auto glass-card p-8 md:p-12 rounded-3xl">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900 dark:text-white tracking-tight">Ready to Automate?</h2>
-            <p className="text-gray-500 dark:text-gray-400">Tell us about your business, and we'll reach out with a custom plan.</p>
-          </div>
-
-          {submitStatus === 'success' && (
-            <div className="mb-6 p-4 bg-green-500/10 border border-green-500/20 rounded-xl text-green-600 dark:text-green-400 text-center text-sm">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="inline-block mr-2 mb-0.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-              Thank you! We've received your submission and will be in touch soon.
-            </div>
-          )}
-
-          {submitStatus === 'error' && (
-            <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-600 dark:text-red-400 text-center text-sm">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="inline-block mr-2 mb-0.5"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
-              {errorMessage}
-            </div>
-          )}
-
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label htmlFor="fullName" className="text-sm font-medium text-gray-600 dark:text-gray-300 block">Full Name</label>
-                <input
-                  type="text"
-                  id="fullName"
-                  value={formData.fullName}
-                  onChange={handleInputChangeWithValidation}
-                  onBlur={handleFieldBlur}
-                  className={getInputClassName('fullName')}
-                  placeholder="John Doe"
-                  required
-                  disabled={isSubmitting}
-                />
-                {touchedFields.has('fullName') && formErrors.fullName && (
-                  <p className="text-xs text-red-500 dark:text-red-400 flex items-center gap-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                    {formErrors.fullName}
-                  </p>
-                )}
-              </div>
-              <div className="space-y-2">
-                <label htmlFor="email" className="text-sm font-medium text-gray-600 dark:text-gray-300 block">Email Address</label>
-                <input
-                  type="email"
-                  id="email"
-                  value={formData.email}
-                  onChange={handleInputChangeWithValidation}
-                  onBlur={handleFieldBlur}
-                  className={getInputClassName('email')}
-                  placeholder="john@company.com"
-                  required
-                  disabled={isSubmitting}
-                />
-                {touchedFields.has('email') && formErrors.email && (
-                  <p className="text-xs text-red-500 dark:text-red-400 flex items-center gap-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                    {formErrors.email}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label htmlFor="phone" className="text-sm font-medium text-gray-600 dark:text-gray-300 block">Phone</label>
-                <input
-                  type="tel"
-                  id="phone"
-                  value={formData.phone}
-                  onChange={handleInputChangeWithValidation}
-                  onBlur={handleFieldBlur}
-                  className={getInputClassName('phone')}
-                  placeholder="+1 (555) 000-0000"
-                  required
-                  disabled={isSubmitting}
-                />
-                {touchedFields.has('phone') && formErrors.phone && (
-                  <p className="text-xs text-red-500 dark:text-red-400 flex items-center gap-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                    {formErrors.phone}
-                  </p>
-                )}
-              </div>
-              <div className="space-y-2">
-                <label htmlFor="businessName" className="text-sm font-medium text-gray-600 dark:text-gray-300 block">Business Name</label>
-                <input
-                  type="text"
-                  id="businessName"
-                  value={formData.businessName}
-                  onChange={handleInputChangeWithValidation}
-                  onBlur={handleFieldBlur}
-                  className={getInputClassName('businessName')}
-                  placeholder="Acme Corp"
-                  required
-                  disabled={isSubmitting}
-                />
-                {touchedFields.has('businessName') && formErrors.businessName && (
-                  <p className="text-xs text-red-500 dark:text-red-400 flex items-center gap-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                    {formErrors.businessName}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label htmlFor="website" className="text-sm font-medium text-gray-600 dark:text-gray-300 block">
-                Website URL <span className="text-gray-400">(Optional)</span>
-              </label>
-              <input
-                type="url"
-                id="website"
-                value={formData.website}
-                onChange={handleInputChangeWithValidation}
-                onBlur={handleFieldBlur}
-                className={getInputClassName('website')}
-                placeholder="https://www.example.com"
-                disabled={isSubmitting}
-              />
-              {touchedFields.has('website') && formErrors.website && (
-                <p className="text-xs text-red-500 dark:text-red-400 flex items-center gap-1">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                  {formErrors.website}
-                </p>
-              )}
-            </div>
-
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="btn-primary w-full text-lg py-4 mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isSubmitting ? (
-                <>
-                  <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 rounded-3xl overflow-hidden shadow-2xl">
+            {/* Left Side - Form */}
+            <div className="bg-white dark:bg-gray-900 p-8 md:p-12">
+              {/* Logo */}
+              <div className="flex items-center gap-2 mb-8">
+                <div className="w-8 h-8 bg-gray-900 dark:bg-white rounded-lg flex items-center justify-center">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="text-white dark:text-gray-900">
+                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" fill="currentColor"/>
                   </svg>
-                  Submitting...
-                </>
-              ) : (
-                'Get Your Free Audit'
+                </div>
+                <span className="font-display font-bold text-lg">
+                  <span className="text-gray-900 dark:text-white">KHAN</span>
+                  <span className="text-brand-lime">ECT</span>
+                </span>
+              </div>
+
+              {/* Heading */}
+              <h2 className="text-3xl md:text-4xl font-bold mb-3 text-gray-900 dark:text-white tracking-tight">
+                We'd love to help
+              </h2>
+              <p className="text-gray-500 dark:text-gray-400 mb-8">
+                We're a full service agency with experts ready to help. We'll get in touch within 24 hours.
+              </p>
+
+              {/* Status Messages */}
+              {submitStatus === 'success' && (
+                <div className="mb-6 p-4 bg-green-500/10 border border-green-500/20 rounded-xl text-green-600 dark:text-green-400 text-sm">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="inline-block mr-2 mb-0.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                  Thank you! We've received your submission and will be in touch soon.
+                </div>
               )}
-            </button>
-          </form>
+
+              {submitStatus === 'error' && (
+                <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-600 dark:text-red-400 text-sm">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="inline-block mr-2 mb-0.5"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                  {errorMessage}
+                </div>
+              )}
+
+              {/* Form */}
+              <form className="space-y-5" onSubmit={handleSubmit}>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label htmlFor="fullName" className="text-sm font-medium text-gray-700 dark:text-gray-300 block">Full name</label>
+                    <input
+                      type="text"
+                      id="fullName"
+                      value={formData.fullName}
+                      onChange={handleInputChangeWithValidation}
+                      onBlur={handleFieldBlur}
+                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-lime/50 focus:border-brand-lime transition-all text-sm"
+                      placeholder="Full name"
+                      required
+                      disabled={isSubmitting}
+                    />
+                    {touchedFields.has('fullName') && formErrors.fullName && (
+                      <p className="text-xs text-red-500">{formErrors.fullName}</p>
+                    )}
+                  </div>
+                  <div className="space-y-1.5">
+                    <label htmlFor="businessName" className="text-sm font-medium text-gray-700 dark:text-gray-300 block">Business name</label>
+                    <input
+                      type="text"
+                      id="businessName"
+                      value={formData.businessName}
+                      onChange={handleInputChangeWithValidation}
+                      onBlur={handleFieldBlur}
+                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-lime/50 focus:border-brand-lime transition-all text-sm"
+                      placeholder="Business name"
+                      required
+                      disabled={isSubmitting}
+                    />
+                    {touchedFields.has('businessName') && formErrors.businessName && (
+                      <p className="text-xs text-red-500">{formErrors.businessName}</p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label htmlFor="email" className="text-sm font-medium text-gray-700 dark:text-gray-300 block">Email</label>
+                  <input
+                    type="email"
+                    id="email"
+                    value={formData.email}
+                    onChange={handleInputChangeWithValidation}
+                    onBlur={handleFieldBlur}
+                    className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-lime/50 focus:border-brand-lime transition-all text-sm"
+                    placeholder="you@company.com"
+                    required
+                    disabled={isSubmitting}
+                  />
+                  {touchedFields.has('email') && formErrors.email && (
+                    <p className="text-xs text-red-500">{formErrors.email}</p>
+                  )}
+                </div>
+
+                <div className="space-y-1.5">
+                  <label htmlFor="phone" className="text-sm font-medium text-gray-700 dark:text-gray-300 block">Phone number</label>
+                  <div className="flex">
+                    <CountryCodeSelect
+                      value={countryCode}
+                      onChange={setCountryCode}
+                      disabled={isSubmitting}
+                    />
+                    <input
+                      type="tel"
+                      id="phone"
+                      value={formData.phone}
+                      onChange={handleInputChangeWithValidation}
+                      onBlur={handleFieldBlur}
+                      className="flex-1 px-4 py-2.5 rounded-r-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-lime/50 focus:border-brand-lime transition-all text-sm"
+                      placeholder="(555) 000-0000"
+                      required
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                  {touchedFields.has('phone') && formErrors.phone && (
+                    <p className="text-xs text-red-500">{formErrors.phone}</p>
+                  )}
+                </div>
+
+                <div className="space-y-1.5">
+                  <label htmlFor="website" className="text-sm font-medium text-gray-700 dark:text-gray-300 block">
+                    Website <span className="text-gray-400 font-normal">(optional)</span>
+                  </label>
+                  <input
+                    type="url"
+                    id="website"
+                    value={formData.website}
+                    onChange={handleInputChangeWithValidation}
+                    onBlur={handleFieldBlur}
+                    className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-lime/50 focus:border-brand-lime transition-all text-sm"
+                    placeholder="https://yourwebsite.com"
+                    disabled={isSubmitting}
+                  />
+                  {touchedFields.has('website') && formErrors.website && (
+                    <p className="text-xs text-red-500">{formErrors.website}</p>
+                  )}
+                </div>
+
+                <div className="space-y-1.5">
+                  <label htmlFor="message" className="text-sm font-medium text-gray-700 dark:text-gray-300 block">Message</label>
+                  <textarea
+                    id="message"
+                    value={formData.message}
+                    onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
+                    className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-lime/50 focus:border-brand-lime transition-all text-sm resize-none"
+                    placeholder="Leave us a message..."
+                    rows={4}
+                    disabled={isSubmitting}
+                  />
+                </div>
+
+                <div className="flex items-start gap-2 pt-2">
+                  <input
+                    type="checkbox"
+                    id="privacy"
+                    className="mt-1 w-4 h-4 rounded border-gray-300 text-brand-lime focus:ring-brand-lime"
+                  />
+                  <label htmlFor="privacy" className="text-sm text-gray-500 dark:text-gray-400">
+                    You agree to our friendly <a href="#" className="underline hover:text-gray-700 dark:hover:text-gray-200">privacy policy</a>.
+                  </label>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full py-3 px-6 rounded-lg bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-semibold text-sm hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isSubmitting ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Sending...
+                    </span>
+                  ) : (
+                    'Send message'
+                  )}
+                </button>
+              </form>
+            </div>
+
+            {/* Right Side - Testimonial */}
+            <div className="relative bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 p-8 md:p-12 flex flex-col justify-end min-h-[500px] lg:min-h-0">
+              {/* Abstract decorative elements */}
+              <div className="absolute inset-0 overflow-hidden">
+                <div className="absolute top-10 right-10 w-32 h-32 bg-white/10 rounded-2xl transform rotate-12"></div>
+                <div className="absolute top-1/4 left-1/4 w-48 h-48 bg-gradient-to-br from-cyan-400/30 to-purple-500/30 rounded-3xl transform -rotate-6"></div>
+                <div className="absolute bottom-1/3 right-1/4 w-24 h-24 bg-pink-500/20 rounded-xl transform rotate-45"></div>
+                <div className="absolute top-1/2 right-10 w-16 h-16 bg-white/5 rounded-lg"></div>
+                <div className="absolute bottom-1/4 left-10 w-20 h-20 bg-gradient-to-tr from-teal-400/20 to-blue-500/20 rounded-2xl transform -rotate-12"></div>
+              </div>
+
+              {/* Testimonial content */}
+              <div className="relative z-10 mt-auto">
+                {/* Stars */}
+                <div className="flex gap-1 mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <svg key={i} className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                  ))}
+                </div>
+
+                {/* Quote */}
+                <blockquote className="text-white text-lg md:text-xl leading-relaxed mb-6">
+                  "Khanect AI transformed our workflow completely. We've automated 80% of our repetitive tasks and saved over 40 hours per week. The team is incredibly responsive and professional."
+                </blockquote>
+
+                {/* Author */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-white font-semibold">— Sarah Mitchell</p>
+                    <p className="text-white/70 text-sm">CEO, TechFlow Solutions</p>
+                  </div>
+
+                  {/* Navigation arrows */}
+                  <div className="flex gap-2">
+                    <button className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white/70 hover:bg-white/10 transition-colors">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                      </svg>
+                    </button>
+                    <button className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white/70 hover:bg-white/10 transition-colors">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
     </>

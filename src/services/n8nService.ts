@@ -12,6 +12,7 @@ interface LeadData {
   phone: string;
   businessName: string;
   website?: string;
+  message?: string;
 }
 
 interface ProcessLeadResult {

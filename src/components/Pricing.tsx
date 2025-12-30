@@ -209,8 +209,8 @@ const Pricing: React.FC<PricingProps> = ({ onNavigate }) => {
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900 dark:text-white tracking-tight">
             Ready to Get Started?
           </h2>
-          <p className="text-lg text-gray-500 dark:text-gray-400 mb-10 max-w-2xl mx-auto leading-relaxed">
-            Join hundreds of businesses already automating their workflows with Khanect AI
+          <p className="text-lg text-gray-500 dark:text-gray-400 mb-10 leading-relaxed">
+            Join hundreds of businesses already automating their workflows<br className="hidden sm:inline" /> with Khanect&nbsp;AI
           </p>
           <button
             onClick={handleStartFreeTrial}
