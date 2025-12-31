@@ -153,12 +153,10 @@ const AiConsultant: React.FC<AiConsultantProps> = ({ onNavigate }) => {
 
             {isTextLoading && (
                 <div className="flex justify-start animate-fade-in-up">
-                    <div className="bg-white dark:bg-white/5 rounded-[20px] rounded-tl-sm px-5 py-4 shadow-sm border border-gray-100 dark:border-white/5 transition-colors">
-                        <div className="flex gap-1.5">
-                            <span className="w-1.5 h-1.5 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce"></span>
-                            <span className="w-1.5 h-1.5 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce delay-75"></span>
-                            <span className="w-1.5 h-1.5 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce delay-150"></span>
-                        </div>
+                    <div className="bg-white dark:bg-white/5 rounded-[20px] rounded-tl-sm px-5 py-3.5 shadow-sm border border-gray-100 dark:border-white/5 transition-colors">
+                        <TextShimmer as="span" className="text-[14px] font-medium" duration={1.5} spread={2}>
+                            Generating...
+                        </TextShimmer>
                     </div>
                 </div>
             )}
