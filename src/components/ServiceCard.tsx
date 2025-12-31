@@ -1,14 +1,18 @@
 import React from 'react';
 import CheckmarkIcon from './icons/CheckmarkIcon';
 
+import { Link } from 'react-router-dom';
+
 interface ServiceCardProps {
   icon: React.ComponentType<{ className?: string }>;
   title: string;
   description: string;
   features: string[];
+  slug?: string;
+  category?: 'services' | 'industries';
 }
 
-const ServiceCard: React.FC<ServiceCardProps> = ({ icon: IconComponent, title, description, features }) => {
+const ServiceCard: React.FC<ServiceCardProps> = ({ icon: IconComponent, title, description, features, slug = '', category = 'services' }) => {
   return (
     <div className="bg-transparent border-t sm:border-t-0 sm:border-l border-gray-200 dark:border-white/[0.1] p-7 pt-8 sm:pt-7 sm:pl-8 group cursor-default flex flex-col">
       {/* Icon Container */}
@@ -40,9 +44,12 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ icon: IconComponent, title, d
         ))}
       </ul>
 
-      <button className="mt-auto w-fit px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-white/[0.2] rounded-lg hover:border-gray-500 dark:hover:border-white/40 transition-colors duration-200">
+      <Link 
+        to={`/${category}/${slug}`}
+        className="mt-auto w-fit px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-white/[0.2] rounded-lg hover:border-gray-500 dark:hover:border-white/40 transition-colors duration-200"
+      >
         Learn more
-      </button>
+      </Link>
     </div>
   );
 };

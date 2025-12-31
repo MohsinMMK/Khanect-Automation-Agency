@@ -22,10 +22,16 @@ export interface ChartDataPoint {
 
 export interface Service {
   id: string;
+  slug?: string;
   title: string;
   description: string;
   features: string[];
   icon: React.ComponentType<{ className?: string }>;
+  details?: {
+    fullDescription: string;
+    benefits: string[];
+    process: string[];
+  };
 }
 
 export interface Industry extends Service {}
