@@ -34,16 +34,16 @@ export function HoverBorderGradient({
     return directions[nextIndex];
   };
 
-  // Using brand-lime color (#a3e635) for the gradient
+  // Using brand-lime color (#14B8A6) for the gradient
   const movingMap: Record<Direction, string> = {
-    TOP: "radial-gradient(20.7% 50% at 50% 0%, #a3e635 0%, rgba(163, 230, 53, 0) 100%)",
-    LEFT: "radial-gradient(16.6% 43.1% at 0% 50%, #a3e635 0%, rgba(163, 230, 53, 0) 100%)",
-    BOTTOM: "radial-gradient(20.7% 50% at 50% 100%, #a3e635 0%, rgba(163, 230, 53, 0) 100%)",
-    RIGHT: "radial-gradient(16.2% 41.2% at 100% 50%, #a3e635 0%, rgba(163, 230, 53, 0) 100%)",
+    TOP: "radial-gradient(20.7% 50% at 50% 0%, #14B8A6 0%, rgba(20, 184, 166, 0) 100%)",
+    LEFT: "radial-gradient(16.6% 43.1% at 0% 50%, #14B8A6 0%, rgba(20, 184, 166, 0) 100%)",
+    BOTTOM: "radial-gradient(20.7% 50% at 50% 100%, #14B8A6 0%, rgba(20, 184, 166, 0) 100%)",
+    RIGHT: "radial-gradient(16.2% 41.2% at 100% 50%, #14B8A6 0%, rgba(20, 184, 166, 0) 100%)",
   };
 
   const highlight =
-    "radial-gradient(75% 181.15% at 50% 50%, #a3e635 0%, rgba(163, 230, 53, 0) 100%)";
+    "radial-gradient(75% 181.15% at 50% 50%, #14B8A6 0%, rgba(20, 184, 166, 0) 100%)";
 
   useEffect(() => {
     if (!hovered) {
