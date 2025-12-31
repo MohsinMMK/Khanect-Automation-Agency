@@ -4,6 +4,7 @@ import { sendChatMessage } from '../services/chatbotService';
 import KhanectBoltIcon from './icons/KhanectBoltIcon';
 import { formatMessage } from '../utils/formatMessage';
 import { TextShimmer } from './ui/TextShimmer';
+import { BorderTrail } from './ui/BorderTrail';
 
 interface AiConsultantProps {
     onNavigate?: (view: ViewState) => void;
@@ -108,7 +109,17 @@ const AiConsultant: React.FC<AiConsultantProps> = ({ onNavigate }) => {
   };
 
   return (
-    <div className="w-full h-full glass3d rounded-2xl font-sans border border-white/20 dark:border-white/10 transition-all duration-300">
+    <div className="relative w-full h-full glass3d rounded-2xl font-sans border border-white/20 dark:border-white/10 transition-all duration-300">
+      {/* Animated border trail effect */}
+      <BorderTrail
+        className="bg-gradient-to-l from-brand-lime via-brand-lime/50 to-transparent"
+        size={80}
+        transition={{
+          repeat: Infinity,
+          duration: 8,
+          ease: 'linear',
+        }}
+      />
       {/* Inner wrapper for overflow clipping */}
       <div className="w-full h-full flex flex-col overflow-hidden rounded-2xl">
 
