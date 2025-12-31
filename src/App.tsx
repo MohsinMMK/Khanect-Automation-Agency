@@ -149,7 +149,7 @@ const App: React.FC = () => {
       {/* Floating Chat Widget for DEMO */}
       {demoActive && (
           <div
-             className="fixed bottom-6 right-6 z-[100] w-[380px] max-w-[calc(100vw-32px)] h-[600px] max-h-[calc(100vh-120px)] shadow-soft-lg rounded-3xl overflow-hidden animate-fade-in-up border border-black/[0.06] dark:border-white/[0.06]"
+             className="fixed bottom-6 right-6 z-[100] w-[380px] max-w-[calc(100vw-32px)] h-[600px] max-h-[calc(100vh-120px)] shadow-soft-lg rounded-2xl animate-fade-in-up"
           >
              <AiConsultant onNavigate={() => setDemoActive(false)} />
           </div>
