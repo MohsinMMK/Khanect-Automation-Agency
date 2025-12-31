@@ -87,9 +87,16 @@ const App: React.FC = () => {
   // Reset scroll position when route changes
   useEffect(() => {
      if (!demoActive) {
-         window.scrollTo(0, 0);
+         if (location.hash) {
+             const element = document.getElementById(location.hash.substring(1));
+             if (element) {
+                 element.scrollIntoView({ behavior: 'smooth' });
+             }
+         } else {
+             window.scrollTo(0, 0);
+         }
      }
-  }, [location.pathname]);
+  }, [location]);
 
   // Prevent body scroll when AI assistant is open (mobile experience)
   useEffect(() => {
