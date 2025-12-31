@@ -13,9 +13,7 @@ const ServiceDetailPage: React.FC = () => {
   const allItems = [...services, ...industries] as (Service | Industry)[];
   const item = allItems.find(s => s.slug === slug);
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [slug]);
+
 
   if (!item) {
     return <Navigate to="/" replace />;

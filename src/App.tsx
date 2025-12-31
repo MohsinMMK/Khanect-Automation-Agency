@@ -9,6 +9,7 @@ import Footer from './components/Footer';
 import ServiceDetailPage from './components/ServiceDetailPage';
 import ErrorBoundary from './components/ErrorBoundary';
 import KhanectBoltIcon from './components/icons/KhanectBoltIcon';
+import ScrollToTop from './components/ScrollToTop';
 import { ViewState } from './types';
 
 const App: React.FC = () => {
@@ -84,20 +85,6 @@ const App: React.FC = () => {
     }
   };
 
-  // Reset scroll position when route changes
-  useEffect(() => {
-     if (!demoActive) {
-         if (location.hash) {
-             const element = document.getElementById(location.hash.substring(1));
-             if (element) {
-                 element.scrollIntoView({ behavior: 'smooth' });
-             }
-         } else {
-             window.scrollTo(0, 0);
-         }
-     }
-  }, [location]);
-
   // Prevent body scroll when AI assistant is open (mobile experience)
   useEffect(() => {
     if (demoActive) {
@@ -112,6 +99,7 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen font-sans selection:bg-brand-lime/25 selection:text-gray-900 dark:selection:text-brand-lime dark:text-white transition-colors duration-300 relative flex flex-col">
+      <ScrollToTop />
       <div className="spotlight-glow"></div>
 
       <Navbar
