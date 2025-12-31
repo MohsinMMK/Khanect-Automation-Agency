@@ -22,6 +22,162 @@ const data: ChartDataPoint[] = [
   { month: 'Jul', cost: 1200, savings: 6500 },
 ];
 
+// Activity Feed types and demo data
+interface ActivityItem {
+  id: string;
+  type: 'lead_processing' | 'email_generation' | 'chat' | 'workflow';
+  title: string;
+  description: string;
+  status: 'success' | 'failed' | 'pending';
+  timestamp: Date;
+  metadata?: {
+    tokens?: number;
+    cost?: number;
+    latency?: number;
+  };
+}
+
+const generateDemoActivities = (): ActivityItem[] => {
+  const now = new Date();
+  return [
+    {
+      id: '1',
+      type: 'lead_processing',
+      title: 'New Lead Scored',
+      description: 'Lead from contact form qualified as "Hot" (Score: 87)',
+      status: 'success',
+      timestamp: new Date(now.getTime() - 12 * 60000),
+      metadata: { tokens: 1250, cost: 0.0024, latency: 2340 }
+    },
+    {
+      id: '2',
+      type: 'email_generation',
+      title: 'Follow-up Email Sent',
+      description: 'Personalized welcome email sent to john@acme.com',
+      status: 'success',
+      timestamp: new Date(now.getTime() - 45 * 60000),
+      metadata: { tokens: 890, cost: 0.0018, latency: 1820 }
+    },
+    {
+      id: '3',
+      type: 'workflow',
+      title: 'CRM Sync Completed',
+      description: '15 new contacts synced to HubSpot',
+      status: 'success',
+      timestamp: new Date(now.getTime() - 2 * 3600000),
+    },
+    {
+      id: '4',
+      type: 'chat',
+      title: 'AI Chat Session',
+      description: 'Visitor consultation - 8 messages exchanged',
+      status: 'success',
+      timestamp: new Date(now.getTime() - 3 * 3600000),
+      metadata: { tokens: 3200, cost: 0.0064, latency: 890 }
+    },
+    {
+      id: '5',
+      type: 'email_generation',
+      title: 'Email Delivery Failed',
+      description: 'Bounce: invalid@example.com - address not found',
+      status: 'failed',
+      timestamp: new Date(now.getTime() - 5 * 3600000),
+    },
+    {
+      id: '6',
+      type: 'lead_processing',
+      title: 'Bulk Lead Import',
+      description: '47 leads imported from CSV, 42 qualified',
+      status: 'success',
+      timestamp: new Date(now.getTime() - 8 * 3600000),
+      metadata: { tokens: 15600, cost: 0.031, latency: 12400 }
+    },
+    {
+      id: '7',
+      type: 'workflow',
+      title: 'Daily Report Generated',
+      description: 'Performance summary sent to team@company.com',
+      status: 'success',
+      timestamp: new Date(now.getTime() - 24 * 3600000),
+    },
+    {
+      id: '8',
+      type: 'chat',
+      title: 'Demo Booking Request',
+      description: 'Visitor requested demo via AI assistant',
+      status: 'pending',
+      timestamp: new Date(now.getTime() - 26 * 3600000),
+    },
+  ];
+};
+
+const formatTimeAgo = (date: Date): string => {
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
+
+  if (diffMins < 1) return 'Just now';
+  if (diffMins < 60) return `${diffMins}m ago`;
+  if (diffHours < 24) return `${diffHours}h ago`;
+  if (diffDays === 1) return 'Yesterday';
+  return `${diffDays}d ago`;
+};
+
+const getActivityIcon = (type: ActivityItem['type']) => {
+  switch (type) {
+    case 'lead_processing':
+      return (
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+      );
+    case 'email_generation':
+      return (
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+        </svg>
+      );
+    case 'chat':
+      return (
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+      );
+    case 'workflow':
+      return (
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+        </svg>
+      );
+  }
+};
+
+const getStatusColor = (status: ActivityItem['status']) => {
+  switch (status) {
+    case 'success':
+      return 'bg-green-500';
+    case 'failed':
+      return 'bg-red-500';
+    case 'pending':
+      return 'bg-yellow-500';
+  }
+};
+
+const getTypeColor = (type: ActivityItem['type']) => {
+  switch (type) {
+    case 'lead_processing':
+      return 'bg-blue-500/10 text-blue-500';
+    case 'email_generation':
+      return 'bg-purple-500/10 text-purple-500';
+    case 'chat':
+      return 'bg-brand-lime/10 text-brand-lime';
+    case 'workflow':
+      return 'bg-orange-500/10 text-orange-500';
+  }
+};
+
 const ClientPortal: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [client, setClient] = useState<Client | null>(null);
@@ -344,61 +500,123 @@ const ClientPortal: React.FC = () => {
         />
       </div>
 
-      {/* Main Chart */}
-      <div className="glass-card p-6 md:p-8 rounded-2xl transition-all duration-300 hover:shadow-2xl stagger-fade">
-        <h3 className="text-xl font-semibold mb-6 text-gray-900 dark:text-white transition-colors">Cost vs. Savings Analysis</h3>
-        <div className="h-[400px] w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart
-              data={data}
-              margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-            >
-              <defs>
-                <linearGradient id="colorSavings" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#14B8A6" stopOpacity={0.8}/>
-                  <stop offset="95%" stopColor="#14B8A6" stopOpacity={0}/>
-                </linearGradient>
-                <linearGradient id="colorCost" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#333" stopOpacity={0.8}/>
-                  <stop offset="95%" stopColor="#333" stopOpacity={0}/>
-                </linearGradient>
-              </defs>
-              <XAxis dataKey="month" stroke="#6b7280" />
-              <YAxis stroke="#6b7280" />
-              <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
-              <Tooltip
-                contentStyle={{
-                  background: 'rgba(17, 17, 17, 0.75)',
-                  backdropFilter: 'blur(12px)',
-                  borderRadius: '12px',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                  padding: '12px'
-                }}
-                itemStyle={{ color: '#14B8A6' }}
-                labelStyle={{ color: '#fff', marginBottom: '8px' }}
-              />
-              <Area
-                type="monotone"
-                dataKey="savings"
-                stroke="#14B8A6"
-                fillOpacity={1}
-                fill="url(#colorSavings)"
-                name="Operational Savings ($)"
-                animationDuration={prefersReducedMotion ? 0 : 1200}
-                animationEasing="ease-out"
-              />
-              <Area
-                type="monotone"
-                dataKey="cost"
-                stroke="#666"
-                fillOpacity={1}
-                fill="url(#colorCost)"
-                name="Operational Cost ($)"
-                animationDuration={prefersReducedMotion ? 0 : 1200}
-                animationEasing="ease-out"
-              />
-            </AreaChart>
-          </ResponsiveContainer>
+      {/* Two Column Layout: Chart + Activity Feed */}
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 stagger-fade">
+        {/* Main Chart - 2 columns */}
+        <div className="xl:col-span-2 glass-card p-6 md:p-8 rounded-2xl transition-all duration-300 hover:shadow-2xl">
+          <h3 className="text-xl font-semibold mb-6 text-gray-900 dark:text-white transition-colors">Cost vs. Savings Analysis</h3>
+          <div className="h-[400px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart
+                data={data}
+                margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+              >
+                <defs>
+                  <linearGradient id="colorSavings" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#14B8A6" stopOpacity={0.8}/>
+                    <stop offset="95%" stopColor="#14B8A6" stopOpacity={0}/>
+                  </linearGradient>
+                  <linearGradient id="colorCost" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#333" stopOpacity={0.8}/>
+                    <stop offset="95%" stopColor="#333" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <XAxis dataKey="month" stroke="#6b7280" />
+                <YAxis stroke="#6b7280" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
+                <Tooltip
+                  contentStyle={{
+                    background: 'rgba(17, 17, 17, 0.75)',
+                    backdropFilter: 'blur(12px)',
+                    borderRadius: '12px',
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    padding: '12px'
+                  }}
+                  itemStyle={{ color: '#14B8A6' }}
+                  labelStyle={{ color: '#fff', marginBottom: '8px' }}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="savings"
+                  stroke="#14B8A6"
+                  fillOpacity={1}
+                  fill="url(#colorSavings)"
+                  name="Operational Savings ($)"
+                  animationDuration={prefersReducedMotion ? 0 : 1200}
+                  animationEasing="ease-out"
+                />
+                <Area
+                  type="monotone"
+                  dataKey="cost"
+                  stroke="#666"
+                  fillOpacity={1}
+                  fill="url(#colorCost)"
+                  name="Operational Cost ($)"
+                  animationDuration={prefersReducedMotion ? 0 : 1200}
+                  animationEasing="ease-out"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Activity Feed - 1 column */}
+        <div className="glass-card p-6 rounded-2xl transition-all duration-300 hover:shadow-2xl">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white transition-colors">Activity Feed</h3>
+            <span className="text-xs text-gray-500 dark:text-gray-400">Last 48 hours</span>
+          </div>
+
+          <div className="space-y-1 max-h-[400px] overflow-y-auto custom-scrollbar pr-2">
+            {generateDemoActivities().map((activity) => (
+              <div
+                key={activity.id}
+                className="group p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 transition-all duration-200 cursor-default"
+              >
+                <div className="flex items-start gap-3">
+                  {/* Icon */}
+                  <div className={`p-2 rounded-lg ${getTypeColor(activity.type)} shrink-0`}>
+                    {getActivityIcon(activity.type)}
+                  </div>
+
+                  {/* Content */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <span className={`w-1.5 h-1.5 rounded-full ${getStatusColor(activity.status)}`}></span>
+                      <h4 className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                        {activity.title}
+                      </h4>
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                      {activity.description}
+                    </p>
+                    <div className="flex items-center gap-3 mt-1.5">
+                      <span className="text-[10px] text-gray-400 dark:text-gray-500">
+                        {formatTimeAgo(activity.timestamp)}
+                      </span>
+                      {activity.metadata?.tokens && (
+                        <span className="text-[10px] text-gray-400 dark:text-gray-500">
+                          {activity.metadata.tokens.toLocaleString()} tokens
+                        </span>
+                      )}
+                      {activity.metadata?.cost && (
+                        <span className="text-[10px] text-brand-lime">
+                          ${activity.metadata.cost.toFixed(4)}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Footer */}
+          <div className="mt-4 pt-4 border-t border-gray-100 dark:border-white/5">
+            <button className="w-full text-sm text-gray-500 dark:text-gray-400 hover:text-brand-lime transition-colors py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-white/5">
+              View All Activity
+            </button>
+          </div>
         </div>
       </div>
     </div>
