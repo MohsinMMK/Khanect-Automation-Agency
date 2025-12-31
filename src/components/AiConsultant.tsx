@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { motion } from 'framer-motion';
 import { ChatMessage, ViewState } from '../types';
 import { sendChatMessage } from '../services/chatbotService';
 import KhanectBoltIcon from './icons/KhanectBoltIcon';
 import { formatMessage } from '../utils/formatMessage';
 import { TextShimmer } from './ui/TextShimmer';
-import { HoverBorderGradient } from './ui/HoverBorderGradient';
 
 interface AiConsultantProps {
     onNavigate?: (view: ViewState) => void;
@@ -18,6 +18,8 @@ const SUGGESTIONS = [
   "Tell me about AI automation"
 ];
 
+type Direction = "TOP" | "LEFT" | "BOTTOM" | "RIGHT";
+
 const AiConsultant: React.FC<AiConsultantProps> = ({ onNavigate }) => {
   // Text Chat State
   const [input, setInput] = useState('');
@@ -26,6 +28,10 @@ const AiConsultant: React.FC<AiConsultantProps> = ({ onNavigate }) => {
     { role: 'model', text: "Hello! I'm your Khanect AI Assistant. How can I help you optimize your business today?" }
   ]);
   const [isTextLoading, setIsTextLoading] = useState(false);
+
+  // Animated border state
+  const [hovered, setHovered] = useState(false);
+  const [direction, setDirection] = useState<Direction>("TOP");
 
   // Use a ref for the scrollable container
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -45,6 +51,32 @@ const AiConsultant: React.FC<AiConsultantProps> = ({ onNavigate }) => {
     }, 100);
     return () => clearTimeout(timeoutId);
   }, [messages, isTextLoading]);
+
+  // Animated border rotation
+  const rotateDirection = (currentDirection: Direction): Direction => {
+    const directions: Direction[] = ["TOP", "LEFT", "BOTTOM", "RIGHT"];
+    const currentIndex = directions.indexOf(currentDirection);
+    const nextIndex = (currentIndex + 1) % directions.length;
+    return directions[nextIndex];
+  };
+
+  useEffect(() => {
+    if (!hovered) {
+      const interval = setInterval(() => {
+        setDirection((prev) => rotateDirection(prev));
+      }, 2000);
+      return () => clearInterval(interval);
+    }
+  }, [hovered]);
+
+  const movingMap: Record<Direction, string> = {
+    TOP: "radial-gradient(20.7% 50% at 50% 0%, #14B8A6 0%, rgba(20, 184, 166, 0) 100%)",
+    LEFT: "radial-gradient(16.6% 43.1% at 0% 50%, #14B8A6 0%, rgba(20, 184, 166, 0) 100%)",
+    BOTTOM: "radial-gradient(20.7% 50% at 50% 100%, #14B8A6 0%, rgba(20, 184, 166, 0) 100%)",
+    RIGHT: "radial-gradient(16.2% 41.2% at 100% 50%, #14B8A6 0%, rgba(20, 184, 166, 0) 100%)",
+  };
+
+  const highlight = "radial-gradient(75% 181.15% at 50% 50%, #14B8A6 0%, rgba(20, 184, 166, 0) 100%)";
 
   const handleTextSend = useCallback(async (textOverride?: string) => {
     if (isTextLoading) return;
@@ -109,15 +141,28 @@ const AiConsultant: React.FC<AiConsultantProps> = ({ onNavigate }) => {
   };
 
   return (
-    <HoverBorderGradient
-      containerClassName="w-full h-full rounded-2xl"
-      className=""
-      duration={2}
+    <div
+      className="relative w-full h-full rounded-2xl overflow-hidden"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
-      <div className="w-full flex-1 min-h-0 flex flex-col overflow-hidden rounded-2xl font-sans">
+      {/* Animated gradient border */}
+      <motion.div
+        className="absolute inset-0 rounded-2xl"
+        style={{ filter: "blur(2px)" }}
+        initial={{ background: movingMap[direction] }}
+        animate={{
+          background: hovered
+            ? [movingMap[direction], highlight]
+            : movingMap[direction],
+        }}
+        transition={{ ease: "linear", duration: 2 }}
+      />
 
+      {/* Main content container - positioned absolutely to fill parent */}
+      <div className="absolute inset-[2px] rounded-[14px] bg-white dark:bg-[#0f0f11] flex flex-col overflow-hidden font-sans">
         {/* Header */}
-        <div className="px-5 py-4 flex items-center justify-between border-b border-gray-100/50 dark:border-white/5 z-10 transition-colors">
+        <div className="shrink-0 px-5 py-4 flex items-center justify-between border-b border-gray-100/50 dark:border-white/5 transition-colors">
             <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-lime/20 to-brand-lime/5 flex items-center justify-center border border-brand-lime/20">
                      <KhanectBoltIcon size={20} />
@@ -142,7 +187,7 @@ const AiConsultant: React.FC<AiConsultantProps> = ({ onNavigate }) => {
         </div>
 
         {/* Chat Area */}
-        <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-5 space-y-6 relative custom-scrollbar transition-colors">
+        <div ref={chatContainerRef} className="flex-1 min-h-0 overflow-y-auto p-5 space-y-6 custom-scrollbar transition-colors">
             {messages.map((msg, idx) => (
                 <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-scale-up origin-bottom`}>
                     <div className={`max-w-[85%] px-5 py-3.5 text-[14px] leading-relaxed shadow-sm transition-all duration-300 ease-fluid hover:scale-[1.01] ${
@@ -181,7 +226,7 @@ const AiConsultant: React.FC<AiConsultantProps> = ({ onNavigate }) => {
         </div>
 
         {/* Input Area */}
-        <div className="p-4 z-10 transition-colors">
+        <div className="shrink-0 p-4 transition-colors">
             <div className="bg-gray-50 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-full p-1.5 flex items-center gap-2 shadow-sm focus-within:ring-2 focus-within:ring-brand-lime/50 transition-all duration-300 ease-fluid hover:shadow-md">
                 <input
                     type="text"
@@ -214,7 +259,7 @@ const AiConsultant: React.FC<AiConsultantProps> = ({ onNavigate }) => {
             </div>
         </div>
       </div>
-    </HoverBorderGradient>
+    </div>
   );
 };
 
