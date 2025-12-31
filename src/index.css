@@ -244,13 +244,13 @@
 /* Enhanced effect when backdrop-filter is supported */
 @supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
     .glass3d {
-        background: rgba(255, 255, 255, 0.75);
+        background: rgba(255, 255, 255, 0.88);
         -webkit-backdrop-filter: blur(24px) saturate(1.5);
         backdrop-filter: blur(24px) saturate(1.5);
     }
 
     .dark .glass3d {
-        background: rgba(15, 15, 17, 0.75);
+        background: rgba(15, 15, 17, 0.88);
     }
 }
 

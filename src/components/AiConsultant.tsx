@@ -3,6 +3,7 @@ import { ChatMessage, ViewState } from '../types';
 import { sendChatMessage } from '../services/chatbotService';
 import KhanectBoltIcon from './icons/KhanectBoltIcon';
 import { formatMessage } from '../utils/formatMessage';
+import { TextShimmer } from './ui/TextShimmer';
 
 interface AiConsultantProps {
     onNavigate?: (view: ViewState) => void;
@@ -118,7 +119,7 @@ const AiConsultant: React.FC<AiConsultantProps> = ({ onNavigate }) => {
                      <KhanectBoltIcon size={20} />
                 </div>
                 <div>
-                    <h3 className="font-bold text-gray-900 dark:text-white leading-tight">Khanect AI</h3>
+                    <TextShimmer as="h3" className="font-bold leading-tight" duration={3} spread={1.5}>Khanect AI</TextShimmer>
                     <div className="flex items-center gap-1.5 mt-0.5">
                         <span className="w-1.5 h-1.5 bg-brand-lime rounded-full animate-pulse"></span>
                         <span className="text-[10px] text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">Assistant</span>
