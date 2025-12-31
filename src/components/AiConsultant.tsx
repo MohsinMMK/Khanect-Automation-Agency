@@ -4,7 +4,7 @@ import { sendChatMessage } from '../services/chatbotService';
 import KhanectBoltIcon from './icons/KhanectBoltIcon';
 import { formatMessage } from '../utils/formatMessage';
 import { TextShimmer } from './ui/TextShimmer';
-import { BorderTrail } from './ui/BorderTrail';
+import { HoverBorderGradient } from './ui/HoverBorderGradient';
 
 interface AiConsultantProps {
     onNavigate?: (view: ViewState) => void;
@@ -109,11 +109,12 @@ const AiConsultant: React.FC<AiConsultantProps> = ({ onNavigate }) => {
   };
 
   return (
-    <div className="relative w-full h-full glass3d rounded-2xl font-sans border border-white/20 dark:border-white/10 transition-all duration-300">
-      {/* Animated border trail effect */}
-      <BorderTrail duration={8} />
-      {/* Inner wrapper for overflow clipping */}
-      <div className="w-full h-full flex flex-col overflow-hidden rounded-2xl">
+    <HoverBorderGradient
+      containerClassName="w-full h-full rounded-2xl"
+      className="w-full h-full"
+      duration={2}
+    >
+      <div className="w-full h-full flex flex-col overflow-hidden rounded-2xl font-sans">
 
         {/* Header */}
         <div className="px-5 py-4 flex items-center justify-between border-b border-gray-100/50 dark:border-white/5 z-10 transition-colors">
@@ -213,7 +214,7 @@ const AiConsultant: React.FC<AiConsultantProps> = ({ onNavigate }) => {
             </div>
         </div>
       </div>
-    </div>
+    </HoverBorderGradient>
   );
 };
 
