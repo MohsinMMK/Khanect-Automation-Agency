@@ -4,6 +4,7 @@ import LandingPage from './components/LandingPage';
 import Pricing from './components/Pricing';
 import AiConsultant from './components/AiConsultant';
 import ClientPortal from './components/ClientPortal';
+import ErrorBoundary from './components/ErrorBoundary';
 import KhanectBoltIcon from './components/icons/KhanectBoltIcon';
 import { ViewState } from './types';
 
@@ -78,18 +79,20 @@ const App: React.FC = () => {
       />
 
       <main>
-        {/* Always render Landing Page unless we are in Portal or Pricing. This allows DEMO widget to float over Landing Page. */}
-        {(currentView === ViewState.LANDING || currentView === ViewState.DEMO) && (
-          <LandingPage onNavigate={setCurrentView} />
-        )}
+        <ErrorBoundary>
+          {/* Always render Landing Page unless we are in Portal or Pricing. This allows DEMO widget to float over Landing Page. */}
+          {(currentView === ViewState.LANDING || currentView === ViewState.DEMO) && (
+            <LandingPage onNavigate={setCurrentView} />
+          )}
 
-        {currentView === ViewState.PRICING && (
-          <Pricing onNavigate={setCurrentView} />
-        )}
+          {currentView === ViewState.PRICING && (
+            <Pricing onNavigate={setCurrentView} />
+          )}
 
-        {currentView === ViewState.PORTAL && (
-          <ClientPortal />
-        )}
+          {currentView === ViewState.PORTAL && (
+            <ClientPortal />
+          )}
+        </ErrorBoundary>
       </main>
 
       {/* Scroll To Top Button */}

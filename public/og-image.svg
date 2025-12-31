@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <!-- Gradient for background -->
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0F0F11;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1a1a1f;stop-opacity:1" />
+    </linearGradient>
+
+    <!-- Glow effect for logo -->
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Subtle pattern -->
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(20, 184, 166, 0.05)" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGradient)"/>
+
+  <!-- Grid pattern overlay -->
+  <rect width="1200" height="630" fill="url(#grid)"/>
+
+  <!-- Decorative circles -->
+  <circle cx="1100" cy="100" r="200" fill="rgba(20, 184, 166, 0.1)"/>
+  <circle cx="100" cy="530" r="150" fill="rgba(20, 184, 166, 0.08)"/>
+
+  <!-- Logo icon (lightning bolt) -->
+  <g transform="translate(100, 200)">
+    <rect width="80" height="80" rx="16" fill="#14B8A6" filter="url(#glow)"/>
+    <path d="M42.5 10L17.5 45H37.5L32.5 70L57.5 35H37.5L42.5 10Z" fill="#0F0F11"/>
+  </g>
+
+  <!-- Brand name -->
+  <text x="200" y="260" font-family="'Space Grotesk', 'Arial Black', sans-serif" font-size="64" font-weight="700" fill="#ffffff">
+    KHANECT
+    <tspan fill="#14B8A6"> AI</tspan>
+  </text>
+
+  <!-- Tagline -->
+  <text x="100" y="340" font-family="'Plus Jakarta Sans', 'Segoe UI', sans-serif" font-size="32" font-weight="500" fill="#9CA3AF">
+    Business Automation Agency
+  </text>
+
+  <!-- Description -->
+  <text x="100" y="420" font-family="'Plus Jakarta Sans', 'Segoe UI', sans-serif" font-size="24" fill="#6B7280">
+    AI-Powered Workflows • Chatbots • CRM Integration
+  </text>
+
+  <!-- Accent line -->
+  <rect x="100" y="470" width="200" height="4" rx="2" fill="#14B8A6"/>
+
+  <!-- Website URL -->
+  <text x="100" y="540" font-family="'Plus Jakarta Sans', 'Segoe UI', sans-serif" font-size="22" fill="#14B8A6">
+    khanect.com
+  </text>
+
+  <!-- Decorative elements on right side -->
+  <g transform="translate(850, 180)" opacity="0.6">
+    <!-- Connected nodes representing automation -->
+    <circle cx="50" cy="50" r="8" fill="#14B8A6"/>
+    <circle cx="150" cy="30" r="6" fill="#14B8A6"/>
+    <circle cx="200" cy="100" r="10" fill="#14B8A6"/>
+    <circle cx="100" cy="150" r="7" fill="#14B8A6"/>
+    <circle cx="250" cy="180" r="5" fill="#14B8A6"/>
+    <circle cx="180" cy="220" r="8" fill="#14B8A6"/>
+
+    <!-- Connection lines -->
+    <line x1="50" y1="50" x2="150" y2="30" stroke="#14B8A6" stroke-width="2" opacity="0.5"/>
+    <line x1="150" y1="30" x2="200" y2="100" stroke="#14B8A6" stroke-width="2" opacity="0.5"/>
+    <line x1="50" y1="50" x2="100" y2="150" stroke="#14B8A6" stroke-width="2" opacity="0.5"/>
+    <line x1="200" y1="100" x2="250" y2="180" stroke="#14B8A6" stroke-width="2" opacity="0.5"/>
+    <line x1="100" y1="150" x2="180" y2="220" stroke="#14B8A6" stroke-width="2" opacity="0.5"/>
+    <line x1="200" y1="100" x2="180" y2="220" stroke="#14B8A6" stroke-width="2" opacity="0.5"/>
+  </g>
+</svg>

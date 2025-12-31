@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ViewState } from '../types';
-import { validateEmail, validatePhone, validateUrl, validateName } from '../utils/validation';
+import { validateEmail, validatePhone, validateUrl, validateName, validateBusinessName, validateMessage, MAX_LENGTHS } from '../utils/validation';
 import { supabase } from '../lib/supabase';
 import { processLead } from '../services/n8nService';
 import TabSwitch from './TabSwitch';
@@ -36,6 +36,10 @@ interface FormErrors {
   message?: string;
 }
 
+// Rate limiting: 60 seconds between submissions
+const RATE_LIMIT_SECONDS = 60;
+const RATE_LIMIT_KEY = 'khanect_last_submission';
+
 const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
   const [formData, setFormData] = useState<FormData>({
     fullName: '',
@@ -53,6 +57,23 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
   const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
   const [activeTab, setActiveTab] = useState<'services' | 'industries'>('services');
   const [openFAQ, setOpenFAQ] = useState<string | null>(null);
+  const [rateLimitCooldown, setRateLimitCooldown] = useState(0);
+
+  // Check and update rate limit cooldown
+  useEffect(() => {
+    const checkCooldown = () => {
+      const lastSubmission = sessionStorage.getItem(RATE_LIMIT_KEY);
+      if (lastSubmission) {
+        const elapsed = Math.floor((Date.now() - parseInt(lastSubmission, 10)) / 1000);
+        const remaining = Math.max(0, RATE_LIMIT_SECONDS - elapsed);
+        setRateLimitCooldown(remaining);
+      }
+    };
+
+    checkCooldown();
+    const interval = setInterval(checkCooldown, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -71,7 +92,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
         const phoneResult = validatePhone(value);
         return phoneResult.isValid ? undefined : phoneResult.error;
       case 'businessName':
-        const businessResult = validateName(value, 'Business name');
+        const businessResult = validateBusinessName(value);
         return businessResult.isValid ? undefined : businessResult.error;
       case 'website':
         // Website is optional - only validate if not empty
@@ -79,8 +100,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
         const urlResult = validateUrl(value);
         return urlResult.isValid ? undefined : urlResult.error;
       case 'message':
-        // Message is optional, no validation needed
-        return undefined;
+        // Message is optional - validate max length
+        const messageResult = validateMessage(value);
+        return messageResult.isValid ? undefined : messageResult.error;
       default:
         return undefined;
     }
@@ -115,6 +137,14 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Check rate limiting
+    if (rateLimitCooldown > 0) {
+      setSubmitStatus('error');
+      setErrorMessage(`Please wait ${rateLimitCooldown} seconds before submitting again.`);
+      return;
+    }
+
     const errors: FormErrors = {
       fullName: validateField('fullName', formData.fullName),
       email: validateField('email', formData.email),
@@ -202,6 +232,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
       setFormData({ fullName: '', email: '', phone: '', businessName: '', website: '', message: '' });
       setFormErrors({});
       setTouchedFields(new Set());
+      // Store submission timestamp for rate limiting
+      sessionStorage.setItem(RATE_LIMIT_KEY, Date.now().toString());
+      setRateLimitCooldown(RATE_LIMIT_SECONDS);
     } catch (error) {
       console.error('Form submission error:', error);
       setSubmitStatus('error');
@@ -450,6 +483,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                       className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-lime/50 focus:border-brand-lime transition-all text-sm"
                       placeholder="Full name"
                       required
+                      maxLength={MAX_LENGTHS.name}
                       disabled={isSubmitting}
                     />
                     {touchedFields.has('fullName') && formErrors.fullName && (
@@ -467,6 +501,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                       className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-lime/50 focus:border-brand-lime transition-all text-sm"
                       placeholder="Business name"
                       required
+                      maxLength={MAX_LENGTHS.businessName}
                       disabled={isSubmitting}
                     />
                     {touchedFields.has('businessName') && formErrors.businessName && (
@@ -486,6 +521,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                     className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-lime/50 focus:border-brand-lime transition-all text-sm"
                     placeholder="you@company.com"
                     required
+                    maxLength={MAX_LENGTHS.email}
                     disabled={isSubmitting}
                   />
                   {touchedFields.has('email') && formErrors.email && (
@@ -510,6 +546,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                       className="flex-1 px-4 py-2.5 rounded-r-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-lime/50 focus:border-brand-lime transition-all text-sm"
                       placeholder="(555) 000-0000"
                       required
+                      maxLength={MAX_LENGTHS.phone}
                       disabled={isSubmitting}
                     />
                   </div>
@@ -530,6 +567,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                     onBlur={handleFieldBlur}
                     className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-lime/50 focus:border-brand-lime transition-all text-sm"
                     placeholder="yourwebsite.com"
+                    maxLength={MAX_LENGTHS.website}
                     disabled={isSubmitting}
                   />
                   {touchedFields.has('website') && formErrors.website && (
@@ -542,12 +580,27 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                   <textarea
                     id="message"
                     value={formData.message}
-                    onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
+                    onChange={(e) => {
+                      setFormData(prev => ({ ...prev, message: e.target.value }));
+                      if (touchedFields.has('message')) {
+                        const error = validateField('message', e.target.value);
+                        setFormErrors(prev => ({ ...prev, message: error }));
+                      }
+                    }}
+                    onBlur={() => {
+                      setTouchedFields(prev => new Set(prev).add('message'));
+                      const error = validateField('message', formData.message);
+                      setFormErrors(prev => ({ ...prev, message: error }));
+                    }}
                     className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-lime/50 focus:border-brand-lime transition-all text-sm resize-none"
                     placeholder="Leave us a message..."
                     rows={4}
+                    maxLength={MAX_LENGTHS.message}
                     disabled={isSubmitting}
                   />
+                  {touchedFields.has('message') && formErrors.message && (
+                    <p className="text-xs text-red-500">{formErrors.message}</p>
+                  )}
                 </div>
 
                 <div className="flex items-start gap-2 pt-2">
@@ -563,7 +616,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
 
                 <button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || rateLimitCooldown > 0}
                   className="w-full py-3 px-6 rounded-lg bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-semibold text-sm hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? (
@@ -574,6 +627,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                       </svg>
                       Sending...
                     </span>
+                  ) : rateLimitCooldown > 0 ? (
+                    `Please wait ${rateLimitCooldown}s`
                   ) : (
                     'Send message'
                   )}

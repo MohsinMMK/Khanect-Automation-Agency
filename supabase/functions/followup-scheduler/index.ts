@@ -130,9 +130,38 @@ async function sendEmail(
   }
 }
 
-// Convert plain text to simple HTML
+/**
+ * Escape HTML entities to prevent XSS in emails
+ */
+function escapeHtml(text: string): string {
+  const htmlEntities: Record<string, string> = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+  };
+  return text.replace(/[&<>"']/g, (char) => htmlEntities[char] || char);
+}
+
+/**
+ * Sanitize URL for safe use in href attributes
+ * Only allow http/https protocols
+ */
+function sanitizeUrl(url: string): string {
+  const trimmed = url.trim();
+  // Only allow http and https protocols
+  if (!trimmed.startsWith('http://') && !trimmed.startsWith('https://')) {
+    return '#';
+  }
+  return escapeHtml(trimmed);
+}
+
+// Convert plain text to simple HTML with XSS protection
 function textToHtml(text: string, ctaText?: string, ctaUrl?: string): string {
-  const paragraphs = text.split('\n\n').map((p) => `<p>${p.replace(/\n/g, '<br>')}</p>`);
+  // Escape HTML in text content, then convert newlines
+  const escapedText = escapeHtml(text);
+  const paragraphs = escapedText.split('\n\n').map((p) => `<p>${p.replace(/\n/g, '<br>')}</p>`);
 
   let html = `
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
@@ -140,10 +169,12 @@ function textToHtml(text: string, ctaText?: string, ctaUrl?: string): string {
   `;
 
   if (ctaText && ctaUrl) {
+    const safeCtaText = escapeHtml(ctaText);
+    const safeCtaUrl = sanitizeUrl(ctaUrl);
     html += `
       <p style="margin-top: 24px;">
-        <a href="${ctaUrl}" style="display: inline-block; background-color: #D3F36B; color: #000; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">
-          ${ctaText}
+        <a href="${safeCtaUrl}" style="display: inline-block; background-color: #D3F36B; color: #000; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">
+          ${safeCtaText}
         </a>
       </p>
     `;

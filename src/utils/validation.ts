@@ -1,11 +1,48 @@
 /**
  * Validation utilities for form inputs
+ * Includes input sanitization and max length validation for security
  */
 
 export interface ValidationResult {
   isValid: boolean;
   error?: string;
 }
+
+// Max length constants for security (prevent DoS)
+export const MAX_LENGTHS = {
+  name: 100,
+  email: 254, // RFC 5321 limit
+  phone: 20,
+  businessName: 200,
+  website: 253, // Domain name limit
+  message: 2000,
+} as const;
+
+/**
+ * Sanitize input to prevent XSS - strips HTML tags and trims
+ */
+export const sanitizeInput = (input: string): string => {
+  if (!input) return '';
+  // Remove HTML tags and trim whitespace
+  return input.replace(/<[^>]*>/g, '').trim();
+};
+
+/**
+ * Validate max length
+ */
+export const validateMaxLength = (
+  value: string,
+  maxLength: number,
+  fieldName: string
+): ValidationResult => {
+  if (value && value.length > maxLength) {
+    return {
+      isValid: false,
+      error: `${fieldName} must be ${maxLength} characters or less`,
+    };
+  }
+  return { isValid: true };
+};
 
 /**
  * Email validation using RFC 5322 simplified regex
@@ -14,6 +51,10 @@ export const validateEmail = (email: string): ValidationResult => {
   if (!email || email.trim() === '') {
     return { isValid: false, error: 'Email is required' };
   }
+
+  // Check max length first
+  const lengthCheck = validateMaxLength(email, MAX_LENGTHS.email, 'Email');
+  if (!lengthCheck.isValid) return lengthCheck;
 
   // RFC 5322 simplified regex - covers 99% of valid emails
   const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
@@ -33,6 +74,10 @@ export const validatePhone = (phone: string): ValidationResult => {
   if (!phone || phone.trim() === '') {
     return { isValid: false, error: 'Phone number is required' };
   }
+
+  // Check max length first
+  const lengthCheck = validateMaxLength(phone, MAX_LENGTHS.phone, 'Phone number');
+  if (!lengthCheck.isValid) return lengthCheck;
 
   // Remove all non-digit characters for validation
   const digitsOnly = phone.replace(/\D/g, '');
@@ -66,6 +111,10 @@ export const validateUrl = (url: string): ValidationResult => {
     return { isValid: true };
   }
 
+  // Check max length first
+  const lengthCheck = validateMaxLength(url, MAX_LENGTHS.website, 'Website');
+  if (!lengthCheck.isValid) return lengthCheck;
+
   const trimmed = url.trim().toLowerCase();
 
   // Domain pattern: allows optional protocol, optional www, domain.tld format
@@ -90,11 +139,15 @@ export const validateRequired = (value: string, fieldName: string): ValidationRe
 };
 
 /**
- * Name validation - ensures minimum quality
+ * Name validation - ensures minimum quality and max length
  */
 export const validateName = (name: string, fieldName: string): ValidationResult => {
   const requiredCheck = validateRequired(name, fieldName);
   if (!requiredCheck.isValid) return requiredCheck;
+
+  // Check max length
+  const lengthCheck = validateMaxLength(name, MAX_LENGTHS.name, fieldName);
+  if (!lengthCheck.isValid) return lengthCheck;
 
   // Must be at least 2 characters
   if (name.trim().length < 2) {
@@ -105,6 +158,41 @@ export const validateName = (name: string, fieldName: string): ValidationResult 
   if (!/[a-zA-Z]/.test(name)) {
     return { isValid: false, error: `${fieldName} must contain letters` };
   }
+
+  return { isValid: true };
+};
+
+/**
+ * Business name validation - required with max length
+ */
+export const validateBusinessName = (name: string): ValidationResult => {
+  const requiredCheck = validateRequired(name, 'Business name');
+  if (!requiredCheck.isValid) return requiredCheck;
+
+  // Check max length
+  const lengthCheck = validateMaxLength(name, MAX_LENGTHS.businessName, 'Business name');
+  if (!lengthCheck.isValid) return lengthCheck;
+
+  // Must be at least 2 characters
+  if (name.trim().length < 2) {
+    return { isValid: false, error: 'Business name must be at least 2 characters' };
+  }
+
+  return { isValid: true };
+};
+
+/**
+ * Message validation - optional with max length
+ */
+export const validateMessage = (message: string): ValidationResult => {
+  // Empty is valid since field is optional
+  if (!message || message.trim() === '') {
+    return { isValid: true };
+  }
+
+  // Check max length
+  const lengthCheck = validateMaxLength(message, MAX_LENGTHS.message, 'Message');
+  if (!lengthCheck.isValid) return lengthCheck;
 
   return { isValid: true };
 };
