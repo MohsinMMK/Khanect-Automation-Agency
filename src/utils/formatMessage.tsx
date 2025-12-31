@@ -79,6 +79,17 @@ export const formatMessage = (text: string): React.ReactNode => {
       return;
     }
 
+    // Handle headers (###)
+    if (line.trim().startsWith('### ')) {
+      const headerText = line.trim().substring(4);
+      elements.push(
+        <h4 key={`header-${index}`} className="font-bold text-sm mt-3 mb-1 text-brand-lime">
+          {formatInlineContent(headerText)}
+        </h4>
+      );
+      return;
+    }
+
     // Handle headers (##)
     if (line.trim().startsWith('## ')) {
       const headerText = line.trim().substring(3);
