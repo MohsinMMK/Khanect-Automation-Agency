@@ -59,26 +59,16 @@ export function HoverBorderGradient({
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       className={cn(
-        "relative flex content-center transition duration-500 items-center flex-col flex-nowrap gap-10 h-min justify-center overflow-visible p-px decoration-clone w-full",
+        "relative p-[2px] overflow-hidden transition duration-500",
         containerClassName
       )}
       {...props}
     >
-      <div
-        className={cn(
-          "w-full h-full z-10 rounded-[inherit]",
-          className
-        )}
-      >
-        {children}
-      </div>
+      {/* Animated gradient border */}
       <motion.div
-        className="flex-none inset-0 overflow-hidden absolute z-0 rounded-[inherit]"
+        className="absolute inset-0 rounded-[inherit]"
         style={{
-          filter: "blur(3px)",
-          position: "absolute",
-          width: "100%",
-          height: "100%",
+          filter: "blur(2px)",
         }}
         initial={{ background: movingMap[direction] }}
         animate={{
@@ -88,8 +78,15 @@ export function HoverBorderGradient({
         }}
         transition={{ ease: "linear", duration: duration ?? 1 }}
       />
-      {/* Inner background - matches glass3d */}
-      <div className="absolute z-[1] flex-none inset-[2px] rounded-[inherit] bg-white/95 dark:bg-[#0f0f11]/95 backdrop-blur-xl" />
+      {/* Inner content with background */}
+      <div
+        className={cn(
+          "relative z-10 w-full h-full rounded-[inherit] bg-white dark:bg-[#0f0f11]",
+          className
+        )}
+      >
+        {children}
+      </div>
     </Tag>
   );
 }
