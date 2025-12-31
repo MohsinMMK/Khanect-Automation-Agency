@@ -107,7 +107,9 @@ const AiConsultant: React.FC<AiConsultantProps> = ({ onNavigate }) => {
   };
 
   return (
-    <div className="w-full h-full glass3d rounded-2xl flex flex-col overflow-hidden font-sans border border-white/20 dark:border-white/10 transition-all duration-300">
+    <div className="w-full h-full glass3d rounded-2xl font-sans border border-white/20 dark:border-white/10 transition-all duration-300">
+      {/* Inner wrapper for overflow clipping */}
+      <div className="w-full h-full flex flex-col overflow-hidden rounded-2xl">
 
         {/* Header */}
         <div className="px-5 py-4 flex items-center justify-between border-b border-gray-100/50 dark:border-white/5 z-10 transition-colors">
@@ -208,6 +210,7 @@ const AiConsultant: React.FC<AiConsultantProps> = ({ onNavigate }) => {
                  <p className="text-[10px] text-gray-400 dark:text-gray-600">Powered by Khanect AI</p>
             </div>
         </div>
+      </div>
     </div>
   );
 };
