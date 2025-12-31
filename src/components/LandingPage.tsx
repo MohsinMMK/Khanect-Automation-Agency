@@ -137,24 +137,24 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
     setFormErrors({});
 
     try {
-      let supabaseId = `backup-id-${Date.now()}`;
+      // Generate a client-side UUID for tracking
+      const submissionId = crypto.randomUUID();
       let supabaseSuccess = false;
 
       if (supabase) {
         try {
           const fullPhoneNumber = `${countryCode} ${formData.phone}`;
-          const { data: supabaseData, error: supabaseError } = await supabase
+          const { error: supabaseError } = await supabase
             .from('contact_submissions')
             .insert([{
+              id: submissionId,
               full_name: formData.fullName,
               email: formData.email,
               phone: fullPhoneNumber,
               business_name: formData.businessName,
               website: formData.website || null,
               message: formData.message || null,
-            }])
-            .select()
-            .single();
+            }]);
 
           if (supabaseError) {
             console.error('Supabase error:', supabaseError);
@@ -162,10 +162,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
               throw new Error('Database configuration error. Please contact support.');
             }
             throw new Error('Failed to save your submission. Please try again.');
-          } else if (supabaseData) {
-            supabaseId = supabaseData.id;
-            supabaseSuccess = true;
           }
+          supabaseSuccess = true;
         } catch (dbErr) {
           console.error('Database error:', dbErr);
           throw dbErr;
@@ -180,7 +178,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
       // Process lead via N8N webhook (non-blocking)
       if (supabaseSuccess) {
         processLead({
-          submissionId: supabaseId,
+          submissionId,
           fullName: formData.fullName,
           email: formData.email,
           phone: `${countryCode} ${formData.phone}`,
