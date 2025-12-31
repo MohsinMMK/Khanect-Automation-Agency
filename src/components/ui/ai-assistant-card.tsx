@@ -18,6 +18,7 @@ import { sendChatMessage } from "@/services/chatbotService";
 import { formatMessage } from "@/utils/formatMessage";
 import { TextShimmer } from "@/components/ui/TextShimmer";
 import KhanectBoltIcon from "@/components/icons/KhanectBoltIcon";
+import { AnimatedMessage } from "./AnimatedMessage";
 
 interface AiAssistantCardProps {
   onClose?: () => void;
@@ -221,7 +222,11 @@ export function AiAssistantCard({ onClose }: AiAssistantCardProps) {
                       : ""
                   }`}
                 >
-                  {msg.role === "user" ? msg.text : formatMessage(msg.text)}
+                  {msg.role === "user" ? (
+                    msg.text
+                  ) : (
+                    <AnimatedMessage text={msg.text} />
+                  )}
                 </div>
               </div>
             ))}
