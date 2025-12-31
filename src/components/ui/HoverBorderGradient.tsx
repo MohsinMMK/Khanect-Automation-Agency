@@ -59,7 +59,7 @@ export function HoverBorderGradient({
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       className={cn(
-        "relative p-[2px] overflow-hidden transition duration-500",
+        "relative flex flex-col p-[2px] overflow-hidden transition duration-500",
         containerClassName
       )}
       {...props}
@@ -81,7 +81,7 @@ export function HoverBorderGradient({
       {/* Inner content with background */}
       <div
         className={cn(
-          "relative z-10 w-full h-full rounded-[inherit] bg-white dark:bg-[#0f0f11]",
+          "relative z-10 flex-1 w-full rounded-[inherit] bg-white dark:bg-[#0f0f11]",
           className
         )}
       >
