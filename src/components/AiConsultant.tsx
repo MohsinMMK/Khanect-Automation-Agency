@@ -111,7 +111,7 @@ const AiConsultant: React.FC<AiConsultantProps> = ({ onNavigate }) => {
   return (
     <HoverBorderGradient
       containerClassName="w-full h-full rounded-2xl"
-      className="w-full h-full"
+      className=""
       duration={2}
     >
       <div className="w-full flex-1 min-h-0 flex flex-col overflow-hidden rounded-2xl font-sans">
