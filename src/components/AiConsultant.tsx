@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { motion } from 'framer-motion';
 import { ChatMessage, ViewState } from '../types';
 import { sendChatMessage } from '../services/chatbotService';
 import KhanectBoltIcon from './icons/KhanectBoltIcon';
@@ -18,8 +17,6 @@ const SUGGESTIONS = [
   "Tell me about AI automation"
 ];
 
-type Direction = "TOP" | "LEFT" | "BOTTOM" | "RIGHT";
-
 const AiConsultant: React.FC<AiConsultantProps> = ({ onNavigate }) => {
   // Text Chat State
   const [input, setInput] = useState('');
@@ -28,10 +25,6 @@ const AiConsultant: React.FC<AiConsultantProps> = ({ onNavigate }) => {
     { role: 'model', text: "Hello! I'm your Khanect AI Assistant. How can I help you optimize your business today?" }
   ]);
   const [isTextLoading, setIsTextLoading] = useState(false);
-
-  // Animated border state
-  const [hovered, setHovered] = useState(false);
-  const [direction, setDirection] = useState<Direction>("TOP");
 
   // Use a ref for the scrollable container
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -51,32 +44,6 @@ const AiConsultant: React.FC<AiConsultantProps> = ({ onNavigate }) => {
     }, 100);
     return () => clearTimeout(timeoutId);
   }, [messages, isTextLoading]);
-
-  // Animated border rotation
-  const rotateDirection = (currentDirection: Direction): Direction => {
-    const directions: Direction[] = ["TOP", "LEFT", "BOTTOM", "RIGHT"];
-    const currentIndex = directions.indexOf(currentDirection);
-    const nextIndex = (currentIndex + 1) % directions.length;
-    return directions[nextIndex];
-  };
-
-  useEffect(() => {
-    if (!hovered) {
-      const interval = setInterval(() => {
-        setDirection((prev) => rotateDirection(prev));
-      }, 2000);
-      return () => clearInterval(interval);
-    }
-  }, [hovered]);
-
-  const movingMap: Record<Direction, string> = {
-    TOP: "radial-gradient(20.7% 50% at 50% 0%, #14B8A6 0%, rgba(20, 184, 166, 0) 100%)",
-    LEFT: "radial-gradient(16.6% 43.1% at 0% 50%, #14B8A6 0%, rgba(20, 184, 166, 0) 100%)",
-    BOTTOM: "radial-gradient(20.7% 50% at 50% 100%, #14B8A6 0%, rgba(20, 184, 166, 0) 100%)",
-    RIGHT: "radial-gradient(16.2% 41.2% at 100% 50%, #14B8A6 0%, rgba(20, 184, 166, 0) 100%)",
-  };
-
-  const highlight = "radial-gradient(75% 181.15% at 50% 50%, #14B8A6 0%, rgba(20, 184, 166, 0) 100%)";
 
   const handleTextSend = useCallback(async (textOverride?: string) => {
     if (isTextLoading) return;
@@ -141,123 +108,101 @@ const AiConsultant: React.FC<AiConsultantProps> = ({ onNavigate }) => {
   };
 
   return (
-    <div
-      className="relative w-full h-full rounded-2xl overflow-hidden"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-    >
-      {/* Animated gradient border */}
-      <motion.div
-        className="absolute inset-0 rounded-2xl"
-        style={{ filter: "blur(2px)" }}
-        initial={{ background: movingMap[direction] }}
-        animate={{
-          background: hovered
-            ? [movingMap[direction], highlight]
-            : movingMap[direction],
-        }}
-        transition={{ ease: "linear", duration: 2 }}
-      />
+    <div className="w-full h-full rounded-2xl bg-white dark:bg-[#0f0f11] flex flex-col overflow-hidden font-sans border border-gray-200/50 dark:border-white/10 shadow-lg">
+      {/* Header */}
+      <div className="shrink-0 px-5 py-4 flex items-center justify-between border-b border-gray-100/50 dark:border-white/5 transition-colors">
+          <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-lime/20 to-brand-lime/5 flex items-center justify-center border border-brand-lime/20">
+                   <KhanectBoltIcon size={20} />
+              </div>
+              <div>
+                  <TextShimmer as="h3" className="font-bold leading-tight" duration={3} spread={1.5}>Khanect AI</TextShimmer>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                      <span className="w-1.5 h-1.5 bg-brand-lime rounded-full animate-pulse"></span>
+                      <span className="text-[10px] text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">Assistant</span>
+                  </div>
+              </div>
+          </div>
+          {onNavigate && (
+              <button
+                  onClick={() => onNavigate(ViewState.LANDING)}
+                  className="w-8 h-8 rounded-full text-gray-400 hover:text-black dark:text-gray-500 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 flex items-center justify-center transition-all duration-300 ease-fluid hover:rotate-90"
+                  aria-label="Close Chat"
+              >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              </button>
+          )}
+      </div>
 
-      {/* Main content container - positioned absolutely to fill parent */}
-      <div className="absolute inset-[2px] rounded-[14px] bg-white dark:bg-[#0f0f11] flex flex-col overflow-hidden font-sans">
-        {/* Header */}
-        <div className="shrink-0 px-5 py-4 flex items-center justify-between border-b border-gray-100/50 dark:border-white/5 transition-colors">
-            <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-lime/20 to-brand-lime/5 flex items-center justify-center border border-brand-lime/20">
-                     <KhanectBoltIcon size={20} />
-                </div>
-                <div>
-                    <TextShimmer as="h3" className="font-bold leading-tight" duration={3} spread={1.5}>Khanect AI</TextShimmer>
-                    <div className="flex items-center gap-1.5 mt-0.5">
-                        <span className="w-1.5 h-1.5 bg-brand-lime rounded-full animate-pulse"></span>
-                        <span className="text-[10px] text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">Assistant</span>
-                    </div>
-                </div>
-            </div>
-            {onNavigate && (
-                <button
-                    onClick={() => onNavigate(ViewState.LANDING)}
-                    className="w-8 h-8 rounded-full text-gray-400 hover:text-black dark:text-gray-500 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 flex items-center justify-center transition-all duration-300 ease-fluid hover:rotate-90"
-                    aria-label="Close Chat"
-                >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                </button>
-            )}
-        </div>
+      {/* Chat Area */}
+      <div ref={chatContainerRef} className="flex-1 min-h-0 overflow-y-auto p-5 space-y-6 custom-scrollbar transition-colors">
+          {messages.map((msg, idx) => (
+              <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-scale-up origin-bottom`}>
+                  <div className={`max-w-[85%] px-5 py-3.5 text-[14px] leading-relaxed shadow-sm transition-all duration-300 ease-fluid hover:scale-[1.01] ${
+                      msg.role === 'user'
+                      ? 'bg-brand-lime text-black rounded-[20px] rounded-tr-sm font-medium'
+                      : 'bg-white dark:bg-white/5 text-gray-800 dark:text-gray-200 rounded-[20px] rounded-tl-sm border border-gray-100 dark:border-white/5 backdrop-blur-sm'
+                  } ${msg.isError ? 'bg-red-50 text-red-600 border border-red-100 dark:bg-red-900/10 dark:text-red-300 dark:border-red-900/20' : ''}`}>
+                      {msg.role === 'user' ? msg.text : formatMessage(msg.text)}
+                  </div>
+              </div>
+          ))}
 
-        {/* Chat Area */}
-        <div ref={chatContainerRef} className="flex-1 min-h-0 overflow-y-auto p-5 space-y-6 custom-scrollbar transition-colors">
-            {messages.map((msg, idx) => (
-                <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-scale-up origin-bottom`}>
-                    <div className={`max-w-[85%] px-5 py-3.5 text-[14px] leading-relaxed shadow-sm transition-all duration-300 ease-fluid hover:scale-[1.01] ${
-                        msg.role === 'user'
-                        ? 'bg-brand-lime text-black rounded-[20px] rounded-tr-sm font-medium'
-                        : 'bg-white dark:bg-white/5 text-gray-800 dark:text-gray-200 rounded-[20px] rounded-tl-sm border border-gray-100 dark:border-white/5 backdrop-blur-sm'
-                    } ${msg.isError ? 'bg-red-50 text-red-600 border border-red-100 dark:bg-red-900/10 dark:text-red-300 dark:border-red-900/20' : ''}`}>
-                        {msg.role === 'user' ? msg.text : formatMessage(msg.text)}
-                    </div>
-                </div>
-            ))}
+          {isTextLoading && (
+              <div className="flex justify-start animate-fade-in-up">
+                  <div className="bg-white dark:bg-white/5 rounded-[20px] rounded-tl-sm px-5 py-3.5 shadow-sm border border-gray-100 dark:border-white/5 transition-colors">
+                      <TextShimmer as="span" className="text-[14px] font-medium" duration={1.5} spread={2}>
+                          Generating...
+                      </TextShimmer>
+                  </div>
+              </div>
+          )}
 
-            {isTextLoading && (
-                <div className="flex justify-start animate-fade-in-up">
-                    <div className="bg-white dark:bg-white/5 rounded-[20px] rounded-tl-sm px-5 py-3.5 shadow-sm border border-gray-100 dark:border-white/5 transition-colors">
-                        <TextShimmer as="span" className="text-[14px] font-medium" duration={1.5} spread={2}>
-                            Generating...
-                        </TextShimmer>
-                    </div>
-                </div>
-            )}
+          {messages.length === 1 && !isTextLoading && (
+              <div className="flex flex-wrap gap-2 mt-2 px-1 animate-fade-in-up delay-200">
+                  {SUGGESTIONS.map((suggestion, i) => (
+                      <button
+                          key={i}
+                          onClick={() => handleTextSend(suggestion)}
+                          className="text-xs font-medium bg-white/50 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-300 px-4 py-2 rounded-full hover:border-brand-lime dark:hover:border-brand-lime hover:text-black dark:hover:text-brand-lime hover:bg-brand-lime/10 transition-all duration-300 ease-fluid hover:scale-105"
+                      >
+                          {suggestion}
+                      </button>
+                  ))}
+              </div>
+          )}
+      </div>
 
-            {messages.length === 1 && !isTextLoading && (
-                <div className="flex flex-wrap gap-2 mt-2 px-1 animate-fade-in-up delay-200">
-                    {SUGGESTIONS.map((suggestion, i) => (
-                        <button
-                            key={i}
-                            onClick={() => handleTextSend(suggestion)}
-                            className="text-xs font-medium bg-white/50 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-300 px-4 py-2 rounded-full hover:border-brand-lime dark:hover:border-brand-lime hover:text-black dark:hover:text-brand-lime hover:bg-brand-lime/10 transition-all duration-300 ease-fluid hover:scale-105"
-                        >
-                            {suggestion}
-                        </button>
-                    ))}
-                </div>
-            )}
-        </div>
+      {/* Input Area */}
+      <div className="shrink-0 px-4 pt-3 pb-2 transition-colors">
+          <div className="bg-gray-50 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-full p-1.5 flex items-center gap-2 shadow-sm focus-within:ring-2 focus-within:ring-brand-lime/50 transition-all duration-300 ease-fluid hover:shadow-md">
+              <input
+                  type="text"
+                  value={input}
+                  onChange={handleInputChange}
+                  onKeyDown={handleKeyDown}
+                  placeholder="Type your message..."
+                  className="flex-1 bg-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none text-sm px-4"
+                  disabled={isTextLoading}
+              />
 
-        {/* Input Area */}
-        <div className="shrink-0 p-4 transition-colors">
-            <div className="bg-gray-50 dark:bg-black/40 border border-gray-200 dark:border-white/10 rounded-full p-1.5 flex items-center gap-2 shadow-sm focus-within:ring-2 focus-within:ring-brand-lime/50 transition-all duration-300 ease-fluid hover:shadow-md">
-                <input
-                    type="text"
-                    value={input}
-                    onChange={handleInputChange}
-                    onKeyDown={handleKeyDown}
-                    placeholder="Type your message..."
-                    className="flex-1 bg-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none text-sm px-4"
-                    disabled={isTextLoading}
-                />
-
-                <button
-                    onClick={() => handleTextSend()}
-                    disabled={!input.trim() || isTextLoading}
-                    className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 ease-fluid ${
-                        input.trim() && !isTextLoading
-                            ? 'bg-brand-lime text-black hover:scale-110 hover:bg-brand-limeHover shadow-lg shadow-brand-lime/20'
-                            : 'bg-gray-200 dark:bg-white/10 text-gray-400 dark:text-gray-600 cursor-not-allowed'
-                    }`}
-                    title="Send"
-                >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-                </button>
-            </div>
-            {inputError && (
-                <p className="text-xs text-red-500 mt-2 px-4">{inputError}</p>
-            )}
-            <div className="text-center mt-2">
-                 <p className="text-[10px] text-gray-400 dark:text-gray-600">Powered by Khanect AI</p>
-            </div>
-        </div>
+              <button
+                  onClick={() => handleTextSend()}
+                  disabled={!input.trim() || isTextLoading}
+                  className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 ease-fluid ${
+                      input.trim() && !isTextLoading
+                          ? 'bg-brand-lime text-black hover:scale-110 hover:bg-brand-limeHover shadow-lg shadow-brand-lime/20'
+                          : 'bg-gray-200 dark:bg-white/10 text-gray-400 dark:text-gray-600 cursor-not-allowed'
+                  }`}
+                  title="Send"
+              >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+              </button>
+          </div>
+          {inputError && (
+              <p className="text-xs text-red-500 mt-2 px-4">{inputError}</p>
+          )}
+          <p className="text-[10px] text-gray-400 dark:text-gray-600 text-center mt-1.5">Powered by Khanect AI</p>
       </div>
     </div>
   );
