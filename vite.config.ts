@@ -33,17 +33,16 @@ export default defineConfig({
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom'],
-          router: ['react-router-dom'],
           charts: ['recharts'],
           supabase: ['@supabase/supabase-js'],
-          ui: ['lenis'],
+          ui: ['lenis', 'gsap'],
         },
       },
     },
   },
 
   optimizeDeps: {
-    include: ['react', 'react-dom', 'react-router-dom', '@supabase/supabase-js'],
+    include: ['react', 'react-dom', '@supabase/supabase-js', 'recharts'],
   },
 
   esbuild: {
