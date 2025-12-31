@@ -112,13 +112,8 @@ const AiConsultant: React.FC<AiConsultantProps> = ({ onNavigate }) => {
     <div className="relative w-full h-full glass3d rounded-2xl font-sans border border-white/20 dark:border-white/10 transition-all duration-300">
       {/* Animated border trail effect */}
       <BorderTrail
-        className="bg-gradient-to-l from-brand-lime via-brand-lime/50 to-transparent"
-        size={80}
-        transition={{
-          repeat: Infinity,
-          duration: 8,
-          ease: 'linear',
-        }}
+        duration={8}
+        style={{ '--trail-color': '#a3e635' } as React.CSSProperties}
       />
       {/* Inner wrapper for overflow clipping */}
       <div className="w-full h-full flex flex-col overflow-hidden rounded-2xl">

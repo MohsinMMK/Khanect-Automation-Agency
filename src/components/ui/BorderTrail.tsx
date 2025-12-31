@@ -1,46 +1,47 @@
 import { cn } from '@/lib/utils';
-import { motion, Transition } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 type BorderTrailProps = {
   className?: string;
-  size?: number;
-  transition?: Transition;
-  delay?: number;
-  onAnimationComplete?: () => void;
+  duration?: number;
+  borderWidth?: number;
   style?: React.CSSProperties;
 };
 
 export function BorderTrail({
   className,
-  size = 60,
-  transition,
-  delay,
-  onAnimationComplete,
+  duration = 5,
+  borderWidth = 2,
   style,
 }: BorderTrailProps) {
-  const BASE_TRANSITION = {
-    repeat: Infinity,
-    duration: 5,
-    ease: 'linear',
-  };
-
   return (
-    <div className='pointer-events-none absolute inset-0 rounded-[inherit] border border-transparent [mask-clip:padding-box,border-box] [mask-composite:intersect] [mask-image:linear-gradient(transparent,transparent),linear-gradient(#000,#000)]'>
+    <div
+      className="pointer-events-none absolute inset-0 rounded-[inherit]"
+      style={{
+        padding: borderWidth,
+        WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+        WebkitMaskComposite: 'xor',
+        mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+        maskComposite: 'exclude',
+      }}
+    >
       <motion.div
-        className={cn('absolute aspect-square bg-zinc-500', className)}
+        className={cn(
+          'absolute inset-[-200%] rounded-[inherit]',
+          className
+        )}
         style={{
-          width: size,
-          offsetPath: `inset(0 round 16px)`,
+          background: 'conic-gradient(from 0deg, transparent 0deg, var(--trail-color, #a3e635) 45deg, transparent 90deg)',
           ...style,
         }}
         animate={{
-          offsetDistance: ['0%', '100%'],
+          rotate: [0, 360],
         }}
         transition={{
-          ...(transition ?? BASE_TRANSITION),
-          delay: delay,
+          duration,
+          repeat: Infinity,
+          ease: 'linear',
         }}
-        onAnimationComplete={onAnimationComplete}
       />
     </div>
   );
