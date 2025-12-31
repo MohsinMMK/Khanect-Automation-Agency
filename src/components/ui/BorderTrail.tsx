@@ -30,7 +30,7 @@ export function BorderTrail({
         className={cn('absolute aspect-square bg-zinc-500', className)}
         style={{
           width: size,
-          offsetPath: `rect(0 auto auto 0 round ${size}px)`,
+          offsetPath: `rect(0 100% 100% 0 round 16px)`,
           ...style,
         }}
         animate={{
