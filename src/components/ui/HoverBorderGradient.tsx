@@ -81,7 +81,7 @@ export function HoverBorderGradient({
       {/* Inner content with background */}
       <div
         className={cn(
-          "relative z-10 flex-1 w-full rounded-[inherit] bg-white dark:bg-[#0f0f11]",
+          "relative z-10 flex-1 min-h-0 w-full rounded-[inherit] bg-white dark:bg-[#0f0f11] flex flex-col",
           className
         )}
       >

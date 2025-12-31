@@ -114,7 +114,7 @@ const AiConsultant: React.FC<AiConsultantProps> = ({ onNavigate }) => {
       className="w-full h-full"
       duration={2}
     >
-      <div className="w-full h-full flex flex-col overflow-hidden rounded-2xl font-sans">
+      <div className="w-full flex-1 min-h-0 flex flex-col overflow-hidden rounded-2xl font-sans">
 
         {/* Header */}
         <div className="px-5 py-4 flex items-center justify-between border-b border-gray-100/50 dark:border-white/5 z-10 transition-colors">
