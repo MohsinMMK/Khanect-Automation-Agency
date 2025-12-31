@@ -57,7 +57,8 @@ export const validatePhone = (phone: string): ValidationResult => {
 };
 
 /**
- * URL validation - optional field
+ * Website/domain validation - optional field
+ * Accepts formats like: website.com, www.website.com, https://website.com
  */
 export const validateUrl = (url: string): ValidationResult => {
   // Empty is valid since field is optional
@@ -65,16 +66,16 @@ export const validateUrl = (url: string): ValidationResult => {
     return { isValid: true };
   }
 
-  try {
-    const urlObj = new URL(url);
-    // Must be http or https
-    if (!['http:', 'https:'].includes(urlObj.protocol)) {
-      return { isValid: false, error: 'URL must start with http:// or https://' };
-    }
-    return { isValid: true };
-  } catch {
-    return { isValid: false, error: 'Please enter a valid URL' };
+  const trimmed = url.trim().toLowerCase();
+
+  // Domain pattern: allows optional protocol, optional www, domain.tld format
+  const domainRegex = /^(https?:\/\/)?(www\.)?[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z]{2,})+$/;
+
+  if (!domainRegex.test(trimmed)) {
+    return { isValid: false, error: 'Please enter a valid website (e.g., yoursite.com)' };
   }
+
+  return { isValid: true };
 };
 
 /**

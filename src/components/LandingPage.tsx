@@ -525,13 +525,13 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                     Website <span className="text-gray-400 font-normal">(optional)</span>
                   </label>
                   <input
-                    type="url"
+                    type="text"
                     id="website"
                     value={formData.website}
                     onChange={handleInputChangeWithValidation}
                     onBlur={handleFieldBlur}
                     className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-lime/50 focus:border-brand-lime transition-all text-sm"
-                    placeholder="https://yourwebsite.com"
+                    placeholder="yourwebsite.com"
                     disabled={isSubmitting}
                   />
                   {touchedFields.has('website') && formErrors.website && (
