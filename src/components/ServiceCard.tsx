@@ -1,5 +1,5 @@
 import React from 'react';
-import CheckmarkIcon from './icons/CheckmarkIcon';
+import CheckCircleIcon from './icons/CheckCircleIcon';
 
 import { Link } from 'react-router-dom';
 
@@ -31,11 +31,11 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ icon: IconComponent, title, d
       </p>
 
       {/* Features List */}
-      <ul className="space-y-2 mb-6 flex-1">
+      <ul className="space-y-3 mb-6 flex-1">
         {features.map((feature, index) => (
-          <li key={`${title}-feature-${index}`} className="flex items-start gap-2.5">
+          <li key={`${title}-feature-${index}`} className="flex items-start gap-3">
             <div className="flex-shrink-0 mt-0.5">
-              <CheckmarkIcon className="text-brand-lime w-4 h-4" />
+              <CheckCircleIcon className="text-brand-lime w-5 h-5" />
             </div>
             <span className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
               {feature}
