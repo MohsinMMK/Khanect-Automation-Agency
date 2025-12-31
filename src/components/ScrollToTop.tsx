@@ -1,25 +1,27 @@
-import { useEffect } from 'react';
+import { useLayoutEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
 const ScrollToTop = () => {
   const { pathname, hash } = useLocation();
 
-  useEffect(() => {
-    // Disable browser's default scroll restoration to avoid conflicts
+  useLayoutEffect(() => {
+    // Disable browser's default scroll restoration
     if ('scrollRestoration' in window.history) {
       window.history.scrollRestoration = 'manual';
     }
 
     if (hash) {
-      // Use setTimeout to ensure the element is rendered before scrolling
-      setTimeout(() => {
+      // Small delay to ensure DOM element exists for hash links
+      const timer = setTimeout(() => {
         const element = document.getElementById(hash.substring(1));
         if (element) {
-            element.scrollIntoView({ behavior: 'smooth' });
+          element.scrollIntoView({ behavior: 'smooth' });
         }
       }, 100);
+      return () => clearTimeout(timer);
     } else {
-      window.scrollTo(0, 0);
+      // Force instant scroll to top for route changes
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     }
   }, [pathname, hash]);
 
