@@ -9,6 +9,7 @@ import ProcessStep from './ProcessStep';
 import FAQItem from './FAQItem';
 import StaggerContainer from './StaggerContainer';
 import CountryCodeSelect from './CountryCodeSelect';
+import { DottedSurface } from './ui/dotted-surface';
 import { services } from '../data/services';
 import { industries } from '../data/industries';
 import { processSteps } from '../data/process';
@@ -248,6 +249,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
     <>
       {/* Hero Section */}
       <header className="relative pt-32 lg:pt-40 pb-20 lg:pb-32 px-6 min-h-screen flex items-center overflow-hidden">
+        {/* Animated Background - Hero Only */}
+        <DottedSurface />
         <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center relative z-10">
 
           {/* Left Content */}
@@ -299,7 +302,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
           <div className="relative h-[600px] w-full hidden lg:block perspective-1000 animate-fade-in">
 
              {/* Main Central Visual */}
-             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[450px] h-[450px] opacity-80">
+             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[450px] h-[450px] opacity-80 z-10">
+                 {/* Backdrop to block dotted animation */}
+                 <div className="absolute inset-0 rounded-full bg-white/80 dark:bg-gray-950/90 backdrop-blur-xl"></div>
                  <div className="absolute inset-0 bg-brand-lime/10 blur-[100px] rounded-full animate-pulse-slow"></div>
                  <div className="absolute inset-0 animate-morph" style={{
                     background: 'radial-gradient(circle at 30% 30%, rgba(211,243,107,0.1) 0%, rgba(0,0,0,0) 70%)',

@@ -6,22 +6,19 @@ import Pricing from './components/Pricing';
 import ClientPortal from './components/ClientPortal';
 import Footer from './components/Footer';
 import ServiceDetailPage from './components/ServiceDetailPage';
+import DottedSurfaceDemo from './components/DottedSurfaceDemo';
 import ErrorBoundary from './components/ErrorBoundary';
 import ScrollToTop from './components/ScrollToTop';
 import AiAssistantCard from './components/ui/ai-assistant-card';
 import KhanectBoltIcon from './components/icons/KhanectBoltIcon';
+import { useTheme } from './contexts/ThemeContext';
 import { ViewState } from './types';
 
 const App: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
-    if (typeof window !== 'undefined') {
-        const savedTheme = localStorage.getItem('theme');
-        return (savedTheme as 'light' | 'dark') || 'light';
-    }
-    return 'light';
-  });
+  const { resolvedTheme, setTheme } = useTheme();
+  const theme = resolvedTheme;
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
 
@@ -32,18 +29,8 @@ const App: React.FC = () => {
     if (path === '/portal') return ViewState.PORTAL;
     return ViewState.LANDING;
   };
-  
-  const currentView = getCurrentView();
 
-  useEffect(() => {
-    const root = window.document.documentElement;
-    if (theme === 'dark') {
-        root.classList.add('dark');
-    } else {
-        root.classList.remove('dark');
-    }
-    localStorage.setItem('theme', theme);
-  }, [theme]);
+  const currentView = getCurrentView();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -54,7 +41,7 @@ const App: React.FC = () => {
   }, []);
 
   const toggleTheme = () => {
-    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+    setTheme(theme === 'dark' ? 'light' : 'dark');
   };
 
   const scrollToTop = () => {
@@ -108,6 +95,7 @@ const App: React.FC = () => {
             <Route path="/portal" element={<ClientPortal />} />
             <Route path="/services/:slug" element={<ServiceDetailPage />} />
             <Route path="/industries/:slug" element={<ServiceDetailPage />} />
+            <Route path="/demo/dotted-surface" element={<DottedSurfaceDemo />} />
           </Routes>
         </ErrorBoundary>
       </main>
