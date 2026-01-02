@@ -69,7 +69,7 @@ const ProcessStep: React.FC<ProcessStepProps> = ({
     <div className="relative">
       <div className="process-card glass-card p-6 rounded-2xl hover:bg-gray-50 dark:hover:bg-white/5 transition-all duration-500 ease-fluid hover:-translate-y-2 hover:shadow-xl h-full group relative overflow-hidden">
         {/* Meteor effect - visible on hover */}
-        <Meteors number={20} />
+        <Meteors number={10} />
 
         <div className="flex items-start gap-4 mb-4 relative z-10">
           {/* Number badge with pulse animation */}

@@ -99,9 +99,9 @@ export default {
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
         meteor: {
-          '0%': { transform: 'rotate(215deg) translateX(0)', opacity: '1' },
+          '0%': { transform: 'rotate(200deg) translateX(0)', opacity: '1' },
           '70%': { opacity: '1' },
-          '100%': { transform: 'rotate(215deg) translateX(500px)', opacity: '0' },
+          '100%': { transform: 'rotate(200deg) translateX(500px)', opacity: '0' },
         },
       }
     },
