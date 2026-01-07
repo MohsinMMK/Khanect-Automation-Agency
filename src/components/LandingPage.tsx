@@ -445,7 +445,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                     <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" fill="currentColor"/>
                   </svg>
                 </div>
-                <span className="font-display font-bold text-lg">
+                <span className="font-blockat tracking-widest text-lg">
                   <span className="text-gray-900 dark:text-white">KHAN</span>
                   <span className="text-brand-lime">ECT</span>
                 </span>

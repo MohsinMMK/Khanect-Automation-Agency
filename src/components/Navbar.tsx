@@ -98,7 +98,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, theme, toggleT
                strokeClassName="stroke-white dark:stroke-gray-900"
              />
           </div>
-          <span className="font-display font-bold text-xl tracking-tight">
+          <span className="font-blockat text-xl tracking-widest">
             <span className="text-gray-900 dark:text-white">KHAN</span>
             <span className="text-brand-lime">ECT</span>
           </span>

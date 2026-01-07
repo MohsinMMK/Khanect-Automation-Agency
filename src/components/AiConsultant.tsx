@@ -116,7 +116,7 @@ const AiConsultant: React.FC<AiConsultantProps> = ({ onNavigate }) => {
                    <KhanectBoltIcon size={20} />
               </div>
               <div>
-                  <TextShimmer as="h3" className="font-bold leading-tight" duration={3} spread={1.5}>Khanect AI</TextShimmer>
+                  <TextShimmer as="h3" className="font-blockat tracking-widest leading-tight" duration={3} spread={1.5}>KHANECT AI</TextShimmer>
                   <div className="flex items-center gap-1.5 mt-0.5">
                       <span className="w-1.5 h-1.5 bg-brand-lime rounded-full animate-pulse"></span>
                       <span className="text-[10px] text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">Assistant</span>

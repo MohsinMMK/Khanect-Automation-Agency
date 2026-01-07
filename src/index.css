@@ -1,6 +1,15 @@
 @import "tailwindcss";
 @config "../tailwind.config.js";
 
+/* Blockat Font */
+@font-face {
+  font-family: 'Blockat';
+  src: url('/fonts/Blockat.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* ==========================================
    SHADCN CSS VARIABLES
    ========================================== */
