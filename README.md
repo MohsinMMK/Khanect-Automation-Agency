@@ -66,8 +66,7 @@ Khanect AI is a modern automation agency platform that helps businesses streamli
 
 ## Prerequisites
 
-- **Node.js** 18+ (recommended: 20+)
-- **npm** or **yarn**
+- **Bun** 1.0+ (recommended: 1.3+) - [Install Bun](https://bun.sh)
 - **Supabase Account** (for authentication and database)
 - **n8n Instance** (for chatbot functionality)
 
@@ -81,7 +80,7 @@ Khanect AI is a modern automation agency platform that helps businesses streamli
 
 2. **Install dependencies**
    ```bash
-   npm install
+   bun install
    ```
 
 3. **Set up environment variables**
@@ -102,21 +101,21 @@ Khanect AI is a modern automation agency platform that helps businesses streamli
 
 5. **Run the development server**
    ```bash
-   npm run dev
+   bun dev
    ```
 
-   Open [http://localhost:5173](http://localhost:5173) in your browser.
+   Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Available Scripts
 
 | Command | Description |
 |---------|-------------|
-| `npm run dev` | Start development server |
-| `npm run build` | Build for production |
-| `npm run preview` | Preview production build |
-| `npm test` | Run tests in watch mode |
-| `npm run test:run` | Run tests once |
-| `npm run test:coverage` | Run tests with coverage |
+| `bun dev` | Start development server |
+| `bun run build` | Build for production |
+| `bun run preview` | Preview production build |
+| `bun test` | Run tests in watch mode |
+| `bun run test:run` | Run tests once |
+| `bun run test:coverage` | Run tests with coverage |
 
 ## Project Structure
 
@@ -194,13 +193,13 @@ See [docs/DATABASE.md](docs/DATABASE.md) for complete schema.
 ## Deployment
 
 ### Hostinger (Recommended)
-1. Build: `npm run build`
+1. Build: `bun run build`
 2. Upload `dist/` folder
 3. Configure environment variables
 
 ### Vercel / Netlify
 1. Connect GitHub repository
-2. Build command: `npm run build`
+2. Build command: `bun run build`
 3. Output directory: `dist`
 4. Add environment variables
 

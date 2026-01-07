@@ -18,6 +18,7 @@ Khanect AI is a Business Automation Agency SaaS platform - a modern React landin
 | Routing | React Router v7 |
 | Smooth Scroll | Lenis |
 | Testing | Vitest + React Testing Library |
+| Package Manager | Bun |
 
 ## Project Structure
 
@@ -64,12 +65,12 @@ src/
 ## Commands
 
 ```bash
-npm run dev        # Start dev server (port 3000)
-npm run build      # Build for production
-npm run preview    # Preview production build (port 3001)
-npm run test       # Run tests in watch mode
-npm run test:run   # Run tests once
-npm run test:coverage # Generate coverage report
+bun dev            # Start dev server (port 3000)
+bun run build      # Build for production
+bun run preview    # Preview production build (port 3001)
+bun test           # Run tests in watch mode
+bun run test:run   # Run tests once
+bun run test:coverage # Generate coverage report
 ```
 
 ## Routes
@@ -162,7 +163,7 @@ brand: {
 - Framework: Vitest with jsdom
 - Component testing: React Testing Library
 - Test files: Co-located in `__tests__/` directories
-- Run: `npm run test`
+- Run: `bun test`
 
 ## Code Conventions
 
