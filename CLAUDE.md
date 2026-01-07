@@ -1,0 +1,189 @@
+# Khanect AI - Project Documentation
+
+## Overview
+Khanect AI is a Business Automation Agency SaaS platform - a modern React landing page and client portal for an AI automation agency that helps businesses streamline operations through AI-powered solutions and workflow automation.
+
+## Tech Stack
+
+| Category | Technology |
+|----------|-----------|
+| Framework | React 19.2 + Vite 6 |
+| Language | TypeScript (ES2022) |
+| Styling | Tailwind CSS v4 + PostCSS |
+| UI Components | Custom CVA components + Radix UI |
+| Database/Auth | Supabase (PostgreSQL + Auth) |
+| Animations | Framer Motion, GSAP, Three.js |
+| Charts | Recharts |
+| Icons | Lucide React + Custom SVG |
+| Routing | React Router v7 |
+| Smooth Scroll | Lenis |
+| Testing | Vitest + React Testing Library |
+
+## Project Structure
+
+```
+src/
+├── components/           # React components
+│   ├── ui/              # UI primitives (button, card, badge, select, textarea)
+│   ├── icons/           # Custom SVG icon components (15 icons)
+│   ├── __tests__/       # Component tests
+│   ├── LandingPage.tsx  # Main landing page with contact form
+│   ├── Navbar.tsx       # Navigation with theme toggle
+│   ├── Pricing.tsx      # Pricing page
+│   ├── ClientPortal.tsx # Authenticated dashboard
+│   └── ...
+├── contexts/
+│   └── ThemeContext.tsx # Light/dark theme management
+├── data/                # Static data definitions
+│   ├── services.ts      # Service offerings
+│   ├── industries.ts    # Industry solutions
+│   ├── pricing.ts       # Pricing packages
+│   ├── process.ts       # Process steps
+│   └── faqs.ts          # FAQ content
+├── hooks/               # Custom React hooks
+│   ├── useAnimatedText.ts
+│   └── useGSAPStagger.ts
+├── lib/
+│   ├── supabase.ts      # Supabase client
+│   └── utils.ts         # cn() utility
+├── services/            # API integrations
+│   ├── chatbotService.ts # Supabase Edge Function calls
+│   └── n8nService.ts    # N8N webhook integration
+├── utils/
+│   ├── validation.ts    # Form validation
+│   ├── formatMessage.tsx
+│   └── env.ts
+├── test/
+│   └── setup.ts         # Vitest setup
+├── types.ts             # TypeScript interfaces
+├── App.tsx              # Main app with routing
+├── index.tsx            # Entry point
+└── index.css            # Global styles + animations
+```
+
+## Commands
+
+```bash
+npm run dev        # Start dev server (port 3000)
+npm run build      # Build for production
+npm run preview    # Preview production build (port 3001)
+npm run test       # Run tests in watch mode
+npm run test:run   # Run tests once
+npm run test:coverage # Generate coverage report
+```
+
+## Routes
+
+| Path | Component | Description |
+|------|-----------|-------------|
+| `/` | LandingPage | Hero, services, FAQs, contact form |
+| `/pricing` | Pricing | Pricing tiers |
+| `/portal` | ClientPortal | Authenticated client dashboard |
+| `/services/:slug` | ServiceDetailPage | Service details |
+| `/industries/:slug` | ServiceDetailPage | Industry details |
+| `/demo/dotted-surface` | DottedSurfaceDemo | 3D background demo |
+
+## Environment Variables
+
+```env
+# Frontend (VITE_ prefix)
+VITE_SUPABASE_URL=         # Supabase project URL
+VITE_SUPABASE_ANON_KEY=    # Supabase anonymous key
+VITE_N8N_WEBHOOK_URL=      # N8N webhook for lead processing
+
+# Backend (Edge Functions)
+SUPABASE_SERVICE_ROLE_KEY= # Admin access
+OPENAI_API_KEY=            # GPT-4 for chatbot
+RESEND_API_KEY=            # Email service
+FROM_EMAIL=                # Sender email
+```
+
+## Key Patterns
+
+### Component Styling
+- Uses `class-variance-authority (CVA)` for component variants
+- `cn()` utility combines `clsx` + `tailwind-merge`
+- Dark mode via class strategy (`darkMode: 'class'`)
+
+### Animation Stack
+- **GSAP**: Scroll-triggered stagger animations (`useGSAPStagger`)
+- **Framer Motion**: Component animations (`useAnimatedText`)
+- **Three.js**: 3D dotted surface background
+- **CSS**: Keyframe animations (meteors, fade-in, float)
+
+### State Management
+- React Context for theme (ThemeContext)
+- Component-level useState for forms
+- localStorage for persistence
+
+### Form Handling
+- Validation in `utils/validation.ts`
+- Rate limiting (60s cooldown)
+- Submits to Supabase + n8n webhook
+
+### API Integration
+- Supabase Edge Functions for AI chatbot
+- N8N webhooks for lead processing automation
+
+## Brand Colors
+
+```javascript
+brand: {
+  lime: '#14B8A6',      // Primary teal
+  limeHover: '#0D9488', // Darker teal
+  dark: '#050505',      // Background dark
+  card: '#0A0A0B',      // Card background
+}
+```
+
+## Fonts
+
+- **Body**: Plus Jakarta Sans
+- **Display**: Space Grotesk
+- **Logo**: Blockat (custom)
+
+## Key Files to Know
+
+| File | Purpose |
+|------|---------|
+| `src/components/LandingPage.tsx` | Main landing page with form logic |
+| `src/components/ui/ai-assistant-card.tsx` | Floating AI chat widget |
+| `src/components/ui/dotted-surface.tsx` | Three.js 3D background |
+| `src/components/ui/meteors.tsx` | Meteor particle effect |
+| `src/contexts/ThemeContext.tsx` | Theme state management |
+| `src/services/chatbotService.ts` | AI chat API integration |
+| `src/services/n8nService.ts` | Lead processing webhook |
+| `src/utils/validation.ts` | Form validation logic |
+| `tailwind.config.js` | Custom theme configuration |
+| `vite.config.ts` | Build configuration with chunking |
+
+## Testing
+
+- Framework: Vitest with jsdom
+- Component testing: React Testing Library
+- Test files: Co-located in `__tests__/` directories
+- Run: `npm run test`
+
+## Code Conventions
+
+1. **Path Alias**: Use `@/` for `src/` imports
+2. **Components**: Functional components with TypeScript interfaces
+3. **Styling**: Tailwind classes, avoid inline styles
+4. **Icons**: Use Lucide React or custom icons from `components/icons/`
+5. **Animations**: Prefer GSAP for scroll-triggered, Framer Motion for interactions
+6. **Forms**: Always validate, always rate-limit submissions
+
+## Security
+
+- CORS whitelisting configured
+- Input validation with max lengths
+- HTML sanitization for XSS prevention
+- Supabase RLS policies for data protection
+- No secrets in frontend code
+
+## Performance
+
+- Code splitting: vendor, charts, supabase, ui chunks
+- Console/debugger removed in production
+- Mobile-optimized particle counts in 3D
+- Smooth scrolling with Lenis
