@@ -39,6 +39,7 @@ lerna-debug.log*
 # OS files
 .DS_Store
 Thumbs.db
+nul
 
 # Testing
 coverage
