@@ -41,7 +41,14 @@ const App: React.FC = () => {
   }, []);
 
   const toggleTheme = () => {
-    setTheme(theme === 'dark' ? 'light' : 'dark');
+    // Cycle through: light -> dark -> oak -> light
+    if (theme === 'light') {
+      setTheme('dark');
+    } else if (theme === 'dark') {
+      setTheme('oak');
+    } else {
+      setTheme('light');
+    }
   };
 
   const scrollToTop = () => {

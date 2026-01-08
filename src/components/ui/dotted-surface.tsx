@@ -93,7 +93,13 @@ export function DottedSurface({
                 if (useBrandColors) {
                     // Gradient from teal to lime based on position
                     const t = (ix + iy) / (AMOUNTX + AMOUNTY);
-                    if (resolvedTheme === 'dark') {
+                    if (resolvedTheme === 'oak') {
+                        // Espresso (#3C2415) to Lighter Espresso (#4A3020) for oak
+                        const r = 60 / 255 + t * (74 - 60) / 255;
+                        const g = 36 / 255 + t * (48 - 36) / 255;
+                        const b = 21 / 255 + t * (32 - 21) / 255;
+                        colors.push(r, g, b);
+                    } else if (resolvedTheme === 'dark') {
                         // Brighter colors for dark mode
                         const r = 20 / 255 + t * (211 - 20) / 255;
                         const g = 184 / 255 + t * (243 - 184) / 255;

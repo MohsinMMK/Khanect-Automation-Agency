@@ -58,6 +58,28 @@
     --ring: 174 84% 40%;
 }
 
+.oak {
+    --background: 36 23% 84%;
+    --foreground: 24 47% 16%;
+    --card: 40 20% 90%;
+    --card-foreground: 24 47% 16%;
+    --popover: 40 20% 90%;
+    --popover-foreground: 24 47% 16%;
+    --primary: 24 47% 16%;
+    --primary-foreground: 36 23% 84%;
+    --secondary: 36 15% 78%;
+    --secondary-foreground: 24 47% 16%;
+    --muted: 36 15% 78%;
+    --muted-foreground: 24 30% 35%;
+    --accent: 24 47% 16%;
+    --accent-foreground: 36 23% 84%;
+    --destructive: 0 62.8% 40%;
+    --destructive-foreground: 36 23% 84%;
+    --border: 36 15% 75%;
+    --input: 36 15% 75%;
+    --ring: 24 47% 16%;
+}
+
 @layer base {
     * {
         border-color: hsl(var(--border));
@@ -232,6 +254,208 @@
 }
 
 /* ==========================================
+   OAK THEME OVERRIDES
+   ========================================== */
+
+/* Oak primary button */
+.oak .btn-primary {
+    background: #3C2415;
+    color: #DDD9CE;
+}
+.oak .btn-primary:hover {
+    background: #4A3020;
+    box-shadow: 0 8px 24px -8px rgba(60, 36, 21, 0.4);
+}
+
+/* Oak secondary button */
+.oak .btn-secondary {
+    color: #3C2415;
+    border-color: rgba(60, 36, 21, 0.2);
+}
+.oak .btn-secondary:hover {
+    border-color: rgba(60, 36, 21, 0.4);
+    background: rgba(60, 36, 21, 0.08);
+    color: #3C2415;
+}
+
+/* Oak tertiary button */
+.oak .btn-tertiary {
+    color: #4A3020;
+}
+.oak .btn-tertiary:hover {
+    color: #3C2415;
+    background: rgba(60, 36, 21, 0.08);
+}
+
+/* Oak theme toggle button */
+.oak .theme-toggle-btn {
+    background: rgba(60, 36, 21, 0.08);
+    color: #4A3020;
+}
+.oak .theme-toggle-btn:hover {
+    background: rgba(60, 36, 21, 0.15);
+    color: #3C2415;
+}
+
+/* Oak navbar styles */
+.oak .navbar-scrolled {
+    background: rgba(221, 217, 206, 0.9);
+    border-color: rgba(60, 36, 21, 0.06);
+}
+
+/* Oak text colors for navigation */
+.oak .nav-link {
+    color: #4A3020;
+}
+.oak .nav-link:hover,
+.oak .nav-link-active {
+    color: #3C2415;
+}
+
+/* Oak mobile menu overlay */
+.oak .mobile-menu-overlay {
+    background: rgba(221, 217, 206, 0.98);
+}
+
+/* Oak mobile menu toggle */
+.oak .mobile-menu-toggle {
+    color: #3C2415;
+}
+
+/* Oak logo icon background */
+.oak .logo-icon {
+    background: #3C2415;
+}
+.oak .logo-icon svg {
+    fill: #DDD9CE;
+    stroke: #DDD9CE;
+}
+
+/* Oak logo text */
+.oak .logo-text {
+    color: #3C2415;
+}
+
+/* Oak selection color */
+.oak ::selection {
+    background: rgba(60, 36, 21, 0.25);
+    color: inherit;
+}
+
+/* Oak text color overrides */
+.oak .text-gray-900 {
+    color: #3C2415 !important;
+}
+.oak .text-gray-800 {
+    color: #3C2415 !important;
+}
+.oak .text-gray-700 {
+    color: #4A3020 !important;
+}
+.oak .text-gray-600 {
+    color: #4A3020 !important;
+}
+.oak .text-gray-500 {
+    color: #6B5344 !important;
+}
+.oak .border-gray-300 {
+    border-color: rgba(60, 36, 21, 0.3) !important;
+}
+.oak .border-gray-200 {
+    border-color: rgba(60, 36, 21, 0.2) !important;
+}
+.oak .hover\:border-gray-500:hover {
+    border-color: rgba(60, 36, 21, 0.6) !important;
+}
+
+/* Oak - replace brand-lime with dark brown */
+.oak .text-brand-lime {
+    color: #3C2415 !important;
+}
+.oak .bg-brand-lime {
+    background-color: #3C2415 !important;
+}
+/* Text inside bg-brand-lime containers should be light in oak theme */
+.oak .bg-brand-lime,
+.oak .bg-brand-lime .text-gray-900,
+.oak .bg-brand-lime .text-gray-800,
+.oak .bg-brand-lime .text-gray-800\/90 {
+    color: #DDD9CE !important;
+}
+.oak .bg-brand-lime .bg-gray-900 {
+    background-color: #DDD9CE !important;
+    color: #3C2415 !important;
+}
+.oak .bg-brand-lime .text-white {
+    color: #3C2415 !important;
+}
+.oak .bg-brand-lime\/10 {
+    background-color: rgba(60, 36, 21, 0.1) !important;
+}
+.oak .bg-brand-lime\/20 {
+    background-color: rgba(60, 36, 21, 0.2) !important;
+}
+.oak .bg-brand-lime\/25 {
+    background-color: rgba(60, 36, 21, 0.25) !important;
+}
+.oak .border-brand-lime {
+    border-color: #3C2415 !important;
+}
+.oak .hover\:text-brand-lime:hover {
+    color: #3C2415 !important;
+}
+.oak .dark\:text-brand-lime {
+    color: #3C2415 !important;
+}
+.oak .dark\:bg-brand-lime\/10 {
+    background-color: rgba(60, 36, 21, 0.1) !important;
+}
+.oak .dark\:bg-brand-lime\/20 {
+    background-color: rgba(60, 36, 21, 0.2) !important;
+}
+.oak .focus\:ring-brand-lime\/50:focus {
+    --tw-ring-color: rgba(60, 36, 21, 0.5) !important;
+}
+.oak .focus\:border-brand-lime:focus {
+    border-color: #3C2415 !important;
+}
+.oak .shadow-glow-lime {
+    box-shadow: 0 0 30px rgba(60, 36, 21, 0.2) !important;
+}
+.oak .shadow-lg.shadow-brand-lime\/30 {
+    --tw-shadow-color: rgba(60, 36, 21, 0.3) !important;
+}
+.oak .from-brand-lime\/30 {
+    --tw-gradient-from: rgba(60, 36, 21, 0.3) var(--tw-gradient-from-position) !important;
+}
+.oak .to-brand-lime\/60 {
+    --tw-gradient-to: rgba(60, 36, 21, 0.6) var(--tw-gradient-to-position) !important;
+}
+/* Timeline dot with hardcoded cyan shadow */
+.oak .timeline-dot {
+    background-color: #3C2415 !important;
+    box-shadow: 0 0 8px rgba(60, 36, 21, 0.6) !important;
+}
+.oak .hover\:shadow-glow-lime:hover {
+    box-shadow: 0 0 30px rgba(60, 36, 21, 0.3) !important;
+}
+.oak .fill-brand-lime {
+    fill: #3C2415 !important;
+}
+.oak .fill-brand-lime\/15 {
+    fill: rgba(60, 36, 21, 0.15) !important;
+}
+.oak .fill-brand-lime\/20 {
+    fill: rgba(60, 36, 21, 0.2) !important;
+}
+.oak .dark\:fill-brand-lime\/20 {
+    fill: rgba(60, 36, 21, 0.2) !important;
+}
+.oak .dark\:bg-brand-lime\/\[0\.08\] {
+    background-color: rgba(60, 36, 21, 0.08) !important;
+}
+
+/* ==========================================
    SPOTLIGHT & GLOW EFFECTS
    ========================================== */
 
@@ -259,6 +483,14 @@
     );
 }
 
+.oak .spotlight-glow {
+    background: radial-gradient(
+        ellipse 60% 40% at 50% 0%,
+        rgba(60, 36, 21, 0.08) 0%,
+        rgba(221, 217, 206, 0) 70%
+    );
+}
+
 /* Orb Gradient for Hero */
 .orb-visual {
     background: radial-gradient(circle at center, rgba(20, 184, 166, 0.4) 0%, rgba(250,250,250,0) 70%);
@@ -268,6 +500,11 @@
 .dark .orb-visual {
     background: radial-gradient(circle at center, rgba(20, 184, 166, 0.15) 0%, rgba(9,9,11,0) 70%);
     filter: blur(40px);
+}
+
+.oak .orb-visual {
+    background: radial-gradient(circle at center, rgba(60, 36, 21, 0.25) 0%, rgba(221,217,206,0) 70%);
+    filter: blur(60px);
 }
 
 /* ==========================================
@@ -294,6 +531,14 @@
         0 8px 32px rgba(0, 0, 0, 0.25);
 }
 
+.oak .glass3d {
+    background: rgba(232, 229, 220, 0.95);
+    box-shadow:
+        0 0 0 1px rgba(60, 36, 21, 0.08),
+        0 4px 16px rgba(0, 0, 0, 0.08),
+        0 8px 32px rgba(0, 0, 0, 0.06);
+}
+
 /* Enhanced effect when backdrop-filter is supported */
 @supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
     .glass3d {
@@ -304,6 +549,10 @@
 
     .dark .glass3d {
         background: rgba(15, 15, 17, 0.88);
+    }
+
+    .oak .glass3d {
+        background: rgba(232, 229, 220, 0.88);
     }
 }
 
@@ -324,6 +573,12 @@
     box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.1),
         inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+}
+
+.oak .glass3d::before {
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.6),
+        inset 0 -1px 0 rgba(60, 36, 21, 0.05);
 }
 
 /* Ensure content is above the pseudo-element */
@@ -349,6 +604,11 @@
     border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
+.oak .glass {
+    background: rgba(232, 229, 220, 0.7);
+    border: 1px solid rgba(60, 36, 21, 0.06);
+}
+
 .glass-card {
     background: rgba(255, 255, 255, 0.9);
     border: 1px solid rgba(0, 0, 0, 0.06);
@@ -363,6 +623,12 @@
     box-shadow: none;
 }
 
+.oak .glass-card {
+    background: linear-gradient(180deg, rgba(232, 229, 220, 1) 0%, rgba(221, 217, 206, 1) 100%);
+    border: 1px solid rgba(60, 36, 21, 0.06);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
 .glass-card:hover {
     border-color: rgba(0, 0, 0, 0.12);
     transform: translateY(-2px);
@@ -372,6 +638,11 @@
 .dark .glass-card:hover {
     border-color: rgba(255, 255, 255, 0.12);
     box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.4);
+}
+
+.oak .glass-card:hover {
+    border-color: rgba(60, 36, 21, 0.12);
+    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.1);
 }
 
 /* ==========================================

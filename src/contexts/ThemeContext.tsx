@@ -1,11 +1,11 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-type Theme = 'light' | 'dark' | 'system';
+type Theme = 'light' | 'dark' | 'oak' | 'system';
 
 interface ThemeContextType {
   theme: Theme;
   setTheme: (theme: Theme) => void;
-  resolvedTheme: 'light' | 'dark';
+  resolvedTheme: 'light' | 'dark' | 'oak';
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -29,21 +29,21 @@ export function ThemeProvider({
     return defaultTheme;
   });
 
-  const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>(() => {
+  const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark' | 'oak'>(() => {
     if (theme === 'system') {
       if (typeof window !== 'undefined') {
         return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
       }
       return 'light';
     }
-    return theme as 'light' | 'dark';
+    return theme as 'light' | 'dark' | 'oak';
   });
 
   useEffect(() => {
     const root = window.document.documentElement;
 
     // Resolve system theme
-    let resolved: 'light' | 'dark';
+    let resolved: 'light' | 'dark' | 'oak';
     if (theme === 'system') {
       resolved = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     } else {
@@ -52,11 +52,13 @@ export function ThemeProvider({
 
     setResolvedTheme(resolved);
 
-    // Apply theme to DOM
+    // Apply theme to DOM - remove all theme classes first
+    root.classList.remove('dark', 'oak');
+
     if (resolved === 'dark') {
       root.classList.add('dark');
-    } else {
-      root.classList.remove('dark');
+    } else if (resolved === 'oak') {
+      root.classList.add('oak');
     }
 
     localStorage.setItem(storageKey, theme);
@@ -70,10 +72,9 @@ export function ThemeProvider({
     const handleChange = (e: MediaQueryListEvent) => {
       setResolvedTheme(e.matches ? 'dark' : 'light');
       const root = window.document.documentElement;
+      root.classList.remove('dark', 'oak');
       if (e.matches) {
         root.classList.add('dark');
-      } else {
-        root.classList.remove('dark');
       }
     };
 

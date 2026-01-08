@@ -5,7 +5,7 @@ import KhanectBoltIcon from './icons/KhanectBoltIcon';
 interface NavbarProps {
   currentView: ViewState;
   onNavigate: (view: ViewState) => void;
-  theme: 'light' | 'dark';
+  theme: 'light' | 'dark' | 'oak';
   toggleTheme: () => void;
 }
 
@@ -81,7 +81,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, theme, toggleT
     <nav
         className={`fixed top-0 w-full z-50 px-6 transition-all duration-300 ${
             isScrolled && !isMobileMenuOpen
-                ? 'py-3 bg-white/80 dark:bg-gray-950/80 backdrop-blur-xl border-b border-black/[0.06] dark:border-white/[0.06]'
+                ? 'py-3 bg-white/80 dark:bg-gray-950/80 navbar-scrolled backdrop-blur-xl border-b border-black/[0.06] dark:border-white/[0.06]'
                 : 'py-5 bg-transparent'
         }`}
     >
@@ -91,7 +91,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, theme, toggleT
           onClick={handleLandingClick}
           className="flex items-center gap-3 group focus:outline-none z-50 relative"
         >
-          <div className="w-8 h-8 bg-gray-900 dark:bg-white rounded-lg flex items-center justify-center transition-transform duration-180 group-hover:scale-105">
+          <div className="logo-icon w-8 h-8 bg-gray-900 dark:bg-white rounded-lg flex items-center justify-center transition-transform duration-180 group-hover:scale-105">
              <KhanectBoltIcon
                size={18}
                fillClassName="fill-white dark:fill-gray-900"
@@ -99,7 +99,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, theme, toggleT
              />
           </div>
           <span className="font-blockat text-xl tracking-widest">
-            <span className="text-gray-900 dark:text-white">KHAN</span>
+            <span className="logo-text text-gray-900 dark:text-white">KHAN</span>
             <span className="text-brand-lime">ECT</span>
           </span>
         </button>
@@ -109,9 +109,9 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, theme, toggleT
           <div className="flex items-center gap-6 text-sm font-medium">
             <button
               onClick={handleLandingClick}
-              className={`transition-colors duration-180 ${
+              className={`nav-link transition-colors duration-180 ${
                 currentView === ViewState.LANDING
-                  ? 'text-gray-900 dark:text-white'
+                  ? 'nav-link-active text-gray-900 dark:text-white'
                   : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
               }`}
             >
@@ -119,9 +119,9 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, theme, toggleT
             </button>
             <button
               onClick={handlePricingClick}
-              className={`transition-colors duration-180 ${
+              className={`nav-link transition-colors duration-180 ${
                 currentView === ViewState.PRICING
-                  ? 'text-gray-900 dark:text-white'
+                  ? 'nav-link-active text-gray-900 dark:text-white'
                   : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
               }`}
             >
@@ -129,9 +129,9 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, theme, toggleT
             </button>
              <button
               onClick={handlePortalClick}
-              className={`transition-colors duration-180 ${
+              className={`nav-link transition-colors duration-180 ${
                 currentView === ViewState.PORTAL
-                  ? 'text-gray-900 dark:text-white'
+                  ? 'nav-link-active text-gray-900 dark:text-white'
                   : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
               }`}
             >
@@ -142,11 +142,13 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, theme, toggleT
           <div className="flex items-center gap-3">
              <button
                 onClick={toggleTheme}
-                className="p-2.5 rounded-lg bg-gray-100 dark:bg-white/[0.06] text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-white/[0.1] transition-all duration-180"
+                className="theme-toggle-btn p-2.5 rounded-lg bg-gray-100 dark:bg-white/[0.06] text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-white/[0.1] transition-all duration-180"
                 aria-label="Toggle Theme"
              >
                 {theme === 'dark' ? (
                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                ) : theme === 'oak' ? (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
                 ) : (
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
                 )}
@@ -166,18 +168,20 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, theme, toggleT
         <div className="flex md:hidden items-center gap-3">
             <button
                 onClick={toggleTheme}
-                className="p-2.5 rounded-lg bg-gray-100 dark:bg-white/[0.06] text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all duration-180 z-50 relative"
+                className="theme-toggle-btn p-2.5 rounded-lg bg-gray-100 dark:bg-white/[0.06] text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all duration-180 z-50 relative"
                 aria-label="Toggle Theme"
             >
                 {theme === 'dark' ? (
                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                ) : theme === 'oak' ? (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
                 ) : (
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
                 )}
             </button>
 
             <button
-                className="z-50 relative text-gray-900 dark:text-white p-2 focus:outline-none hover:text-brand-lime transition-colors duration-180"
+                className="mobile-menu-toggle z-50 relative text-gray-900 dark:text-white p-2 focus:outline-none hover:text-brand-lime transition-colors duration-180"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 aria-label="Toggle Menu"
             >
@@ -193,7 +197,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, theme, toggleT
 
       {/* Mobile Menu Overlay */}
       <div
-        className={`fixed inset-0 bg-white/98 dark:bg-gray-950/98 backdrop-blur-2xl z-40 transition-all duration-300 ease-out md:hidden ${
+        className={`mobile-menu-overlay fixed inset-0 bg-white/98 dark:bg-gray-950/98 backdrop-blur-2xl z-40 transition-all duration-300 ease-out md:hidden ${
           isMobileMenuOpen
             ? 'opacity-100 visible'
             : 'opacity-0 invisible pointer-events-none'
