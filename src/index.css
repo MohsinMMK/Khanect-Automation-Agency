@@ -424,6 +424,7 @@
 }
 .oak .shadow-lg.shadow-brand-lime\/30 {
     --tw-shadow-color: rgba(60, 36, 21, 0.3) !important;
+    box-shadow: 0 10px 15px -3px rgba(60, 36, 21, 0.3), 0 4px 6px -4px rgba(60, 36, 21, 0.3) !important;
 }
 .oak .from-brand-lime\/30 {
     --tw-gradient-from: rgba(60, 36, 21, 0.3) var(--tw-gradient-from-position) !important;
