@@ -454,6 +454,22 @@
 .oak .dark\:bg-brand-lime\/\[0\.08\] {
     background-color: rgba(60, 36, 21, 0.08) !important;
 }
+.oak ::-webkit-scrollbar-thumb:hover {
+    background: #3C2415 !important;
+}
+
+/* Oak theme pulse-ring animation for process badges */
+@keyframes oak-pulse-ring {
+    0% { box-shadow: 0 0 0 0 rgba(60, 36, 21, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(60, 36, 21, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(60, 36, 21, 0); }
+}
+.oak .process-badge {
+    animation: oak-pulse-ring 2.5s ease-out infinite !important;
+}
+.oak .process-badge:hover {
+    box-shadow: 0 0 0 8px rgba(60, 36, 21, 0.15) !important;
+}
 
 /* ==========================================
    SPOTLIGHT & GLOW EFFECTS
