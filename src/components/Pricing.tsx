@@ -4,6 +4,13 @@ import PricingCard from './PricingCard';
 import FAQItem from './FAQItem';
 import StaggerContainer from './StaggerContainer';
 import { pricingPackages } from '../data/pricing';
+import { useStructuredData } from '../hooks/useStructuredData';
+import {
+  generateOrganizationSchema,
+  generatePricingSchema,
+  generateBreadcrumbSchema,
+  combineSchemas
+} from '../utils/structuredData';
 
 interface PricingProps {
   onNavigate: (view: ViewState) => void;
@@ -11,6 +18,19 @@ interface PricingProps {
 
 const Pricing: React.FC<PricingProps> = ({ onNavigate }) => {
   const [openFAQ, setOpenFAQ] = useState<number | null>(null);
+
+  // Structured data for SEO rich snippets
+  useStructuredData(
+    combineSchemas(
+      generateOrganizationSchema(),
+      generateBreadcrumbSchema([
+        { name: 'Home', url: '/' },
+        { name: 'Pricing', url: '/pricing' }
+      ]),
+      ...generatePricingSchema(pricingPackages)
+    ),
+    'pricing-page'
+  );
 
   const handleStartFreeTrial = () => {
     onNavigate(ViewState.LANDING);

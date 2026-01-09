@@ -15,6 +15,14 @@ import { services } from '../data/services';
 import { industries } from '../data/industries';
 import { processSteps } from '../data/process';
 import { faqs } from '../data/faqs';
+import { useStructuredData } from '../hooks/useStructuredData';
+import {
+  generateOrganizationSchema,
+  generateFAQSchema,
+  generateHowToSchema,
+  generateWebSiteSchema,
+  combineSchemas
+} from '../utils/structuredData';
 
 interface LandingPageProps {
   onNavigate: (view: ViewState) => void;
@@ -60,6 +68,17 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
   const [activeTab, setActiveTab] = useState<'services' | 'industries'>('services');
   const [openFAQ, setOpenFAQ] = useState<string | null>(null);
   const [rateLimitCooldown, setRateLimitCooldown] = useState(0);
+
+  // Structured data for SEO rich snippets
+  useStructuredData(
+    combineSchemas(
+      generateOrganizationSchema(),
+      generateWebSiteSchema(),
+      generateFAQSchema(faqs),
+      generateHowToSchema(processSteps)
+    ),
+    'landing-page'
+  );
 
   // Memoized scroll handlers
   const scrollToContact = useCallback(() => {

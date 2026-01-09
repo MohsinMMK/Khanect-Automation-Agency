@@ -1,19 +1,53 @@
-import React, { useEffect } from 'react';
-import { useParams, Navigate, Link } from 'react-router-dom';
+import React, { useMemo } from 'react';
+import { useParams, Navigate, Link, useLocation } from 'react-router-dom';
 import { services } from '../data/services';
 import { industries } from '../data/industries';
 import { Service, Industry } from '../types';
 import CheckmarkIcon from './icons/CheckmarkIcon';
+import { useStructuredData } from '../hooks/useStructuredData';
+import {
+  generateOrganizationSchema,
+  generateServiceSchema,
+  generateIndustrySchema,
+  generateBreadcrumbSchema,
+  combineSchemas
+} from '../utils/structuredData';
 
 const ServiceDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
-  
+  const location = useLocation();
+
   // Combine services and industries to find the matching item
   // Type assertion needed because TypeScript might not infer that both arrays contain items with potential slugs
   const allItems = [...services, ...industries] as (Service | Industry)[];
   const item = allItems.find(s => s.slug === slug);
 
+  // Determine if this is a service or industry page
+  const isService = location.pathname.startsWith('/services/');
+  const isIndustry = location.pathname.startsWith('/industries/');
 
+  // Generate structured data based on page type
+  const structuredData = useMemo(() => {
+    if (!item) return null;
+
+    const breadcrumbs = generateBreadcrumbSchema([
+      { name: 'Home', url: '/' },
+      { name: isService ? 'Services' : 'Industries', url: '/#solutions' },
+      { name: item.title, url: location.pathname }
+    ]);
+
+    const itemSchema = isService
+      ? generateServiceSchema(item as Service)
+      : generateIndustrySchema(item as Industry);
+
+    return combineSchemas(
+      generateOrganizationSchema(),
+      breadcrumbs,
+      itemSchema
+    );
+  }, [item, isService, location.pathname]);
+
+  useStructuredData(structuredData, `detail-${slug}`);
 
   if (!item) {
     return <Navigate to="/" replace />;
