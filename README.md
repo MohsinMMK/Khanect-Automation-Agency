@@ -24,9 +24,10 @@ Khanect AI is a modern automation agency platform that helps businesses streamli
 ## Features
 
 ### AI Business Consultant
-- Intelligent chatbot powered by n8n workflows
+- Intelligent chatbot powered by Supabase Edge Functions + OpenAI GPT-4
 - Natural language processing for business queries
-- Session-based conversation persistence
+- Session-based conversation persistence (24-hour expiry)
+- Exponential backoff retry logic for reliability
 - Real-time response streaming
 
 ### Lead Management
@@ -49,17 +50,27 @@ Khanect AI is a modern automation agency platform that helps businesses streamli
 - HTML sanitization for email content (XSS prevention)
 - React Error Boundaries for graceful error handling
 
+### Accessibility & UX
+- ARIA labels and keyboard navigation support
+- Skip-to-content link for screen readers
+- Focus trapping in modals and menus
+- Debounced form validation (300ms)
+- Responsive design with mobile-optimized layouts
+- WebGL fallback for unsupported browsers
+
 ## Tech Stack
 
 | Category | Technology |
 |----------|------------|
 | Frontend | React 19.2, TypeScript 5.8 |
 | Styling | Tailwind CSS 4.1 |
+| UI Components | Radix UI + CVA (class-variance-authority) |
 | Build Tool | Vite 6.2 |
 | Authentication | Supabase Auth |
 | Database | Supabase (PostgreSQL) |
 | Edge Functions | Supabase Edge Functions (Deno) |
-| AI Backend | n8n Webhook Integration |
+| AI Backend | n8n Webhook + Supabase Edge Functions |
+| Animations | GSAP, Framer Motion, Three.js |
 | Charts | Recharts |
 | Smooth Scroll | Lenis |
 | Testing | Vitest, React Testing Library |
@@ -128,20 +139,31 @@ khanect-ai/
 │   ├── components/           # React components
 │   │   ├── __tests__/       # Component tests
 │   │   ├── icons/           # Custom SVG icons
-│   │   ├── AiConsultant.tsx # AI chatbot component
-│   │   ├── ClientPortal.tsx # Client dashboard
-│   │   ├── ErrorBoundary.tsx # Error handling
+│   │   ├── ui/              # UI primitives (badge, button, card, dialog, input, tooltip)
+│   │   ├── ClientPortal.tsx # Client dashboard with analytics
 │   │   ├── LandingPage.tsx  # Main landing page
+│   │   ├── Navbar.tsx       # Navigation with theme toggle
+│   │   ├── Pricing.tsx      # Pricing page
 │   │   └── ...
+│   ├── contexts/            # React contexts
+│   │   └── ThemeContext.tsx # Light/dark/oak theme management
 │   ├── data/                # Static data
 │   │   ├── faqs.ts
 │   │   ├── industries.ts
 │   │   ├── pricing.ts
 │   │   └── services.ts
+│   ├── hooks/               # Custom React hooks
+│   │   ├── useAnimatedText.ts
+│   │   ├── useBodyOverflow.ts
+│   │   ├── useDebouncedCallback.ts
+│   │   ├── useFocusTrap.ts
+│   │   ├── useGSAPStagger.ts
+│   │   └── useScrolled.ts
 │   ├── lib/                 # Library configs
 │   │   └── supabase.ts
 │   ├── services/            # API services
-│   │   └── chatbotService.ts
+│   │   ├── chatbotService.ts
+│   │   └── n8nService.ts
 │   ├── utils/               # Utilities
 │   │   ├── env.ts
 │   │   └── validation.ts
