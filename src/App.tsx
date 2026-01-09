@@ -15,6 +15,7 @@ import { useTheme } from './contexts/ThemeContext';
 import { ViewState } from './types';
 import { useScrolled } from './hooks/useScrolled';
 import { useBodyOverflow } from './hooks/useBodyOverflow';
+import { useCanonicalUrl } from './hooks/useCanonicalUrl';
 
 const App: React.FC = () => {
   const location = useLocation();
@@ -26,6 +27,9 @@ const App: React.FC = () => {
 
   // Lock body scroll when chat is open
   useBodyOverflow(chatOpen);
+
+  // Update canonical URL on route change for SEO
+  useCanonicalUrl();
 
   // Derive currentView from location for Navbar compatibility
   const getCurrentView = (): ViewState => {
