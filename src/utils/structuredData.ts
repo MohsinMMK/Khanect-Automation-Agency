@@ -15,7 +15,6 @@ export function generateOrganizationSchema() {
     description: ORG_DESCRIPTION,
     foundingDate: '2024',
     areaServed: 'Worldwide',
-    serviceType: 'Business Automation Services',
     knowsAbout: [
       'Business Automation',
       'AI Chatbots',
