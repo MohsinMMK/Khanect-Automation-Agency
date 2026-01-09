@@ -1,0 +1,11 @@
+# Robots.txt for khanect.com
+
+User-agent: *
+Allow: /
+
+# Disallow authenticated/private pages
+Disallow: /portal
+Disallow: /demo/
+
+# Sitemap location
+Sitemap: https://khanect.com/sitemap.xml
