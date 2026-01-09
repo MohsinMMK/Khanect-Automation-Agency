@@ -5,6 +5,9 @@
 
 const N8N_WEBHOOK_URL = import.meta.env.VITE_N8N_WEBHOOK_URL;
 
+// Request timeout in milliseconds (10 seconds)
+const REQUEST_TIMEOUT_MS = 10000;
+
 interface LeadData {
   submissionId: string;
   fullName: string;
@@ -30,6 +33,10 @@ export async function processLead(leadData: LeadData): Promise<ProcessLeadResult
     return { success: false, error: 'Lead processing not configured' };
   }
 
+  // Create AbortController for timeout handling
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
   try {
     const response = await fetch(N8N_WEBHOOK_URL, {
       method: 'POST',
@@ -37,7 +44,10 @@ export async function processLead(leadData: LeadData): Promise<ProcessLeadResult
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(leadData),
+      signal: controller.signal,
     });
+
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -47,6 +57,14 @@ export async function processLead(leadData: LeadData): Promise<ProcessLeadResult
 
     return { success: true };
   } catch (error) {
+    clearTimeout(timeoutId);
+
+    // Handle timeout specifically
+    if (error instanceof Error && error.name === 'AbortError') {
+      console.error('N8N webhook timeout after', REQUEST_TIMEOUT_MS, 'ms');
+      return { success: false, error: 'Request timed out. Please try again.' };
+    }
+
     console.error('N8N webhook error:', error);
     return { success: false, error: 'Failed to connect to lead processing service' };
   }

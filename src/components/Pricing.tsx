@@ -127,7 +127,41 @@ const Pricing: React.FC<PricingProps> = ({ onNavigate }) => {
             </p>
           </div>
 
-          <div className="overflow-x-auto">
+          {/* Mobile Card Layout */}
+          <div className="md:hidden space-y-6">
+            {[
+              { name: 'Starter', features: { 'Workflow Automations': 'Up to 3', 'CRM Integration': 'Basic', 'AI Chatbot': '—', 'Lead Generation': '—', 'Support': '24/7' } },
+              { name: 'Growth', popular: true, features: { 'Workflow Automations': 'Up to 7', 'CRM Integration': 'Advanced', 'AI Chatbot': '✓', 'Lead Generation': 'Automation', 'Support': '24/7' } },
+              { name: 'Scale', features: { 'Workflow Automations': 'Up to 15', 'CRM Integration': 'Full Ecosystem', 'AI Chatbot': 'Custom + KB', 'Lead Generation': 'Complete System', 'Support': '24/7' } },
+              { name: 'Enterprise', features: { 'Workflow Automations': 'Unlimited', 'CRM Integration': 'Multi-department', 'AI Chatbot': 'Custom Dev', 'Lead Generation': 'Custom', 'Support': '24/7' } },
+            ].map((plan) => (
+              <div key={plan.name} className={`glass-card p-6 rounded-2xl ${plan.popular ? 'ring-2 ring-brand-lime' : ''}`}>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white">{plan.name}</h3>
+                  {plan.popular && (
+                    <span className="px-2.5 py-1 bg-brand-lime text-black text-xs font-semibold rounded-full">Popular</span>
+                  )}
+                </div>
+                <ul className="space-y-3">
+                  {Object.entries(plan.features).map(([feature, value]) => (
+                    <li key={feature} className="flex items-center justify-between text-sm">
+                      <span className="text-gray-600 dark:text-gray-400">{feature}</span>
+                      <span className="font-medium text-gray-900 dark:text-white">
+                        {value === '✓' ? (
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-brand-lime">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                          </svg>
+                        ) : value}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop Table Layout */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full min-w-[800px] bg-white dark:bg-white/[0.03] rounded-3xl border border-black/[0.06] dark:border-white/[0.06] overflow-hidden">
               <thead className="bg-gray-50/80 dark:bg-white/[0.04]">
                 <tr>

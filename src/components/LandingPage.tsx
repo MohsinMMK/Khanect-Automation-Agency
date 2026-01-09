@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { ViewState } from '../types';
 import { validateEmail, validatePhone, validateUrl, validateName, validateBusinessName, validateMessage, MAX_LENGTHS } from '../utils/validation';
 import { supabase } from '../lib/supabase';
 import { processLead } from '../services/n8nService';
+import { useDebouncedCallback } from '../hooks/useDebouncedCallback';
 import TabSwitch from './TabSwitch';
 import ServiceCard from './ServiceCard';
 import ProcessStep from './ProcessStep';
@@ -60,6 +61,15 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
   const [openFAQ, setOpenFAQ] = useState<string | null>(null);
   const [rateLimitCooldown, setRateLimitCooldown] = useState(0);
 
+  // Memoized scroll handlers
+  const scrollToContact = useCallback(() => {
+    document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+  }, []);
+
+  const scrollToSolutions = useCallback(() => {
+    document.getElementById('solutions')?.scrollIntoView({ behavior: 'smooth' });
+  }, []);
+
   // Check and update rate limit cooldown
   useEffect(() => {
     const checkCooldown = () => {
@@ -109,13 +119,22 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
     }
   };
 
+  // Debounced validation to prevent rapid error message flickering
+  const debouncedValidate = useDebouncedCallback(
+    (fieldName: keyof FormData, value: string) => {
+      const error = validateField(fieldName, value);
+      setFormErrors(prev => ({ ...prev, [fieldName]: error }));
+    },
+    300
+  );
+
   const handleInputChangeWithValidation = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     const fieldName = id as keyof FormData;
     setFormData(prev => ({ ...prev, [fieldName]: value }));
     if (touchedFields.has(fieldName)) {
-      const error = validateField(fieldName, value);
-      setFormErrors(prev => ({ ...prev, [fieldName]: error }));
+      // Use debounced validation for smoother UX
+      debouncedValidate(fieldName, value);
     }
   };
 
@@ -236,6 +255,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
       // Store submission timestamp for rate limiting
       sessionStorage.setItem(RATE_LIMIT_KEY, Date.now().toString());
       setRateLimitCooldown(RATE_LIMIT_SECONDS);
+
+      // Auto-dismiss success message after 5 seconds
+      setTimeout(() => {
+        setSubmitStatus('idle');
+      }, 5000);
     } catch (error) {
       console.error('Form submission error:', error);
       setSubmitStatus('error');
@@ -269,14 +293,14 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
 
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mb-16">
               <button
-                onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={scrollToContact}
                 className="btn-primary text-lg px-8 py-4"
               >
                 Book a Demo
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
               </button>
               <button
-                onClick={() => document.getElementById('solutions')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={scrollToSolutions}
                 className="btn-secondary text-lg px-8 py-4"
               >
                 Discover Khanect
@@ -490,9 +514,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                       required
                       maxLength={MAX_LENGTHS.name}
                       disabled={isSubmitting}
+                      aria-invalid={touchedFields.has('fullName') && !!formErrors.fullName}
+                      aria-describedby={formErrors.fullName ? 'fullName-error' : undefined}
                     />
                     {touchedFields.has('fullName') && formErrors.fullName && (
-                      <p className="text-xs text-red-500">{formErrors.fullName}</p>
+                      <p id="fullName-error" className="text-xs text-red-500" role="alert">{formErrors.fullName}</p>
                     )}
                   </div>
                   <div className="space-y-1.5">
@@ -508,9 +534,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                       required
                       maxLength={MAX_LENGTHS.businessName}
                       disabled={isSubmitting}
+                      aria-invalid={touchedFields.has('businessName') && !!formErrors.businessName}
+                      aria-describedby={formErrors.businessName ? 'businessName-error' : undefined}
                     />
                     {touchedFields.has('businessName') && formErrors.businessName && (
-                      <p className="text-xs text-red-500">{formErrors.businessName}</p>
+                      <p id="businessName-error" className="text-xs text-red-500" role="alert">{formErrors.businessName}</p>
                     )}
                   </div>
                 </div>
@@ -528,9 +556,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                     required
                     maxLength={MAX_LENGTHS.email}
                     disabled={isSubmitting}
+                    aria-invalid={touchedFields.has('email') && !!formErrors.email}
+                    aria-describedby={formErrors.email ? 'email-error' : undefined}
                   />
                   {touchedFields.has('email') && formErrors.email && (
-                    <p className="text-xs text-red-500">{formErrors.email}</p>
+                    <p id="email-error" className="text-xs text-red-500" role="alert">{formErrors.email}</p>
                   )}
                 </div>
 
@@ -553,10 +583,12 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                       required
                       maxLength={MAX_LENGTHS.phone}
                       disabled={isSubmitting}
+                      aria-invalid={touchedFields.has('phone') && !!formErrors.phone}
+                      aria-describedby={formErrors.phone ? 'phone-error' : undefined}
                     />
                   </div>
                   {touchedFields.has('phone') && formErrors.phone && (
-                    <p className="text-xs text-red-500">{formErrors.phone}</p>
+                    <p id="phone-error" className="text-xs text-red-500" role="alert">{formErrors.phone}</p>
                   )}
                 </div>
 
@@ -574,9 +606,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                     placeholder="yourwebsite.com"
                     maxLength={MAX_LENGTHS.website}
                     disabled={isSubmitting}
+                    aria-invalid={touchedFields.has('website') && !!formErrors.website}
+                    aria-describedby={formErrors.website ? 'website-error' : undefined}
                   />
                   {touchedFields.has('website') && formErrors.website && (
-                    <p className="text-xs text-red-500">{formErrors.website}</p>
+                    <p id="website-error" className="text-xs text-red-500" role="alert">{formErrors.website}</p>
                   )}
                 </div>
 
@@ -602,9 +636,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                     rows={4}
                     maxLength={MAX_LENGTHS.message}
                     disabled={isSubmitting}
+                    aria-invalid={touchedFields.has('message') && !!formErrors.message}
+                    aria-describedby={formErrors.message ? 'message-error' : undefined}
                   />
                   {touchedFields.has('message') && formErrors.message && (
-                    <p className="text-xs text-red-500">{formErrors.message}</p>
+                    <p id="message-error" className="text-xs text-red-500" role="alert">{formErrors.message}</p>
                   )}
                 </div>
 
@@ -633,7 +669,32 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                       Sending...
                     </span>
                   ) : rateLimitCooldown > 0 ? (
-                    `Please wait ${rateLimitCooldown}s`
+                    <span className="flex items-center justify-center gap-2">
+                      <svg className="h-4 w-4" viewBox="0 0 36 36">
+                        <circle
+                          cx="18"
+                          cy="18"
+                          r="16"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          opacity="0.3"
+                        />
+                        <circle
+                          cx="18"
+                          cy="18"
+                          r="16"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeDasharray={`${(rateLimitCooldown / RATE_LIMIT_SECONDS) * 100} 100`}
+                          strokeLinecap="round"
+                          transform="rotate(-90 18 18)"
+                          className="transition-all duration-1000"
+                        />
+                      </svg>
+                      Wait {rateLimitCooldown}s
+                    </span>
                   ) : (
                     'Send message'
                   )}

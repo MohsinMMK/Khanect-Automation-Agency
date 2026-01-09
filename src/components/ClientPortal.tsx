@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   AreaChart,
   Area,
@@ -11,6 +11,15 @@ import {
 import { ChartDataPoint } from '../types';
 import { supabase, Client } from '../lib/supabase';
 import type { User } from '@supabase/supabase-js';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from './ui/dialog';
+import { Button } from './ui/button';
 
 const data: ChartDataPoint[] = [
   { month: 'Jan', cost: 4000, savings: 0 },
@@ -178,6 +187,9 @@ const getTypeColor = (type: ActivityItem['type']) => {
   }
 };
 
+// Activity feed pagination
+const ACTIVITIES_PER_PAGE = 5;
+
 const ClientPortal: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [client, setClient] = useState<Client | null>(null);
@@ -190,6 +202,12 @@ const ClientPortal: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState(new Date());
+
+  // Logout dialog state
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+
+  // Activity pagination state
+  const [activityPage, setActivityPage] = useState(1);
 
   // Check for reduced motion preference
   const prefersReducedMotion = useMemo(
@@ -311,7 +329,11 @@ const ClientPortal: React.FC = () => {
     }
   };
 
-  const handleLogout = async () => {
+  const handleLogout = useCallback(() => {
+    setShowLogoutDialog(true);
+  }, []);
+
+  const confirmLogout = useCallback(async () => {
     if (!supabase) return;
 
     await supabase.auth.signOut();
@@ -319,7 +341,24 @@ const ClientPortal: React.FC = () => {
     setClient(null);
     setEmail('');
     setPassword('');
-  };
+    setShowLogoutDialog(false);
+  }, []);
+
+  const cancelLogout = useCallback(() => {
+    setShowLogoutDialog(false);
+  }, []);
+
+  // Memoized activities with pagination
+  const allActivities = useMemo(() => generateDemoActivities(), []);
+  const visibleActivities = useMemo(
+    () => allActivities.slice(0, activityPage * ACTIVITIES_PER_PAGE),
+    [allActivities, activityPage]
+  );
+  const hasMoreActivities = visibleActivities.length < allActivities.length;
+
+  const loadMoreActivities = useCallback(() => {
+    setActivityPage((prev) => prev + 1);
+  }, []);
 
   // Loading state
   if (loading) {
@@ -568,7 +607,7 @@ const ClientPortal: React.FC = () => {
           </div>
 
           <div className="space-y-1 max-h-[400px] overflow-y-auto custom-scrollbar pr-2">
-            {generateDemoActivities().map((activity) => (
+            {visibleActivities.map((activity) => (
               <div
                 key={activity.id}
                 className="group p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 transition-all duration-200 cursor-default"
@@ -611,14 +650,53 @@ const ClientPortal: React.FC = () => {
             ))}
           </div>
 
-          {/* Footer */}
+          {/* Footer with Load More */}
           <div className="mt-4 pt-4 border-t border-gray-100 dark:border-white/5">
-            <button className="w-full text-sm text-gray-500 dark:text-gray-400 hover:text-brand-lime transition-colors py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-white/5">
-              View All Activity
-            </button>
-          </div>
+            {hasMoreActivities ? (
+              <button
+                onClick={loadMoreActivities}
+                className="w-full text-sm text-gray-500 dark:text-gray-400 hover:text-brand-lime transition-colors py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 flex items-center justify-center gap-2"
+              >
+                <span>Load More</span>
+                <span className="text-xs text-gray-400">
+                  ({visibleActivities.length}/{allActivities.length})
+                </span>
+              </button>
+            ) : (
+              <p className="text-center text-xs text-gray-400 dark:text-gray-500 py-2">
+                All activities loaded
+              </p>
+            )}
         </div>
       </div>
+    </div>
+
+      {/* Logout Confirmation Dialog */}
+      <Dialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Confirm Logout</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to log out of the client portal? You'll need to sign in again to access your dashboard.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex gap-2 sm:gap-0">
+            <Button
+              variant="outline"
+              onClick={cancelLogout}
+              className="flex-1 sm:flex-none"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={confirmLogout}
+              className="flex-1 sm:flex-none bg-red-500 hover:bg-red-600 text-white"
+            >
+              Logout
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

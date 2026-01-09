@@ -5,17 +5,43 @@
 
 import { supabase } from '../lib/supabase';
 
+// Session expiry duration (24 hours)
+const SESSION_EXPIRY_MS = 24 * 60 * 60 * 1000;
+const SESSION_STORAGE_KEY = 'khanect_chat_session';
+const SESSION_EXPIRY_KEY = 'khanect_chat_session_expiry';
+
+// Retry configuration
+const MAX_RETRIES = 3;
+const RETRY_ERRORS = [
+  'timeout',
+  'network',
+  'fetch',
+  'econnreset',
+  'etimedout',
+  'enotfound',
+  '429',
+  '502',
+  '503',
+  '504',
+];
+
 /**
  * Generate or retrieve a session ID for chat memory persistence.
- * Uses localStorage so the session persists across browser sessions.
+ * Sessions expire after 24 hours for security.
  */
 const getSessionId = (): string => {
-  const storageKey = 'khanect_chat_session';
-  let sessionId = localStorage.getItem(storageKey);
-  if (!sessionId) {
+  const expiry = localStorage.getItem(SESSION_EXPIRY_KEY);
+  const now = Date.now();
+  const isExpired = !expiry || now > parseInt(expiry, 10);
+
+  let sessionId = localStorage.getItem(SESSION_STORAGE_KEY);
+
+  if (!sessionId || isExpired) {
     sessionId = crypto.randomUUID();
-    localStorage.setItem(storageKey, sessionId);
+    localStorage.setItem(SESSION_STORAGE_KEY, sessionId);
+    localStorage.setItem(SESSION_EXPIRY_KEY, (now + SESSION_EXPIRY_MS).toString());
   }
+
   return sessionId;
 };
 
@@ -41,8 +67,6 @@ export const sendChatMessage = async (
   if (!supabase) {
     throw new Error("Supabase client is not configured. Please check your environment variables.");
   }
-
-  const MAX_RETRIES = 2;
 
   try {
     const sessionId = getSessionId();
@@ -84,19 +108,16 @@ export const sendChatMessage = async (
   } catch (error) {
     console.error("Chatbot API Error:", error);
 
-    // Retry logic for transient errors
+    // Retry logic with exponential backoff
     if (retryCount < MAX_RETRIES) {
-      const isRetryable =
-        error instanceof Error && (
-          error.message.includes('timeout') ||
-          error.message.includes('network') ||
-          error.message.includes('fetch') ||
-          error.message.includes('ECONNRESET')
-        );
+      const errorMessage = error instanceof Error ? error.message.toLowerCase() : '';
+      const isRetryable = RETRY_ERRORS.some(e => errorMessage.includes(e));
 
       if (isRetryable) {
-        console.log(`Retrying request (attempt ${retryCount + 1}/${MAX_RETRIES})...`);
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1s before retry
+        // Exponential backoff: 1s, 2s, 4s (max 8s)
+        const delay = Math.min(1000 * Math.pow(2, retryCount), 8000);
+        console.log(`Retrying request (attempt ${retryCount + 1}/${MAX_RETRIES}) in ${delay}ms...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
         return sendChatMessage(message, history, retryCount + 1);
       }
     }
@@ -123,14 +144,13 @@ export const sendChatMessage = async (
  * Clear the chat session and start fresh
  */
 export const clearChatSession = (): void => {
-  const storageKey = 'khanect_chat_session';
-  localStorage.removeItem(storageKey);
+  localStorage.removeItem(SESSION_STORAGE_KEY);
+  localStorage.removeItem(SESSION_EXPIRY_KEY);
 };
 
 /**
  * Get the current session ID (for debugging/analytics)
  */
 export const getCurrentSessionId = (): string | null => {
-  const storageKey = 'khanect_chat_session';
-  return localStorage.getItem(storageKey);
+  return localStorage.getItem(SESSION_STORAGE_KEY);
 };

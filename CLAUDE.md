@@ -3,6 +3,15 @@
 ## Overview
 Khanect AI is a Business Automation Agency SaaS platform - a modern React landing page and client portal for an AI automation agency that helps businesses streamline operations through AI-powered solutions and workflow automation.
 
+## Development Guidelines
+
+1. **Think first, then act** - Read relevant files in the codebase before making changes
+2. **Check in before major changes** - Verify the plan with the user before implementing significant modifications
+3. **Explain at a high level** - Provide concise explanations of what changes were made at each step
+4. **Keep it simple** - Every change should be as minimal as possible, impacting the least amount of code
+5. **Document the architecture** - Maintain this file to describe how the app works inside and out
+6. **Never speculate** - Always read files before answering questions about them. If a user references a specific file, read it first. Give grounded, hallucination-free answers
+
 ## Tech Stack
 
 | Category | Technology |

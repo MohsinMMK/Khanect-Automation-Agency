@@ -58,15 +58,16 @@ export function useGSAPStagger<T extends HTMLElement = HTMLDivElement>(
     });
 
     return () => {
-      // Cleanup
+      // Cleanup - kill specific animation and its ScrollTrigger
       if (animationRef.current) {
-        animationRef.current.kill();
-      }
-      ScrollTrigger.getAll().forEach(trigger => {
-        if (trigger.trigger === container) {
-          trigger.kill();
+        // Kill the ScrollTrigger associated with this animation
+        const scrollTrigger = animationRef.current.scrollTrigger;
+        if (scrollTrigger) {
+          scrollTrigger.kill();
         }
-      });
+        animationRef.current.kill();
+        animationRef.current = null;
+      }
     };
   }, [stagger, duration, y, ease, start, once]);
 

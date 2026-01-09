@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import {
   BotIcon,
   SendIcon,
@@ -37,6 +37,10 @@ export function AiAssistantCard({ onClose }: AiAssistantCardProps) {
   const [isLoading, setIsLoading] = useState(false);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Ref to track messages without causing useCallback recreation
+  const messagesRef = useRef<ChatMessage[]>([]);
+  messagesRef.current = messages;
 
   const scrollToBottom = () => {
     if (chatContainerRef.current) {
@@ -88,7 +92,8 @@ export function AiAssistantCard({ onClose }: AiAssistantCardProps) {
       setIsLoading(true);
 
       try {
-        const history = messages.map((m) => ({
+        // Use ref to avoid stale closure
+        const history = messagesRef.current.map((m) => ({
           role: m.role,
           parts: [{ text: m.text }],
         }));
@@ -108,7 +113,7 @@ export function AiAssistantCard({ onClose }: AiAssistantCardProps) {
         setIsLoading(false);
       }
     },
-    [input, isLoading, messages]
+    [input, isLoading] // Removed messages - using ref instead
   );
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -151,8 +156,9 @@ export function AiAssistantCard({ onClose }: AiAssistantCardProps) {
             size="icon"
             className="size-8 text-muted-foreground hover:text-foreground"
             onClick={onClose}
+            aria-label="Close chat"
           >
-            <XIcon className="size-4" />
+            <XIcon className="size-4" aria-hidden="true" />
           </Button>
         )}
       </div>
@@ -203,6 +209,9 @@ export function AiAssistantCard({ onClose }: AiAssistantCardProps) {
           <div
             ref={chatContainerRef}
             className="flex-1 min-h-0 overflow-y-auto p-4 space-y-4"
+            role="log"
+            aria-live="polite"
+            aria-label="Chat messages"
           >
             {messages.map((msg, idx) => (
               <div
@@ -258,6 +267,7 @@ export function AiAssistantCard({ onClose }: AiAssistantCardProps) {
               onKeyDown={handleKeyDown}
               placeholder="Ask me anything..."
               disabled={isLoading}
+              aria-label="Type your message"
               className="min-h-[80px] max-h-[120px] resize-none rounded-none border-none py-3 ps-4 pe-12 shadow-none focus-visible:ring-0 bg-transparent"
             />
 
@@ -270,8 +280,9 @@ export function AiAssistantCard({ onClose }: AiAssistantCardProps) {
               }`}
               disabled={!input.trim() || isLoading}
               onClick={() => handleSend()}
+              aria-label={isLoading ? "Sending message" : "Send message"}
             >
-              <SendIcon className="size-4" />
+              <SendIcon className="size-4" aria-hidden="true" />
             </Button>
           </div>
 

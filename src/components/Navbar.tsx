@@ -1,6 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { ViewState } from '../types';
 import KhanectBoltIcon from './icons/KhanectBoltIcon';
+import { useScrolled } from '../hooks/useScrolled';
+import { useBodyOverflow } from '../hooks/useBodyOverflow';
+import { useFocusTrap } from '../hooks/useFocusTrap';
 
 interface NavbarProps {
   currentView: ViewState;
@@ -10,70 +13,44 @@ interface NavbarProps {
 }
 
 const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, theme, toggleTheme }) => {
-  const [isScrolled, setIsScrolled] = useState(false);
+  const isScrolled = useScrolled(20);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
   // Lock body scroll when mobile menu is open
-  useEffect(() => {
-    if (isMobileMenuOpen) {
-      document.body.style.overflow = 'hidden';
+  useBodyOverflow(isMobileMenuOpen);
+
+  // Focus trap for mobile menu with ESC key support
+  const mobileMenuRef = useFocusTrap<HTMLDivElement>(
+    isMobileMenuOpen,
+    () => setIsMobileMenuOpen(false)
+  );
+
+  // Parameterized navigation handler
+  const handleNavigation = useCallback((targetView: ViewState, scrollTarget?: string) => {
+    if (currentView === targetView) {
+      if (scrollTarget) {
+        document.getElementById(scrollTarget)?.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     } else {
-      document.body.style.overflow = 'unset';
+      onNavigate(targetView);
+      if (scrollTarget) {
+        setTimeout(() => {
+          document.getElementById(scrollTarget)?.scrollIntoView({ behavior: 'smooth' });
+        }, 200);
+      }
     }
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [isMobileMenuOpen]);
+    setIsMobileMenuOpen(false);
+  }, [currentView, onNavigate]);
+
+  const handleLandingClick = () => handleNavigation(ViewState.LANDING);
+  const handlePricingClick = () => handleNavigation(ViewState.PRICING);
+  const handlePortalClick = () => handleNavigation(ViewState.PORTAL);
+  const handleContactClick = () => handleNavigation(ViewState.LANDING, 'contact');
 
   const handleNavigate = (view: ViewState) => {
-      onNavigate(view);
-      setIsMobileMenuOpen(false);
-  };
-
-  const handleLandingClick = () => {
-      if (currentView === ViewState.LANDING) {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-      } else {
-          onNavigate(ViewState.LANDING);
-      }
-      setIsMobileMenuOpen(false);
-  };
-
-  const handlePricingClick = () => {
-      if (currentView === ViewState.PRICING) {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-      } else {
-          onNavigate(ViewState.PRICING);
-      }
-      setIsMobileMenuOpen(false);
-  };
-
-  const handlePortalClick = () => {
-      if (currentView === ViewState.PORTAL) {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-      } else {
-          onNavigate(ViewState.PORTAL);
-      }
-      setIsMobileMenuOpen(false);
-  };
-
-  const handleContactClick = () => {
-    if (currentView === ViewState.LANDING) {
-        document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
-    } else {
-        onNavigate(ViewState.LANDING);
-        setTimeout(() => {
-             document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
-        }, 200);
-    }
+    onNavigate(view);
     setIsMobileMenuOpen(false);
   };
 
@@ -197,6 +174,10 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, theme, toggleT
 
       {/* Mobile Menu Overlay */}
       <div
+        ref={mobileMenuRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Navigation menu"
         className={`mobile-menu-overlay fixed inset-0 bg-white/98 dark:bg-gray-950/98 backdrop-blur-2xl z-40 transition-all duration-300 ease-out md:hidden ${
           isMobileMenuOpen
             ? 'opacity-100 visible'

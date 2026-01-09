@@ -3,6 +3,19 @@ import { useTheme } from '@/contexts/ThemeContext';
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 
+// Check if WebGL is supported
+function isWebGLSupported(): boolean {
+    try {
+        const canvas = document.createElement('canvas');
+        return !!(
+            window.WebGLRenderingContext &&
+            (canvas.getContext('webgl') || canvas.getContext('experimental-webgl'))
+        );
+    } catch {
+        return false;
+    }
+}
+
 interface DottedSurfaceProps extends Omit<React.ComponentProps<'div'>, 'ref'> {
     /** Reduce particles on mobile for performance */
     optimizeForMobile?: boolean;
@@ -28,6 +41,8 @@ export function DottedSurface({
     const animationIdRef = useRef<number>(0);
     const isCleanedUpRef = useRef<boolean>(false);
     const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+    const [webGLSupported, setWebGLSupported] = useState(true);
+    const [webGLError, setWebGLError] = useState(false);
 
     // Check for reduced motion preference
     useEffect(() => {
@@ -39,170 +54,202 @@ export function DottedSurface({
         return () => mediaQuery.removeEventListener('change', handler);
     }, []);
 
+    // Check for WebGL support
     useEffect(() => {
-        if (!containerRef.current) return;
+        setWebGLSupported(isWebGLSupported());
+    }, []);
+
+    useEffect(() => {
+        if (!containerRef.current || !webGLSupported) return;
 
         isCleanedUpRef.current = false;
         const container = containerRef.current;
 
-        // Responsive particle count
-        const isMobile = optimizeForMobile && window.innerWidth < 768;
-        const SEPARATION = isMobile ? 200 : 150;
-        const AMOUNTX = isMobile ? 25 : 40;
-        const AMOUNTY = isMobile ? 35 : 60;
+        // Declare refs for cleanup
+        let renderer: THREE.WebGLRenderer | null = null;
+        let geometry: THREE.BufferGeometry | null = null;
+        let material: THREE.PointsMaterial | null = null;
+        let handleResize: (() => void) | null = null;
 
-        // Scene setup
-        const scene = new THREE.Scene();
+        try {
+            // Responsive particle count
+            const isMobile = optimizeForMobile && window.innerWidth < 768;
+            const SEPARATION = isMobile ? 200 : 150;
+            const AMOUNTX = isMobile ? 25 : 40;
+            const AMOUNTY = isMobile ? 35 : 60;
 
-        // Camera positioned for better wave visibility
-        const camera = new THREE.PerspectiveCamera(
-            75,
-            window.innerWidth / window.innerHeight,
-            1,
-            10000,
-        );
-        camera.position.set(0, 400, 800);
-        camera.lookAt(0, 0, 0);
+            // Scene setup
+            const scene = new THREE.Scene();
 
-        const renderer = new THREE.WebGLRenderer({
-            alpha: true,
-            antialias: !isMobile, // Disable antialiasing on mobile for performance
-            powerPreference: 'high-performance',
-        });
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Cap pixel ratio
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setClearColor(0x000000, 0);
+            // Camera positioned for better wave visibility
+            const camera = new THREE.PerspectiveCamera(
+                75,
+                window.innerWidth / window.innerHeight,
+                1,
+                10000,
+            );
+            camera.position.set(0, 400, 800);
+            camera.lookAt(0, 0, 0);
 
-        container.appendChild(renderer.domElement);
+            renderer = new THREE.WebGLRenderer({
+                alpha: true,
+                antialias: !isMobile,
+                powerPreference: 'high-performance',
+            });
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setClearColor(0x000000, 0);
 
-        // Create geometry for all particles
-        const geometry = new THREE.BufferGeometry();
-        const positions: number[] = [];
-        const colors: number[] = [];
+            container.appendChild(renderer.domElement);
 
-        // Brand colors: Teal (#14B8A6) = rgb(20, 184, 166)
-        // Lime (#D3F36B) = rgb(211, 243, 107)
-        for (let ix = 0; ix < AMOUNTX; ix++) {
-            for (let iy = 0; iy < AMOUNTY; iy++) {
-                const x = ix * SEPARATION - (AMOUNTX * SEPARATION) / 2;
-                const y = 0;
-                const z = iy * SEPARATION - (AMOUNTY * SEPARATION) / 2;
+            // Create geometry for all particles
+            geometry = new THREE.BufferGeometry();
+            const positions: number[] = [];
+            const colors: number[] = [];
 
-                positions.push(x, y, z);
-
-                if (useBrandColors) {
-                    // Gradient from teal to lime based on position
-                    const t = (ix + iy) / (AMOUNTX + AMOUNTY);
-                    if (resolvedTheme === 'oak') {
-                        // Espresso (#3C2415) to Lighter Espresso (#4A3020) for oak
-                        const r = 60 / 255 + t * (74 - 60) / 255;
-                        const g = 36 / 255 + t * (48 - 36) / 255;
-                        const b = 21 / 255 + t * (32 - 21) / 255;
-                        colors.push(r, g, b);
-                    } else if (resolvedTheme === 'dark') {
-                        // Brighter colors for dark mode
-                        const r = 20 / 255 + t * (211 - 20) / 255;
-                        const g = 184 / 255 + t * (243 - 184) / 255;
-                        const b = 166 / 255 + t * (107 - 166) / 255;
-                        colors.push(r, g, b);
-                    } else {
-                        // Slightly darker for light mode visibility
-                        const r = (20 / 255 + t * (180 - 20) / 255) * 0.7;
-                        const g = (184 / 255 + t * (200 - 184) / 255) * 0.7;
-                        const b = (166 / 255 + t * (80 - 166) / 255) * 0.7;
-                        colors.push(r, g, b);
-                    }
-                } else {
-                    if (resolvedTheme === 'dark') {
-                        colors.push(0.7, 0.7, 0.7);
-                    } else {
-                        colors.push(0.3, 0.3, 0.3);
-                    }
-                }
-            }
-        }
-
-        geometry.setAttribute(
-            'position',
-            new THREE.Float32BufferAttribute(positions, 3),
-        );
-        geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
-
-        // Create material
-        const material = new THREE.PointsMaterial({
-            size: dotSize,
-            vertexColors: true,
-            transparent: true,
-            opacity: dotOpacity,
-            sizeAttenuation: true,
-        });
-
-        // Create points object
-        const points = new THREE.Points(geometry, material);
-        scene.add(points);
-
-        let count = 0;
-        const animationSpeed = prefersReducedMotion ? 0.02 : 0.08;
-
-        // Animation function
-        const animate = () => {
-            if (isCleanedUpRef.current) return;
-
-            animationIdRef.current = requestAnimationFrame(animate);
-
-            const positionAttribute = geometry.attributes.position;
-            const posArray = positionAttribute.array as Float32Array;
-
-            let i = 0;
+            // Brand colors: Teal (#14B8A6) = rgb(20, 184, 166)
+            // Lime (#D3F36B) = rgb(211, 243, 107)
             for (let ix = 0; ix < AMOUNTX; ix++) {
                 for (let iy = 0; iy < AMOUNTY; iy++) {
-                    const index = i * 3;
-                    // Create a gentle wave effect
-                    posArray[index + 1] =
-                        Math.sin((ix + count) * 0.3) * 40 +
-                        Math.sin((iy + count) * 0.4) * 40;
-                    i++;
+                    const x = ix * SEPARATION - (AMOUNTX * SEPARATION) / 2;
+                    const y = 0;
+                    const z = iy * SEPARATION - (AMOUNTY * SEPARATION) / 2;
+
+                    positions.push(x, y, z);
+
+                    if (useBrandColors) {
+                        const t = (ix + iy) / (AMOUNTX + AMOUNTY);
+                        if (resolvedTheme === 'oak') {
+                            const r = 60 / 255 + t * (74 - 60) / 255;
+                            const g = 36 / 255 + t * (48 - 36) / 255;
+                            const b = 21 / 255 + t * (32 - 21) / 255;
+                            colors.push(r, g, b);
+                        } else if (resolvedTheme === 'dark') {
+                            const r = 20 / 255 + t * (211 - 20) / 255;
+                            const g = 184 / 255 + t * (243 - 184) / 255;
+                            const b = 166 / 255 + t * (107 - 166) / 255;
+                            colors.push(r, g, b);
+                        } else {
+                            const r = (20 / 255 + t * (180 - 20) / 255) * 0.7;
+                            const g = (184 / 255 + t * (200 - 184) / 255) * 0.7;
+                            const b = (166 / 255 + t * (80 - 166) / 255) * 0.7;
+                            colors.push(r, g, b);
+                        }
+                    } else {
+                        if (resolvedTheme === 'dark') {
+                            colors.push(0.7, 0.7, 0.7);
+                        } else {
+                            colors.push(0.3, 0.3, 0.3);
+                        }
+                    }
                 }
             }
 
-            positionAttribute.needsUpdate = true;
-            renderer.render(scene, camera);
-            count += animationSpeed;
-        };
+            geometry.setAttribute(
+                'position',
+                new THREE.Float32BufferAttribute(positions, 3),
+            );
+            geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
 
-        // Handle window resize
-        const handleResize = () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        };
+            // Create material
+            material = new THREE.PointsMaterial({
+                size: dotSize,
+                vertexColors: true,
+                transparent: true,
+                opacity: dotOpacity,
+                sizeAttenuation: true,
+            });
 
-        window.addEventListener('resize', handleResize);
+            // Create points object
+            const points = new THREE.Points(geometry, material);
+            scene.add(points);
 
-        // Start animation
-        animate();
+            let count = 0;
+            const animationSpeed = prefersReducedMotion ? 0.02 : 0.08;
+
+            // Capture renderer for closure
+            const rendererRef = renderer;
+            const geometryRef = geometry;
+
+            // Animation function
+            const animate = () => {
+                if (isCleanedUpRef.current) return;
+
+                animationIdRef.current = requestAnimationFrame(animate);
+
+                const positionAttribute = geometryRef.attributes.position;
+                const posArray = positionAttribute.array as Float32Array;
+
+                let i = 0;
+                for (let ix = 0; ix < AMOUNTX; ix++) {
+                    for (let iy = 0; iy < AMOUNTY; iy++) {
+                        const index = i * 3;
+                        posArray[index + 1] =
+                            Math.sin((ix + count) * 0.3) * 40 +
+                            Math.sin((iy + count) * 0.4) * 40;
+                        i++;
+                    }
+                }
+
+                positionAttribute.needsUpdate = true;
+                rendererRef.render(scene, camera);
+                count += animationSpeed;
+            };
+
+            // Handle window resize
+            handleResize = () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                rendererRef.setSize(window.innerWidth, window.innerHeight);
+            };
+
+            window.addEventListener('resize', handleResize);
+
+            // Start animation
+            animate();
+        } catch (error) {
+            console.error('WebGL initialization failed:', error);
+            setWebGLError(true);
+        }
 
         // Cleanup function
         return () => {
             isCleanedUpRef.current = true;
-            window.removeEventListener('resize', handleResize);
+            if (handleResize) {
+                window.removeEventListener('resize', handleResize);
+            }
             cancelAnimationFrame(animationIdRef.current);
 
-            geometry.dispose();
-            material.dispose();
-            renderer.dispose();
-
-            if (container && renderer.domElement.parentNode === container) {
-                container.removeChild(renderer.domElement);
+            if (geometry) geometry.dispose();
+            if (material) material.dispose();
+            if (renderer) {
+                renderer.dispose();
+                if (container && renderer.domElement.parentNode === container) {
+                    container.removeChild(renderer.domElement);
+                }
             }
         };
-    }, [resolvedTheme, prefersReducedMotion, optimizeForMobile, useBrandColors, dotOpacity, dotSize]);
+    }, [resolvedTheme, prefersReducedMotion, optimizeForMobile, useBrandColors, dotOpacity, dotSize, webGLSupported]);
+
+    // Show CSS fallback if WebGL is not supported or failed
+    const showFallback = !webGLSupported || webGLError;
+
+    // Get fallback gradient colors based on theme
+    const getFallbackGradient = () => {
+        if (resolvedTheme === 'oak') {
+            return 'radial-gradient(ellipse at center, rgba(60,36,21,0.3) 0%, transparent 70%)';
+        } else if (resolvedTheme === 'dark') {
+            return 'radial-gradient(ellipse at center, rgba(20,184,166,0.15) 0%, transparent 70%)';
+        }
+        return 'radial-gradient(ellipse at center, rgba(20,184,166,0.1) 0%, transparent 70%)';
+    };
 
     return (
         <div
             ref={containerRef}
             className={cn('pointer-events-none absolute inset-0 -z-10', className)}
             aria-hidden="true"
+            style={showFallback ? { background: getFallbackGradient() } : undefined}
             {...props}
         >
             {children}

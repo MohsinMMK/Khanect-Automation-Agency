@@ -24,13 +24,45 @@ const badgeVariants = cva(
 )
 
 export interface BadgeProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof badgeVariants> {}
-
-function Badge({ className, variant, ...props }: BadgeProps) {
-  return (
-    <div className={cn(badgeVariants({ variant }), className)} {...props} />
-  )
+  extends React.HTMLAttributes<HTMLElement>,
+    VariantProps<typeof badgeVariants> {
+  asChild?: boolean
 }
+
+const Badge = React.forwardRef<HTMLElement, BadgeProps>(
+  ({ className, variant, onClick, onKeyDown, ...props }, ref) => {
+    const isInteractive = !!onClick
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
+      if (isInteractive && (e.key === "Enter" || e.key === " ")) {
+        e.preventDefault()
+        onClick?.(e as unknown as React.MouseEvent<HTMLElement>)
+      }
+      onKeyDown?.(e)
+    }
+
+    if (isInteractive) {
+      return (
+        <button
+          ref={ref as React.Ref<HTMLButtonElement>}
+          type="button"
+          className={cn(badgeVariants({ variant }), className)}
+          onClick={onClick as React.MouseEventHandler<HTMLButtonElement>}
+          onKeyDown={handleKeyDown as React.KeyboardEventHandler<HTMLButtonElement>}
+          {...(props as React.ButtonHTMLAttributes<HTMLButtonElement>)}
+        />
+      )
+    }
+
+    return (
+      <div
+        ref={ref as React.Ref<HTMLDivElement>}
+        className={cn(badgeVariants({ variant }), className)}
+        {...(props as React.HTMLAttributes<HTMLDivElement>)}
+      />
+    )
+  }
+)
+Badge.displayName = "Badge"
 
 export { Badge, badgeVariants }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import LandingPage from './components/LandingPage';
@@ -13,14 +13,19 @@ import AiAssistantCard from './components/ui/ai-assistant-card';
 import KhanectBoltIcon from './components/icons/KhanectBoltIcon';
 import { useTheme } from './contexts/ThemeContext';
 import { ViewState } from './types';
+import { useScrolled } from './hooks/useScrolled';
+import { useBodyOverflow } from './hooks/useBodyOverflow';
 
 const App: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { resolvedTheme, setTheme } = useTheme();
   const theme = resolvedTheme;
-  const [showScrollTop, setShowScrollTop] = useState(false);
+  const showScrollTop = useScrolled(500);
   const [chatOpen, setChatOpen] = useState(false);
+
+  // Lock body scroll when chat is open
+  useBodyOverflow(chatOpen);
 
   // Derive currentView from location for Navbar compatibility
   const getCurrentView = (): ViewState => {
@@ -31,14 +36,6 @@ const App: React.FC = () => {
   };
 
   const currentView = getCurrentView();
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setShowScrollTop(window.scrollY > 500);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   const toggleTheme = () => {
     // Cycle through: light -> dark -> oak -> light
@@ -70,20 +67,16 @@ const App: React.FC = () => {
     }
   };
 
-  // Prevent body scroll when chat is open (mobile experience)
-  useEffect(() => {
-    if (chatOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [chatOpen]);
-
   return (
     <div className="min-h-screen font-sans selection:bg-brand-lime/25 selection:text-gray-900 dark:selection:text-brand-lime dark:text-white transition-colors duration-300 relative flex flex-col">
+      {/* Skip to main content link for accessibility */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:bg-brand-lime focus:text-black focus:px-4 focus:py-2 focus:rounded-lg focus:font-medium"
+      >
+        Skip to main content
+      </a>
+
       <ScrollToTop />
       <div className="spotlight-glow"></div>
 
@@ -94,7 +87,7 @@ const App: React.FC = () => {
         toggleTheme={toggleTheme}
       />
 
-      <main className="flex-grow">
+      <main id="main-content" className="flex-grow" tabIndex={-1}>
         <ErrorBoundary>
           <Routes>
             <Route path="/" element={<LandingPage onNavigate={handleNavigate} />} />
