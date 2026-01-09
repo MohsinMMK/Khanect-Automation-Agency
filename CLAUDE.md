@@ -52,7 +52,9 @@ src/
 │   └── faqs.ts          # FAQ content
 ├── hooks/               # Custom React hooks
 │   ├── useAnimatedText.ts
-│   └── useGSAPStagger.ts
+│   ├── useCanonicalUrl.ts  # Dynamic canonical URL updates
+│   ├── useGSAPStagger.ts
+│   └── useStructuredData.ts # JSON-LD schema injection
 ├── lib/
 │   ├── supabase.ts      # Supabase client
 │   └── utils.ts         # cn() utility
@@ -60,7 +62,8 @@ src/
 │   ├── chatbotService.ts # Supabase Edge Function calls
 │   └── n8nService.ts    # N8N webhook integration
 ├── utils/
-│   ├── validation.ts    # Form validation
+│   ├── validation.ts       # Form validation
+│   ├── structuredData.ts   # SEO schema generators
 │   ├── formatMessage.tsx
 │   └── env.ts
 ├── test/
@@ -197,3 +200,38 @@ brand: {
 - Console/debugger removed in production
 - Mobile-optimized particle counts in 3D
 - Smooth scrolling with Lenis
+
+## SEO
+
+### Structured Data (JSON-LD)
+Rich snippets enabled via `useStructuredData` hook and schema generators in `src/utils/structuredData.ts`.
+
+| Page | Schemas |
+|------|---------|
+| Homepage | Organization, WebSite, FAQPage, HowTo |
+| Pricing | Organization, BreadcrumbList, Product/Offer |
+| Service Pages | Organization, BreadcrumbList, Service |
+| Industry Pages | Organization, BreadcrumbList, Service |
+
+**Key Files:**
+- `src/utils/structuredData.ts` - Schema generator functions
+- `src/hooks/useStructuredData.ts` - JSON-LD injection hook
+
+### Sitemap & Robots
+- `public/sitemap.xml` - All 12 indexable pages
+- `public/robots.txt` - Crawler directives, blocks `/portal` and `/demo/`
+
+### Canonical URLs
+- Static canonical in `index.html` for homepage
+- Dynamic canonicals via `useCanonicalUrl` hook in `src/hooks/useCanonicalUrl.ts`
+- Updates `og:url` and `twitter:url` meta tags on route change
+
+### Redirects (.htaccess)
+- HTTP → HTTPS (301 redirect)
+- www → non-www (301 redirect to `https://khanect.com`)
+- SPA routing fallback to `index.html`
+
+### Verification Tools
+- [Google Rich Results Test](https://search.google.com/test/rich-results)
+- [Schema Markup Validator](https://validator.schema.org/)
+- Google Search Console for indexing status
