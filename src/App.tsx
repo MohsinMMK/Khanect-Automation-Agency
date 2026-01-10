@@ -16,6 +16,7 @@ import { ViewState } from './types';
 import { useScrolled } from './hooks/useScrolled';
 import { useBodyOverflow } from './hooks/useBodyOverflow';
 import { useCanonicalUrl } from './hooks/useCanonicalUrl';
+import { Toaster } from '@/components/ui/sonner';
 
 const App: React.FC = () => {
   const location = useLocation();
@@ -139,6 +140,7 @@ const App: React.FC = () => {
       )}
 
       <Footer />
+      <Toaster />
     </div>
   );
 };
