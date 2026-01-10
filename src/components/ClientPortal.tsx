@@ -20,6 +20,7 @@ import {
   DialogTitle,
 } from './ui/dialog';
 import { Button } from './ui/button';
+import { toast } from 'sonner';
 
 const data: ChartDataPoint[] = [
   { month: 'Jan', cost: 4000, savings: 0 },
@@ -200,7 +201,6 @@ const ClientPortal: React.FC = () => {
 
   const [isLogging, setIsLogging] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [authError, setAuthError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState(new Date());
 
   // Logout dialog state
@@ -261,20 +261,20 @@ const ClientPortal: React.FC = () => {
 
       if (error) {
         console.error('Error fetching client data:', error);
-        setAuthError('Failed to load client data. Please contact support.');
+        toast.error('Failed to load client data. Please contact support.');
         setLoading(false);
         return;
       }
 
       if (!data) {
-        setAuthError('No client record found. Please contact support.');
+        toast.error('No client record found. Please contact support.');
         setLoading(false);
         return;
       }
 
       // Check if client status is active
       if (data.status !== 'active') {
-        setAuthError(`Your account is ${data.status}. Please contact support.`);
+        toast.error(`Your account is ${data.status}. Please contact support.`);
         await supabase.auth.signOut();
         setLoading(false);
         return;
@@ -284,7 +284,7 @@ const ClientPortal: React.FC = () => {
       setLoading(false);
     } catch (err) {
       console.error('Unexpected error:', err);
-      setAuthError('An unexpected error occurred. Please try again.');
+      toast.error('An unexpected error occurred. Please try again.');
       setLoading(false);
     }
   };
@@ -303,7 +303,6 @@ const ClientPortal: React.FC = () => {
     if (!email || !password || !supabase) return;
 
     setIsLogging(true);
-    setAuthError(null);
 
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -313,18 +312,19 @@ const ClientPortal: React.FC = () => {
 
       if (error) {
         console.error('Login error:', error);
-        setAuthError(error.message || 'Invalid email or password.');
+        toast.error(error.message || 'Invalid email or password.');
         setIsLogging(false);
         return;
       }
 
       if (data.user) {
+        toast.success('Welcome back!');
         // fetchClientData will be called by the auth state change listener
         setIsLogging(false);
       }
     } catch (err) {
       console.error('Unexpected login error:', err);
-      setAuthError('An unexpected error occurred. Please try again.');
+      toast.error('An unexpected error occurred. Please try again.');
       setIsLogging(false);
     }
   };
@@ -342,6 +342,7 @@ const ClientPortal: React.FC = () => {
     setEmail('');
     setPassword('');
     setShowLogoutDialog(false);
+    toast.success('You have been logged out.');
   }, []);
 
   const cancelLogout = useCallback(() => {
@@ -389,15 +390,6 @@ const ClientPortal: React.FC = () => {
                     Sign in to access your automation dashboard
                 </p>
             </div>
-
-            {authError && (
-              <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-500/30 rounded-lg">
-                <p className="text-sm text-red-600 dark:text-red-400 flex items-center gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                  {authError}
-                </p>
-              </div>
-            )}
 
             <form onSubmit={handleLogin} className="space-y-4">
                 {/* Floating Label - Email */}
