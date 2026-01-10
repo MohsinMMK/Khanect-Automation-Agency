@@ -23,6 +23,7 @@ import {
   generateWebSiteSchema,
   combineSchemas
 } from '../utils/structuredData';
+import { toast } from 'sonner';
 
 interface LandingPageProps {
   onNavigate: (view: ViewState) => void;
@@ -61,8 +62,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
   });
   const [countryCode, setCountryCode] = useState('+1');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
-  const [errorMessage, setErrorMessage] = useState('');
   const [formErrors, setFormErrors] = useState<FormErrors>({});
   const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
   const [activeTab, setActiveTab] = useState<'services' | 'industries'>('services');
@@ -179,8 +178,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
 
     // Check rate limiting
     if (rateLimitCooldown > 0) {
-      setSubmitStatus('error');
-      setErrorMessage(`Please wait ${rateLimitCooldown} seconds before submitting again.`);
+      toast.error(`Please wait ${rateLimitCooldown} seconds before submitting again.`);
       return;
     }
 
@@ -196,13 +194,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
     const hasErrors = Object.values(errors).some(error => error !== undefined);
     if (hasErrors) {
       setFormErrors(errors);
-      setSubmitStatus('error');
-      setErrorMessage('Please fix the errors above before submitting.');
+      toast.error('Please fix the errors above before submitting.');
       return;
     }
     setIsSubmitting(true);
-    setSubmitStatus('idle');
-    setErrorMessage('');
     setFormErrors({});
 
     try {
@@ -267,7 +262,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
         throw new Error('Unable to process your submission. Please try again.');
       }
 
-      setSubmitStatus('success');
       setFormData({ fullName: '', email: '', phone: '', businessName: '', website: '', message: '' });
       setFormErrors({});
       setTouchedFields(new Set());
@@ -275,14 +269,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
       sessionStorage.setItem(RATE_LIMIT_KEY, Date.now().toString());
       setRateLimitCooldown(RATE_LIMIT_SECONDS);
 
-      // Auto-dismiss success message after 5 seconds
-      setTimeout(() => {
-        setSubmitStatus('idle');
-      }, 5000);
+      toast.success("Thank you! We've received your submission and will be in touch soon.");
     } catch (error) {
       console.error('Form submission error:', error);
-      setSubmitStatus('error');
-      setErrorMessage(error instanceof Error ? error.message : 'Something went wrong. Please try again.');
+      toast.error(error instanceof Error ? error.message : 'Something went wrong. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -501,21 +491,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
               <p className="text-gray-500 dark:text-gray-400 mb-8">
                 We're a full service agency with experts ready to help. We'll get in touch within 24 hours.
               </p>
-
-              {/* Status Messages */}
-              {submitStatus === 'success' && (
-                <div className="mb-6 p-4 bg-green-500/10 border border-green-500/20 rounded-xl text-green-600 dark:text-green-400 text-sm">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="inline-block mr-2 mb-0.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                  Thank you! We've received your submission and will be in touch soon.
-                </div>
-              )}
-
-              {submitStatus === 'error' && (
-                <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-600 dark:text-red-400 text-sm">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="inline-block mr-2 mb-0.5"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
-                  {errorMessage}
-                </div>
-              )}
 
               {/* Form */}
               <form className="space-y-5" onSubmit={handleSubmit}>
