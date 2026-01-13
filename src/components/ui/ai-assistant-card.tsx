@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { ChatMessage } from "@/types";
-import { sendChatMessage } from "@/services/chatbotService";
+import { sendN8NChatMessage } from "@/services/n8nChatbotService";
 import { formatMessage } from "@/utils/formatMessage";
 import { TextShimmer } from "@/components/ui/TextShimmer";
 import KhanectBoltIcon from "@/components/icons/KhanectBoltIcon";
@@ -92,13 +92,8 @@ export function AiAssistantCard({ onClose }: AiAssistantCardProps) {
       setIsLoading(true);
 
       try {
-        // Use ref to avoid stale closure
-        const history = messagesRef.current.map((m) => ({
-          role: m.role,
-          parts: [{ text: m.text }],
-        }));
-
-        const { text } = await sendChatMessage(textToSend, history);
+        // n8n handles conversation memory via session ID
+        const { text } = await sendN8NChatMessage(textToSend);
         setMessages((prev) => [...prev, { role: "model", text: text }]);
       } catch (error) {
         const errorMessage =

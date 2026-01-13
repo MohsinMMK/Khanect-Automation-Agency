@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from 'react';
 import { ViewState } from '../types';
-import KhanectBoltIcon from './icons/KhanectBoltIcon';
 import { useScrolled } from '../hooks/useScrolled';
 import { useBodyOverflow } from '../hooks/useBodyOverflow';
 import { useFocusTrap } from '../hooks/useFocusTrap';
@@ -58,27 +57,21 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, theme, toggleT
     <nav
         className={`fixed top-0 w-full z-50 px-6 transition-all duration-300 ${
             isScrolled && !isMobileMenuOpen
-                ? 'py-3 bg-white/80 dark:bg-gray-950/80 navbar-scrolled backdrop-blur-xl border-b border-black/[0.06] dark:border-white/[0.06]'
-                : 'py-5 bg-transparent'
+                ? 'py-0 bg-white/80 dark:bg-gray-950/80 navbar-scrolled backdrop-blur-xl border-b border-black/[0.06] dark:border-white/[0.06]'
+                : 'py-0 bg-transparent'
         }`}
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         {/* Logo Area */}
         <button
           onClick={handleLandingClick}
-          className="flex items-center gap-3 group focus:outline-none z-50 relative"
+          className="flex items-center gap-0 group focus:outline-none z-50 relative"
         >
-          <div className="logo-icon w-8 h-8 bg-gray-900 dark:bg-white rounded-lg flex items-center justify-center transition-transform duration-180 group-hover:scale-105">
-             <KhanectBoltIcon
-               size={18}
-               fillClassName="fill-white dark:fill-gray-900"
-               strokeClassName="stroke-white dark:stroke-gray-900"
-             />
-          </div>
-          <span className="font-blockat text-xl tracking-widest">
-            <span className="logo-text text-gray-900 dark:text-white">KHAN</span>
-            <span className="text-brand-lime">ECT</span>
-          </span>
+          <img 
+            src="/logo-full.png" 
+            alt="Khanect" 
+            className="h-40 -mt-8 -mb-10 -ml-10 object-contain transition-transform duration-180 group-hover:scale-105"
+          />
         </button>
 
         {/* Desktop Navigation */}

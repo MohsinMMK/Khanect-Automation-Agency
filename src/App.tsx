@@ -21,8 +21,7 @@ import { Toaster } from '@/components/ui/sonner';
 const App: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { resolvedTheme, setTheme } = useTheme();
-  const theme = resolvedTheme;
+  const { theme, setTheme } = useTheme();
   const showScrollTop = useScrolled(500);
   const [chatOpen, setChatOpen] = useState(false);
 

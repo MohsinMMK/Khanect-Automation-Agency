@@ -90,30 +90,30 @@
 }
 
 .oak {
-    --background: 36 23% 84%;
-    --foreground: 24 47% 16%;
-    --card: 40 20% 90%;
-    --card-foreground: 24 47% 16%;
-    --popover: 40 20% 90%;
-    --popover-foreground: 24 47% 16%;
-    --primary: 24 47% 16%;
-    --primary-foreground: 36 23% 84%;
-    --secondary: 36 15% 78%;
-    --secondary-foreground: 24 47% 16%;
-    --muted: 36 15% 78%;
-    --muted-foreground: 24 30% 35%;
-    --accent: 24 47% 16%;
-    --accent-foreground: 36 23% 84%;
-    --destructive: 0 62.8% 40%;
-    --destructive-foreground: 36 23% 84%;
-    --border: 36 15% 75%;
-    --input: 36 15% 75%;
-    --ring: 24 47% 16%;
+    --background: oklch(0.88 0.015 85);
+    --foreground: oklch(0.28 0.05 55);
+    --card: oklch(0.90 0.012 85);
+    --card-foreground: oklch(0.28 0.05 55);
+    --popover: oklch(0.90 0.012 85);
+    --popover-foreground: oklch(0.28 0.05 55);
+    --primary: oklch(0.28 0.05 55);
+    --primary-foreground: oklch(0.88 0.015 85);
+    --secondary: oklch(0.84 0.012 85);
+    --secondary-foreground: oklch(0.28 0.05 55);
+    --muted: oklch(0.84 0.012 85);
+    --muted-foreground: oklch(0.45 0.04 55);
+    --accent: oklch(0.28 0.05 55);
+    --accent-foreground: oklch(0.88 0.015 85);
+    --destructive: oklch(0.5 0.2 25);
+    --destructive-foreground: oklch(0.88 0.015 85);
+    --border: oklch(0.82 0.012 85);
+    --input: oklch(0.82 0.012 85);
+    --ring: oklch(0.28 0.05 55);
 }
 
 @layer base {
     * {
-        border-color: hsl(var(--border));
+        border-color: var(--border);
     }
 
     html {
@@ -121,8 +121,8 @@
     }
 
     body {
-        background-color: hsl(var(--background));
-        color: hsl(var(--foreground));
+        background-color: var(--background);
+        color: var(--foreground);
         overflow-x: hidden;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
