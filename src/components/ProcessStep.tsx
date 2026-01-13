@@ -1,6 +1,5 @@
 import React from 'react';
 import CalendarIcon from './icons/CalendarIcon';
-import { Meteors } from './ui/meteors';
 
 interface ProcessStepProps {
   number: number;
@@ -68,9 +67,7 @@ const ProcessStep: React.FC<ProcessStepProps> = ({
   return (
     <div className="relative">
       <div className="process-card glass-card p-6 rounded-2xl hover:bg-gray-50 dark:hover:bg-white/5 transition-all duration-500 ease-fluid hover:-translate-y-2 hover:shadow-xl h-full group relative overflow-hidden">
-        {/* Meteor effect - visible on hover */}
-        <Meteors number={10} />
-
+        
         <div className="flex items-start gap-4 mb-4 relative z-10">
           {/* Number badge with pulse animation */}
           <div className="process-badge flex-shrink-0 w-12 h-12 bg-brand-lime rounded-full flex items-center justify-center text-black font-bold text-xl shadow-lg shadow-brand-lime/30 relative">

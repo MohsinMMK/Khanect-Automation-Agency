@@ -67,7 +67,6 @@ export default {
         'morph': 'morph 8s ease-in-out infinite',
         'claude-fade': 'claudeFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
         'stagger-reveal': 'staggerReveal 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-        'meteor-effect': 'meteor 5s linear infinite',
       },
       keyframes: {
         fadeInUp: {
@@ -99,11 +98,7 @@ export default {
           '0%': { opacity: '0', transform: 'translateY(16px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
-        meteor: {
-          '0%': { transform: 'rotate(200deg) translateX(0)', opacity: '1' },
-          '70%': { opacity: '1' },
-          '100%': { transform: 'rotate(200deg) translateX(500px)', opacity: '0' },
-        },
+
       }
     },
   },

@@ -125,7 +125,7 @@ FROM_EMAIL=                # Sender email
 - **GSAP**: Scroll-triggered stagger animations (`useGSAPStagger`)
 - **Framer Motion**: Component animations (`useAnimatedText`)
 - **Three.js**: 3D dotted surface background
-- **CSS**: Keyframe animations (meteors, fade-in, float)
+- **CSS**: Keyframe animations (fade-in, float)
 
 ### State Management
 
@@ -230,13 +230,13 @@ object-contain /* Preserve aspect ratio */
 | `src/components/LandingPage.tsx`          | Main landing page with form logic |
 | `src/components/ui/ai-assistant-card.tsx` | Floating AI chat widget           |
 | `src/components/ui/dotted-surface.tsx`    | Three.js 3D background            |
-| `src/components/ui/meteors.tsx`           | Meteor particle effect            |
-| `src/contexts/ThemeContext.tsx`           | Theme state management            |
-| `src/services/chatbotService.ts`          | AI chat API integration           |
-| `src/services/n8nService.ts`              | Lead processing webhook           |
-| `src/utils/validation.ts`                 | Form validation logic             |
-| `tailwind.config.js`                      | Custom theme configuration        |
-| `vite.config.ts`                          | Build configuration with chunking |
+
+| `src/contexts/ThemeContext.tsx` | Theme state management |
+| `src/services/chatbotService.ts` | AI chat API integration |
+| `src/services/n8nService.ts` | Lead processing webhook |
+| `src/utils/validation.ts` | Form validation logic |
+| `tailwind.config.js` | Custom theme configuration |
+| `vite.config.ts` | Build configuration with chunking |
 
 ## Testing
 
