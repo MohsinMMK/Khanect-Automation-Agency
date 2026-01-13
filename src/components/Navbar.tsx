@@ -70,7 +70,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, theme, toggleT
           <img 
             src="/logo-full.png" 
             alt="Khanect" 
-            className="h-40 -mt-8 -mb-10 -ml-10 object-contain transition-transform duration-180 group-hover:scale-105"
+            className="h-40 -mt-6 -mb-10 -ml-10 object-contain transition-transform duration-180 group-hover:scale-105"
           />
         </button>
 

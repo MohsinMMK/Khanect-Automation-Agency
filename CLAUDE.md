@@ -196,7 +196,7 @@ The navbar logo uses a combined image (`/public/logo-full.png`) containing both 
 ```css
 /* Current logo classes in Navbar.tsx */
 h-40           /* Height: 160px */
--mt-8          /* Negative top margin to reduce top spacing */
+-mt-6          /* Negative top margin for vertical positioning */
 -mb-10         /* Negative bottom margin to keep navbar compact */
 -ml-10         /* Negative left margin to align with page content */
 object-contain /* Preserve aspect ratio */
