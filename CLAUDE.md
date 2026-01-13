@@ -179,7 +179,14 @@ The app supports 3 themes (no system preference option):
 
 - Theme context: `src/contexts/ThemeContext.tsx`
 - CSS variables: `src/index.css` (`:root`, `.dark`, `.oak` blocks)
-- Toggle cycles: Light → Dark → Oak → Light
+- **Default theme**: Oak
+- Toggle cycles: Oak → Light → Dark → Oak
+
+### Mobile Navbar
+
+- **Contact icon button** - Email icon that scrolls to contact section
+- **Hamburger menu** - Opens overlay with nav links and theme toggle
+- Theme toggle is inside the mobile menu overlay (not in header)
 
 ## Fonts
 
