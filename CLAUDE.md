@@ -15,7 +15,7 @@ Business Automation Agency SaaS platform - React landing page and client portal 
 - **Framework**: React 19.2 + Vite 6 + TypeScript
 - **Styling**: Tailwind CSS v4 + CVA components
 - **Backend**: Supabase (PostgreSQL + Auth) + N8N webhooks
-- **Animations**: GSAP, Framer Motion, Three.js
+- **Animations**: GSAP, Framer Motion, Three.js (Shader Lines)
 - **Package Manager**: Bun
 
 ## Commands
@@ -138,6 +138,7 @@ All logos use `public/logo-full.png` (combined icon + "KHANECT" text).
 | `src/App.tsx`                             | Main routing + chat widget                   |
 | `src/components/LandingPage.tsx`          | Landing page + contact form                  |
 | `src/components/Navbar.tsx`               | Navigation + theme toggle                    |
+| `src/components/ui/shader-lines.tsx`      | Hero background shader animation             |
 | `src/components/ui/ai-assistant-card.tsx` | AI chat widget                               |
 | `src/contexts/ThemeContext.tsx`           | Theme state                                  |
 | `src/services/n8nChatbotService.ts`       | Chat API                                     |

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { ShaderAnimation } from './ui/shader-lines';
 import { ViewState } from '../types';
 import { validateEmail, validatePhone, validateUrl, validateName, validateBusinessName, validateMessage, MAX_LENGTHS } from '../utils/validation';
 import { supabase } from '../lib/supabase';
@@ -281,6 +282,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
     <>
       {/* Hero Section */}
       <header className="relative pt-32 lg:pt-40 pb-20 lg:pb-32 px-6 min-h-screen flex items-center overflow-hidden">
+        {/* Animated Background */}
+        <div className="absolute inset-0 z-0 opacity-40 dark:opacity-60 pointer-events-none">
+          <ShaderAnimation />
+        </div>
 
         <div className="max-w-7xl mx-auto w-full flex flex-col items-center justify-center text-center relative z-10">
 
@@ -310,21 +315,24 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
             </button>
           </div>
 
-          <div className="flex items-center justify-center gap-4">
-             <div className="flex -space-x-3">
-               {[1,2,3].map(i => (
-                   <div key={i} className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 border-2 border-white dark:border-gray-950 flex items-center justify-center overflow-hidden relative z-0 transition-transform hover:z-10 hover:scale-110 duration-300">
-                       <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${i*135}`} alt="User" />
-                   </div>
-               ))}
-             </div>
-             <div className="text-left">
-               <div className="text-2xl font-bold text-gray-900 dark:text-white">15+</div>
-               <div className="text-xs text-gray-500">people joined us and <br/> choose simplicity</div>
-             </div>
           </div>
 
+        {/* Social Proof - Bottom Left */}
+        <div className="absolute bottom-8 left-8 z-20 hidden md:flex items-center gap-4">
+            <div className="flex -space-x-3">
+            {[1,2,3].map(i => (
+                <div key={i} className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 border-2 border-white dark:border-gray-950 flex items-center justify-center overflow-hidden relative z-0 transition-transform hover:z-10 hover:scale-110 duration-300">
+                    <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${i*135}`} alt="User" />
+                </div>
+            ))}
+            </div>
+            <div className="text-left">
+            <div className="text-2xl font-bold text-gray-900 dark:text-white">15+</div>
+            <div className="text-xs text-gray-500">people joined us and <br/> choose simplicity</div>
+            </div>
         </div>
+
+
       </header>
 
       {/* Solutions Section */}
