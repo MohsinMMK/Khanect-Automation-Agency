@@ -10,7 +10,6 @@ import ProcessStep from './ProcessStep';
 import FAQItem from './FAQItem';
 import StaggerContainer from './StaggerContainer';
 import CountryCodeSelect from './CountryCodeSelect';
-import { DottedSurface } from './ui/dotted-surface';
 import { services } from '../data/services';
 import { industries } from '../data/industries';
 import { processSteps } from '../data/process';
@@ -282,106 +281,49 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
     <>
       {/* Hero Section */}
       <header className="relative pt-32 lg:pt-40 pb-20 lg:pb-32 px-6 min-h-screen flex items-center overflow-hidden">
-        {/* Animated Background - Hero Only */}
-        <DottedSurface />
-        <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center relative z-10">
 
-          {/* Left Content */}
-          <div className="text-left">
-            <h1 className="font-logo text-2xl md:text-3xl font-bold tracking-tight mb-8 text-gray-900 dark:text-white uppercase">
-              DEEP <span className="inline-block relative">
-                <span className="relative z-10">WORK</span>
-                <span className="absolute bottom-2 left-0 w-full h-2 bg-brand-lime/20 -rotate-1 z-0"></span>
-              </span>
-              <br />MADE POSSIBLE.
-            </h1>
+        <div className="max-w-7xl mx-auto w-full flex flex-col items-center justify-center text-center relative z-10">
 
-            <p className="text-lg text-gray-500 dark:text-gray-400 max-w-lg mb-12 leading-relaxed">
-              Our platform is designed with predictive AI in mind, making focus automatic and mitigating overload risk for your business.
-            </p>
+          {/* Centered Content */}
+          <h1 
+            className="font-logo font-bold tracking-tight mb-12 text-gray-900 dark:text-white leading-tight whitespace-nowrap" 
+            style={{ fontSize: 'clamp(24px, 5vw, 60px)' }}
+          >
+            Voices That Connect.<br />
+            Systems That Sync.<br />
+            AI That Delivers.
+          </h1>
 
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mb-16">
-              <button
-                onClick={scrollToContact}
-                className="btn-primary text-lg px-8 py-4"
-              >
-                Book a Demo
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
-              </button>
-              <button
-                onClick={scrollToSolutions}
-                className="btn-secondary text-lg px-8 py-4"
-              >
-                Discover Khanect
-              </button>
-            </div>
-
-            <div className="flex items-center gap-4">
-               <div className="flex -space-x-3">
-                  {[1,2,3].map(i => (
-                      <div key={i} className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 border-2 border-white dark:border-gray-950 flex items-center justify-center overflow-hidden relative z-0 transition-transform hover:z-10 hover:scale-110 duration-300">
-                          <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${i*135}`} alt="User" />
-                      </div>
-                  ))}
-               </div>
-               <div>
-                  <div className="text-2xl font-bold text-gray-900 dark:text-white">15+</div>
-                  <div className="text-xs text-gray-500">people joined us and <br/> choose simplicity</div>
-               </div>
-            </div>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
+            <button
+              onClick={scrollToContact}
+              className="btn-primary text-lg px-8 py-4"
+            >
+              Book a Demo
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+            </button>
+            <button
+              onClick={scrollToSolutions}
+              className="btn-secondary text-lg px-8 py-4"
+            >
+              Discover Khanect
+            </button>
           </div>
 
-          {/* Right Visuals */}
-          <div className="relative h-[600px] w-full hidden lg:block perspective-1000 animate-fade-in">
-
-             {/* Main Central Visual */}
-             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[450px] h-[450px] opacity-80 z-10">
-                 {/* Backdrop to block dotted animation */}
-                 <div className="absolute inset-0 rounded-full bg-white/80 dark:bg-gray-950/90 backdrop-blur-xl"></div>
-                 <div className="absolute inset-0 bg-brand-lime/10 blur-[100px] rounded-full animate-pulse-slow"></div>
-                 <div className="absolute inset-0 animate-morph" style={{
-                    background: 'radial-gradient(circle at 30% 30%, rgba(211,243,107,0.1) 0%, rgba(0,0,0,0) 70%)',
-                    boxShadow: 'inset 0 0 20px rgba(211,243,107,0.05), inset 10px 10px 40px rgba(255,255,255,0.05), 0 0 0 1px rgba(255,255,255,0.05)',
-                    backdropFilter: 'blur(8px)',
-                 }}></div>
-                 <div className="absolute inset-4 animate-morph" style={{
-                    animationDelay: '-2s',
-                    background: 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(211,243,107,0.05) 50%, rgba(0,0,0,0) 100%)',
-                    boxShadow: 'inset -10px -10px 30px rgba(0,0,0,0.5)',
-                    borderRadius: '50% 50% 50% 50% / 50% 50% 50% 50%',
-                    transform: 'rotate(45deg)'
-                 }}></div>
-                 <div className="absolute top-1/4 left-1/4 w-1/2 h-1/2 bg-brand-lime/20 rounded-full blur-[40px] mix-blend-screen animate-pulse-slow"></div>
+          <div className="flex items-center justify-center gap-4">
+             <div className="flex -space-x-3">
+               {[1,2,3].map(i => (
+                   <div key={i} className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 border-2 border-white dark:border-gray-950 flex items-center justify-center overflow-hidden relative z-0 transition-transform hover:z-10 hover:scale-110 duration-300">
+                       <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${i*135}`} alt="User" />
+                   </div>
+               ))}
              </div>
-
-             {/* Floating Card 1 */}
-             <div className="absolute top-[10%] right-[5%] animate-float z-20">
-                <div className="glass-card p-5 rounded-2xl w-64">
-                    <div className="flex justify-between items-start mb-6">
-                        <div className="w-10 h-10 rounded-xl bg-white/[0.06] flex items-center justify-center text-white">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
-                        </div>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
-                    </div>
-                    <div className="text-2xl font-semibold text-gray-900 dark:text-white mb-1">-75%</div>
-                    <div className="text-xs text-gray-500 font-medium">Avg. Risk Mitigation Score</div>
-                </div>
-             </div>
-
-             {/* Floating Card 2 */}
-             <div className="absolute bottom-[15%] left-[0%] animate-float-delayed z-20">
-                <div className="glass-card p-5 rounded-2xl w-64">
-                     <div className="flex justify-between items-start mb-6">
-                        <div className="w-10 h-10 rounded-xl bg-white/[0.06] flex items-center justify-center text-white">
-                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-                        </div>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
-                    </div>
-                    <div className="text-2xl font-semibold text-gray-900 dark:text-white mb-1">+2.3h</div>
-                    <div className="text-xs text-gray-500 font-medium">Weekly Focus Hours Recovered</div>
-                </div>
+             <div className="text-left">
+               <div className="text-2xl font-bold text-gray-900 dark:text-white">15+</div>
+               <div className="text-xs text-gray-500">people joined us and <br/> choose simplicity</div>
              </div>
           </div>
+
         </div>
       </header>
 

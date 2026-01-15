@@ -159,6 +159,29 @@ html {
     --ring: oklch(0.28 0.05 55);
 }
 
+/* Dusk Theme - Dusk Blue (#26538D) & Azure Mist (#F0FFFF) */
+.dusk {
+    --background: oklch(0.98 0.008 200);
+    --foreground: oklch(0.35 0.08 250);
+    --card: oklch(0.99 0.005 200);
+    --card-foreground: oklch(0.35 0.08 250);
+    --popover: oklch(0.99 0.005 200);
+    --popover-foreground: oklch(0.35 0.08 250);
+    --primary: oklch(0.35 0.08 250);
+    --primary-foreground: oklch(0.98 0.008 200);
+    --secondary: oklch(0.95 0.006 200);
+    --secondary-foreground: oklch(0.35 0.08 250);
+    --muted: oklch(0.95 0.006 200);
+    --muted-foreground: oklch(0.50 0.05 250);
+    --accent: oklch(0.35 0.08 250);
+    --accent-foreground: oklch(0.98 0.008 200);
+    --destructive: oklch(0.5 0.2 25);
+    --destructive-foreground: oklch(0.98 0.008 200);
+    --border: oklch(0.90 0.012 200);
+    --input: oklch(0.90 0.012 200);
+    --ring: oklch(0.35 0.08 250);
+}
+
 @layer base {
     * {
         border-color: var(--border);
@@ -554,6 +577,230 @@ html {
 }
 
 /* ==========================================
+   DUSK THEME OVERRIDES
+   ========================================== */
+
+/* Dusk primary button */
+.dusk .btn-primary {
+    background: #26538D;
+    color: #F0FFFF;
+}
+.dusk .btn-primary:hover {
+    background: #1E4270;
+    box-shadow: 0 8px 24px -8px rgba(38, 83, 141, 0.4);
+}
+
+/* Dusk secondary button */
+.dusk .btn-secondary {
+    color: #26538D;
+    border-color: rgba(38, 83, 141, 0.2);
+}
+.dusk .btn-secondary:hover {
+    border-color: rgba(38, 83, 141, 0.4);
+    background: rgba(38, 83, 141, 0.08);
+    color: #26538D;
+}
+
+/* Dusk tertiary button */
+.dusk .btn-tertiary {
+    color: #3A6BA8;
+}
+.dusk .btn-tertiary:hover {
+    color: #26538D;
+    background: rgba(38, 83, 141, 0.08);
+}
+
+/* Dusk theme toggle button */
+.dusk .theme-toggle-btn {
+    background: rgba(38, 83, 141, 0.08);
+    color: #3A6BA8;
+}
+.dusk .theme-toggle-btn:hover {
+    background: rgba(38, 83, 141, 0.15);
+    color: #26538D;
+}
+
+/* Dusk navbar styles */
+.dusk .navbar-scrolled {
+    background: rgba(240, 255, 255, 0.9);
+    border-color: rgba(38, 83, 141, 0.06);
+}
+
+/* Dusk text colors for navigation */
+.dusk .nav-link {
+    color: #3A6BA8;
+}
+.dusk .nav-link:hover,
+.dusk .nav-link-active {
+    color: #26538D;
+}
+
+/* Dusk mobile menu overlay */
+.dusk .mobile-menu-overlay {
+    background: rgba(240, 255, 255, 0.98);
+}
+
+/* Dusk mobile menu toggle */
+.dusk .mobile-menu-toggle {
+    color: #26538D;
+}
+
+/* Dusk logo - apply Dusk Blue color filter to logo image */
+.dusk .logo-icon {
+    background: #26538D;
+}
+.dusk .logo-icon svg {
+    fill: #F0FFFF;
+    stroke: #F0FFFF;
+}
+
+/* Dusk logo text */
+.dusk .logo-text {
+    color: #26538D;
+}
+
+/* Apply Dusk Blue tint to the full logo image in navbar */
+.dusk img[alt="Khanect"] {
+    filter: brightness(0) saturate(100%) invert(25%) sepia(45%) saturate(850%) hue-rotate(185deg) brightness(95%) contrast(90%);
+}
+
+/* Dusk selection color */
+.dusk ::selection {
+    background: rgba(38, 83, 141, 0.25);
+    color: inherit;
+}
+
+/* Dusk text color overrides */
+.dusk .text-gray-900 {
+    color: #26538D !important;
+}
+.dusk .text-gray-800 {
+    color: #26538D !important;
+}
+.dusk .text-gray-700 {
+    color: #3A6BA8 !important;
+}
+.dusk .text-gray-600 {
+    color: #3A6BA8 !important;
+}
+.dusk .text-gray-500 {
+    color: #5A8BC8 !important;
+}
+.dusk .border-gray-300 {
+    border-color: rgba(38, 83, 141, 0.3) !important;
+}
+.dusk .border-gray-200 {
+    border-color: rgba(38, 83, 141, 0.2) !important;
+}
+.dusk .hover\:border-gray-500:hover {
+    border-color: rgba(38, 83, 141, 0.6) !important;
+}
+
+/* Dusk - replace brand-lime with dusk blue */
+.dusk .text-brand-lime {
+    color: #26538D !important;
+}
+.dusk .bg-brand-lime {
+    background-color: #26538D !important;
+}
+/* Text inside bg-brand-lime containers should be light in dusk theme */
+.dusk .bg-brand-lime,
+.dusk .bg-brand-lime .text-gray-900,
+.dusk .bg-brand-lime .text-gray-800,
+.dusk .bg-brand-lime .text-gray-800\/90 {
+    color: #F0FFFF !important;
+}
+.dusk .bg-brand-lime .bg-gray-900 {
+    background-color: #F0FFFF !important;
+    color: #26538D !important;
+}
+.dusk .bg-brand-lime .text-white {
+    color: #26538D !important;
+}
+.dusk .bg-brand-lime\/10 {
+    background-color: rgba(38, 83, 141, 0.1) !important;
+}
+.dusk .bg-brand-lime\/20 {
+    background-color: rgba(38, 83, 141, 0.2) !important;
+}
+.dusk .bg-brand-lime\/25 {
+    background-color: rgba(38, 83, 141, 0.25) !important;
+}
+.dusk .border-brand-lime {
+    border-color: #26538D !important;
+}
+.dusk .hover\:text-brand-lime:hover {
+    color: #26538D !important;
+}
+.dusk .dark\:text-brand-lime {
+    color: #26538D !important;
+}
+.dusk .dark\:bg-brand-lime\/10 {
+    background-color: rgba(38, 83, 141, 0.1) !important;
+}
+.dusk .dark\:bg-brand-lime\/20 {
+    background-color: rgba(38, 83, 141, 0.2) !important;
+}
+.dusk .focus\:ring-brand-lime\/50:focus {
+    --tw-ring-color: rgba(38, 83, 141, 0.5) !important;
+}
+.dusk .focus\:border-brand-lime:focus {
+    border-color: #26538D !important;
+}
+.dusk .shadow-glow-lime {
+    box-shadow: 0 0 30px rgba(38, 83, 141, 0.2) !important;
+}
+.dusk .shadow-lg.shadow-brand-lime\/30 {
+    --tw-shadow-color: rgba(38, 83, 141, 0.3) !important;
+    box-shadow: 0 10px 15px -3px rgba(38, 83, 141, 0.3), 0 4px 6px -4px rgba(38, 83, 141, 0.3) !important;
+}
+.dusk .from-brand-lime\/30 {
+    --tw-gradient-from: rgba(38, 83, 141, 0.3) var(--tw-gradient-from-position) !important;
+}
+.dusk .to-brand-lime\/60 {
+    --tw-gradient-to: rgba(38, 83, 141, 0.6) var(--tw-gradient-to-position) !important;
+}
+/* Timeline dot with dusk glow */
+.dusk .timeline-dot {
+    background-color: #26538D !important;
+    box-shadow: 0 0 8px rgba(38, 83, 141, 0.6) !important;
+}
+.dusk .hover\:shadow-glow-lime:hover {
+    box-shadow: 0 0 30px rgba(38, 83, 141, 0.3) !important;
+}
+.dusk .fill-brand-lime {
+    fill: #26538D !important;
+}
+.dusk .fill-brand-lime\/15 {
+    fill: rgba(38, 83, 141, 0.15) !important;
+}
+.dusk .fill-brand-lime\/20 {
+    fill: rgba(38, 83, 141, 0.2) !important;
+}
+.dusk .dark\:fill-brand-lime\/20 {
+    fill: rgba(38, 83, 141, 0.2) !important;
+}
+.dusk .dark\:bg-brand-lime\/\[0\.08\] {
+    background-color: rgba(38, 83, 141, 0.08) !important;
+}
+.dusk ::-webkit-scrollbar-thumb:hover {
+    background: #26538D !important;
+}
+
+/* Dusk theme pulse-ring animation for process badges */
+@keyframes dusk-pulse-ring {
+    0% { box-shadow: 0 0 0 0 rgba(38, 83, 141, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(38, 83, 141, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(38, 83, 141, 0); }
+}
+.dusk .process-badge {
+    animation: dusk-pulse-ring 2.5s ease-out infinite !important;
+}
+.dusk .process-badge:hover {
+    box-shadow: 0 0 0 8px rgba(38, 83, 141, 0.15) !important;
+}
+
+/* ==========================================
    SPOTLIGHT & GLOW EFFECTS
    ========================================== */
 
@@ -589,6 +836,14 @@ html {
     );
 }
 
+.dusk .spotlight-glow {
+    background: radial-gradient(
+        ellipse 60% 40% at 50% 0%,
+        rgba(38, 83, 141, 0.10) 0%,
+        rgba(240, 255, 255, 0) 70%
+    );
+}
+
 /* Orb Gradient for Hero */
 .orb-visual {
     background: radial-gradient(circle at center, rgba(20, 184, 166, 0.4) 0%, rgba(250,250,250,0) 70%);
@@ -602,6 +857,11 @@ html {
 
 .oak .orb-visual {
     background: radial-gradient(circle at center, rgba(60, 36, 21, 0.25) 0%, rgba(221,217,206,0) 70%);
+    filter: blur(60px);
+}
+
+.dusk .orb-visual {
+    background: radial-gradient(circle at center, rgba(38, 83, 141, 0.30) 0%, rgba(240,255,255,0) 70%);
     filter: blur(60px);
 }
 
@@ -707,6 +967,31 @@ html {
     border: 1px solid rgba(60, 36, 21, 0.06);
 }
 
+.dusk .glass3d {
+    background: rgba(240, 255, 255, 0.95);
+    box-shadow:
+        0 0 0 1px rgba(38, 83, 141, 0.08),
+        0 4px 16px rgba(0, 0, 0, 0.08),
+        0 8px 32px rgba(0, 0, 0, 0.06);
+}
+
+@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+    .dusk .glass3d {
+        background: rgba(240, 255, 255, 0.88);
+    }
+}
+
+.dusk .glass3d::before {
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.6),
+        inset 0 -1px 0 rgba(38, 83, 141, 0.05);
+}
+
+.dusk .glass {
+    background: rgba(240, 255, 255, 0.7);
+    border: 1px solid rgba(38, 83, 141, 0.06);
+}
+
 .glass-card {
     background: rgba(255, 255, 255, 0.9);
     border: 1px solid rgba(0, 0, 0, 0.06);
@@ -740,6 +1025,17 @@ html {
 
 .oak .glass-card:hover {
     border-color: rgba(60, 36, 21, 0.12);
+    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.1);
+}
+
+.dusk .glass-card {
+    background: linear-gradient(180deg, rgba(245, 255, 255, 1) 0%, rgba(240, 255, 255, 1) 100%);
+    border: 1px solid rgba(38, 83, 141, 0.06);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.dusk .glass-card:hover {
+    border-color: rgba(38, 83, 141, 0.12);
     box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.1);
 }
 

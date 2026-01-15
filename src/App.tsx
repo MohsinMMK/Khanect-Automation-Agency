@@ -42,11 +42,13 @@ const App: React.FC = () => {
   const currentView = getCurrentView();
 
   const toggleTheme = () => {
-    // Cycle through: light -> dark -> oak -> light
+    // Cycle through: light -> dark -> oak -> dusk -> light
     if (theme === 'light') {
       setTheme('dark');
     } else if (theme === 'dark') {
       setTheme('oak');
+    } else if (theme === 'oak') {
+      setTheme('dusk');
     } else {
       setTheme('light');
     }
