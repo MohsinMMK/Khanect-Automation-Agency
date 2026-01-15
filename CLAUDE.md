@@ -46,7 +46,7 @@ VITE_N8N_WEBHOOK_URL=      # N8N webhook for leads
 
 ## Theme System
 
-3 themes (default: Oak), toggle cycles: Oak → Light → Dark → Oak
+3 themes (default: Oak), toggle cycles: Oak -> Light -> Dark -> Oak
 
 | Theme | Background | Primary |
 |-------|------------|---------|
@@ -56,6 +56,57 @@ VITE_N8N_WEBHOOK_URL=      # N8N webhook for leads
 
 **Files**: `src/contexts/ThemeContext.tsx`, `src/index.css`
 
+## Typography System
+
+### Fonts
+
+| Font | Class | Usage |
+|------|-------|-------|
+| Plus Jakarta Sans | `font-sans` | Body text (default) |
+| Space Grotesk | `font-display` | Display headings |
+| Astro | `font-logo` | Logo only |
+| Astro Outline | `font-logo-outline` | Outline variant |
+
+**Font files**: `public/fonts/astro.otf`, `astro-outline.otf`
+
+### Type Scale (1.4 ratio)
+
+| Class | Size | Line Height | Tracking | Use Case |
+|-------|------|-------------|----------|----------|
+| `text-xs` | 11px | 1.6 | +0.01em | Captions |
+| `text-sm` | 14px | 1.6 | +0.01em | Small text |
+| `text-base` | 16px | 1.5 | 0 | Body |
+| `text-lg` | 22px | 1.5 | 0 | Lead text |
+| `text-xl` | 31px | 1.2 | -0.01em | H4 |
+| `text-2xl` | 44px | 1.2 | -0.02em | H3/Section |
+| `text-3xl` | 61px | 1.1 | -0.02em | H2 |
+| `text-4xl` | 85px | 1.1 | -0.03em | H1 Hero |
+
+### Responsive Base Font Size
+
+| Breakpoint | Base Size |
+|------------|-----------|
+| Mobile | 14px |
+| sm (640px) | 15px |
+| lg (1024px) | 16px |
+| 2xl (1536px) | 18px |
+
+### Typography Usage
+
+```tsx
+// Hero title
+<h1 className="text-3xl md:text-4xl font-bold">
+
+// Section heading
+<h2 className="text-2xl md:text-3xl font-bold">
+
+// Body/Lead text
+<p className="text-lg">
+
+// Logo text
+<span className="font-logo tracking-widest">
+```
+
 ## Logo Configuration
 
 All logos use `public/logo-full.png` (combined icon + "KHANECT" text).
@@ -63,16 +114,16 @@ All logos use `public/logo-full.png` (combined icon + "KHANECT" text).
 | Location | File | Classes |
 |----------|------|---------|
 | Navbar | `Navbar.tsx` | `h-40 -mt-6 -mb-10 -ml-10` |
-| Contact Form | `LandingPage.tsx:475` | `h-32 -mt-10 -ml-10` |
+| Contact Form | `LandingPage.tsx` | `h-32 -mt-10 -ml-10` |
 | AI Assistant | `ai-assistant-card.tsx` | `h-24 -mt-2 -mb-4 -ml-4` |
-| Favicon | `index.html:37` | PNG format |
+| Favicon | `index.html` | PNG format |
 
 ## AI Assistant
 
 - **File**: `src/components/ui/ai-assistant-card.tsx`
 - **Trigger**: Floating button on landing/pricing pages
 - **Close**: Click outside (backdrop overlay)
-- **Logo**: `logo-full.png` in header, left-aligned
+- **Logo**: `logo-full.png` in header
 
 ## Key Files
 
@@ -84,13 +135,8 @@ All logos use `public/logo-full.png` (combined icon + "KHANECT" text).
 | `src/components/ui/ai-assistant-card.tsx` | AI chat widget |
 | `src/contexts/ThemeContext.tsx` | Theme state |
 | `src/services/n8nChatbotService.ts` | Chat API |
-| `src/index.css` | Global styles + theme variables |
-
-## Fonts
-
-- **Body**: Plus Jakarta Sans
-- **Display**: Space Grotesk
-- **Logo**: Blockat (custom, `/public/fonts/Blockat.otf`)
+| `src/index.css` | Global styles + typography + theme variables |
+| `tailwind.config.js` | Tailwind theme config |
 
 ## Code Conventions
 

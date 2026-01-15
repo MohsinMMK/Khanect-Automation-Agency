@@ -81,7 +81,7 @@ const Pricing: React.FC<PricingProps> = ({ onNavigate }) => {
             <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Flexible Pricing Plans</span>
           </div>
 
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 text-gray-900 dark:text-white tracking-tight leading-[1.1]">
+          <h1 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900 dark:text-white tracking-tight">
             Simple, Transparent
             <span className="block mt-2">
               <span className="relative inline-block">
@@ -139,7 +139,7 @@ const Pricing: React.FC<PricingProps> = ({ onNavigate }) => {
       <section className="px-6 py-24 lg:py-32 bg-gray-50/50 dark:bg-white/[0.02]">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16 lg:mb-20">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-gray-900 dark:text-white tracking-tight">
+            <h2 className="text-2xl md:text-3xl font-bold mb-4 text-gray-900 dark:text-white tracking-tight">
               Compare All Features
             </h2>
             <p className="text-lg text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
@@ -235,7 +235,7 @@ const Pricing: React.FC<PricingProps> = ({ onNavigate }) => {
       <section className="px-6 py-24 lg:py-32 bg-gray-50/50 dark:bg-white/[0.02]">
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-16 lg:mb-20">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-gray-900 dark:text-white tracking-tight">
+            <h2 className="text-2xl md:text-3xl font-bold mb-4 text-gray-900 dark:text-white tracking-tight">
               Pricing FAQs
             </h2>
             <p className="text-lg text-gray-500 dark:text-gray-400">

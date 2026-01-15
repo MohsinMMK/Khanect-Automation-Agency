@@ -20,7 +20,19 @@ brand: {
 ## Font Classes
 - `font-sans` - Plus Jakarta Sans (body text)
 - `font-display` - Space Grotesk (headings)
-- `font-blockat` - Blockat (logo only)
+- `font-logo` - Astro (logo only)
+
+## Type Scale (1.4 ratio)
+| Class | Size | Use Case |
+|-------|------|----------|
+| `text-xs` | 11px | Captions |
+| `text-sm` | 14px | Small text |
+| `text-base` | 16px | Body |
+| `text-lg` | 22px | Lead text |
+| `text-xl` | 31px | H4 |
+| `text-2xl` | 44px | H3 |
+| `text-3xl` | 61px | H2 |
+| `text-4xl` | 85px | H1 Hero |
 
 ## Common Patterns
 

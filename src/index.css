@@ -6,13 +6,58 @@
 @custom-variant dark (&:is(.dark *));
 @config "../tailwind.config.js";
 
-/* Blockat Font */
+/* Astro Fonts (Logo) */
 @font-face {
-  font-family: 'Blockat';
-  src: url('/fonts/Blockat.otf') format('opentype');
-  font-weight: 700;
+  font-family: 'Astro';
+  src: url('/fonts/astro.otf') format('opentype');
+  font-weight: 400;
   font-style: normal;
   font-display: swap;
+}
+
+@font-face {
+  font-family: 'Astro Outline';
+  src: url('/fonts/astro-outline.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Typography Scale (1.4 ratio) */
+:root {
+  --text-xs: 0.688rem;    /* 11px */
+  --text-sm: 0.875rem;    /* 14px */
+  --text-base: 1rem;      /* 16px */
+  --text-lg: 1.375rem;    /* 22px */
+  --text-xl: 1.938rem;    /* 31px */
+  --text-2xl: 2.75rem;    /* 44px */
+  --text-3xl: 3.813rem;   /* 61px */
+  --text-4xl: 5.338rem;   /* 85px */
+
+  /* Tracking */
+  --tracking-tight: -0.02em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.025em;
+
+  /* Line Heights */
+  --leading-tight: 1.1;
+  --leading-snug: 1.2;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.6;
+}
+
+/* Responsive Base Font Size */
+html {
+  font-size: 14px;
+}
+@media (min-width: 640px) {
+  html { font-size: 15px; }
+}
+@media (min-width: 1024px) {
+  html { font-size: 16px; }
+}
+@media (min-width: 1536px) {
+  html { font-size: 18px; }
 }
 
 /* ==========================================

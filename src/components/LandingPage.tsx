@@ -288,12 +288,12 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
 
           {/* Left Content */}
           <div className="text-left">
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-8 leading-[1.05] text-gray-900 dark:text-white">
-              Deep <span className="inline-block relative">
-                <span className="relative z-10">Work</span>
+            <h1 className="font-logo text-3xl md:text-4xl font-bold tracking-tight mb-8 text-gray-900 dark:text-white uppercase">
+              DEEP <span className="inline-block relative">
+                <span className="relative z-10">WORK</span>
                 <span className="absolute bottom-2 left-0 w-full h-2 bg-brand-lime/20 -rotate-1 z-0"></span>
               </span>
-              <br />Made Possible.
+              <br />MADE POSSIBLE.
             </h1>
 
             <p className="text-lg text-gray-500 dark:text-gray-400 max-w-lg mb-12 leading-relaxed">
@@ -363,7 +363,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                         </div>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
                     </div>
-                    <div className="text-4xl font-semibold text-gray-900 dark:text-white mb-1">-75%</div>
+                    <div className="text-2xl font-semibold text-gray-900 dark:text-white mb-1">-75%</div>
                     <div className="text-xs text-gray-500 font-medium">Avg. Risk Mitigation Score</div>
                 </div>
              </div>
@@ -377,7 +377,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                         </div>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
                     </div>
-                    <div className="text-4xl font-semibold text-gray-900 dark:text-white mb-1">+2.3h</div>
+                    <div className="text-2xl font-semibold text-gray-900 dark:text-white mb-1">+2.3h</div>
                     <div className="text-xs text-gray-500 font-medium">Weekly Focus Hours Recovered</div>
                 </div>
              </div>
@@ -389,7 +389,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
       <section id="solutions" className="py-24 lg:py-32 px-6 relative z-10">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16 lg:mb-20">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-gray-900 dark:text-white tracking-tight">
+            <h2 className="text-2xl md:text-3xl font-bold mb-6 text-gray-900 dark:text-white tracking-tight">
               Comprehensive Automation Solutions
             </h2>
             <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto text-lg leading-relaxed">
@@ -419,7 +419,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
       <section id="process" className="py-24 lg:py-32 px-6 relative z-10">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16 lg:mb-20">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-gray-900 dark:text-white tracking-tight">
+            <h2 className="text-2xl md:text-3xl font-bold mb-6 text-gray-900 dark:text-white tracking-tight">
               Our Proven Process
             </h2>
             <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto text-lg leading-relaxed">
@@ -443,7 +443,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
       <section id="faq" className="py-24 lg:py-32 px-6 relative z-10 bg-gray-50/50 dark:bg-white/[0.02]">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16 lg:mb-20">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-gray-900 dark:text-white tracking-tight">
+            <h2 className="text-2xl md:text-3xl font-bold mb-6 text-gray-900 dark:text-white tracking-tight">
               Frequently Asked Questions
             </h2>
             <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto text-lg leading-relaxed">

@@ -10,7 +10,8 @@ export default {
       fontFamily: {
         sans: ['"Plus Jakarta Sans"', 'sans-serif'],
         display: ['"Space Grotesk"', 'sans-serif'],
-        blockat: ['Blockat', 'sans-serif'],
+        logo: ['Astro', 'sans-serif'],
+        'logo-outline': ['"Astro Outline"', 'sans-serif'],
       },
       colors: {
         brand: {
@@ -27,17 +28,15 @@ export default {
         }
       },
       fontSize: {
-        'xs': ['0.75rem', { lineHeight: '1.6', letterSpacing: '0.01em' }],
-        'sm': ['0.875rem', { lineHeight: '1.6', letterSpacing: '0.01em' }],
-        'base': ['1rem', { lineHeight: '1.6', letterSpacing: '0.005em' }],
-        'lg': ['1.125rem', { lineHeight: '1.6' }],
-        'xl': ['1.25rem', { lineHeight: '1.5' }],
-        '2xl': ['1.5rem', { lineHeight: '1.4' }],
-        '3xl': ['1.875rem', { lineHeight: '1.3' }],
-        '4xl': ['2.25rem', { lineHeight: '1.2' }],
-        '5xl': ['3rem', { lineHeight: '1.1' }],
-        '6xl': ['3.75rem', { lineHeight: '1.05' }],
-        '7xl': ['4.5rem', { lineHeight: '1' }],
+        // 1.4 ratio type scale with built-in tracking & line-height
+        'xs': ['var(--text-xs)', { lineHeight: 'var(--leading-relaxed)', letterSpacing: '0.01em' }],
+        'sm': ['var(--text-sm)', { lineHeight: 'var(--leading-relaxed)', letterSpacing: '0.01em' }],
+        'base': ['var(--text-base)', { lineHeight: 'var(--leading-normal)', letterSpacing: '0' }],
+        'lg': ['var(--text-lg)', { lineHeight: 'var(--leading-normal)', letterSpacing: '0' }],
+        'xl': ['var(--text-xl)', { lineHeight: 'var(--leading-snug)', letterSpacing: '-0.01em' }],
+        '2xl': ['var(--text-2xl)', { lineHeight: 'var(--leading-snug)', letterSpacing: '-0.02em' }],
+        '3xl': ['var(--text-3xl)', { lineHeight: 'var(--leading-tight)', letterSpacing: '-0.02em' }],
+        '4xl': ['var(--text-4xl)', { lineHeight: 'var(--leading-tight)', letterSpacing: '-0.03em' }],
       },
       spacing: {
         '18': '4.5rem',
