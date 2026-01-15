@@ -28,13 +28,13 @@ bun test             # Run tests
 
 ## Routes
 
-| Path | Component | Description |
-|------|-----------|-------------|
-| `/` | LandingPage | Hero, services, FAQs, contact form |
-| `/pricing` | Pricing | Pricing tiers |
-| `/portal` | ClientPortal | Authenticated dashboard |
-| `/services/:slug` | ServiceDetailPage | Service details |
-| `/industries/:slug` | ServiceDetailPage | Industry details |
+| Path                | Component         | Description                        |
+| ------------------- | ----------------- | ---------------------------------- |
+| `/`                 | LandingPage       | Hero, services, FAQs, contact form |
+| `/pricing`          | Pricing           | Pricing tiers                      |
+| `/portal`           | ClientPortal      | Authenticated dashboard            |
+| `/services/:slug`   | ServiceDetailPage | Service details                    |
+| `/industries/:slug` | ServiceDetailPage | Industry details                   |
 
 ## Environment Variables
 
@@ -48,11 +48,11 @@ VITE_N8N_WEBHOOK_URL=      # N8N webhook for leads
 
 3 themes (default: Oak), toggle cycles: Oak -> Light -> Dark -> Oak
 
-| Theme | Background | Primary |
-|-------|------------|---------|
-| Light | `#FFFFFF` | Teal `#14B8A6` |
-| Dark | `#0F0F11` | Teal `#14B8A6` |
-| Oak | `#DDD9CE` | Brown `#3C2415` |
+| Theme | Background | Primary         |
+| ----- | ---------- | --------------- |
+| Light | `#FFFFFF`  | Teal `#14B8A6`  |
+| Dark  | `#0F0F11`  | Teal `#14B8A6`  |
+| Oak   | `#DDD9CE`  | Brown `#3C2415` |
 
 **Files**: `src/contexts/ThemeContext.tsx`, `src/index.css`
 
@@ -60,36 +60,37 @@ VITE_N8N_WEBHOOK_URL=      # N8N webhook for leads
 
 ### Fonts
 
-| Font | Class | Usage |
-|------|-------|-------|
-| Plus Jakarta Sans | `font-sans` | Body text (default) |
-| Space Grotesk | `font-display` | Display headings |
-| Astro | `font-logo` | Logo only |
-| Astro Outline | `font-logo-outline` | Outline variant |
+| Font          | Class               | Usage                           |
+| ------------- | ------------------- | ------------------------------- |
+| Genos         | `font-sans`         | Body text (default, weight 400) |
+| Astro Outline | `font-display`      | Display headings                |
+| Astro         | `font-logo`         | Logo only                       |
+| Astro Outline | `font-logo-outline` | Outline variant                 |
 
 **Font files**: `public/fonts/astro.otf`, `astro-outline.otf`
+**Google Font**: Genos (via CSS import)
 
 ### Type Scale (1.4 ratio)
 
-| Class | Size | Line Height | Tracking | Use Case |
-|-------|------|-------------|----------|----------|
-| `text-xs` | 11px | 1.6 | +0.01em | Captions |
-| `text-sm` | 14px | 1.6 | +0.01em | Small text |
-| `text-base` | 16px | 1.5 | 0 | Body |
-| `text-lg` | 22px | 1.5 | 0 | Lead text |
-| `text-xl` | 31px | 1.2 | -0.01em | H4 |
-| `text-2xl` | 44px | 1.2 | -0.02em | H3/Section |
-| `text-3xl` | 61px | 1.1 | -0.02em | H2 |
-| `text-4xl` | 85px | 1.1 | -0.03em | H1 Hero |
+| Class       | Size | Line Height | Tracking | Use Case   |
+| ----------- | ---- | ----------- | -------- | ---------- |
+| `text-xs`   | 12px | 1.6         | +0.01em  | Captions   |
+| `text-sm`   | 15px | 1.6         | +0.01em  | Small text |
+| `text-base` | 16px | 1.5         | 0        | Body       |
+| `text-lg`   | 22px | 1.5         | 0        | Lead text  |
+| `text-xl`   | 31px | 1.2         | -0.01em  | H4         |
+| `text-2xl`  | 44px | 1.2         | -0.02em  | H3/Section |
+| `text-3xl`  | 61px | 1.1         | -0.02em  | H2         |
+| `text-4xl`  | 85px | 1.1         | -0.03em  | H1 Hero    |
 
 ### Responsive Base Font Size
 
-| Breakpoint | Base Size |
-|------------|-----------|
-| Mobile | 14px |
-| sm (640px) | 15px |
-| lg (1024px) | 16px |
-| 2xl (1536px) | 18px |
+| Breakpoint   | Base Size |
+| ------------ | --------- |
+| Mobile       | 16px      |
+| sm (640px)   | 17px      |
+| lg (1024px)  | 18px      |
+| 2xl (1536px) | 20px      |
 
 ### Typography Usage
 
@@ -111,12 +112,12 @@ VITE_N8N_WEBHOOK_URL=      # N8N webhook for leads
 
 All logos use `public/logo-full.png` (combined icon + "KHANECT" text).
 
-| Location | File | Classes |
-|----------|------|---------|
-| Navbar | `Navbar.tsx` | `h-40 -mt-6 -mb-10 -ml-10` |
-| Contact Form | `LandingPage.tsx` | `h-32 -mt-10 -ml-10` |
-| AI Assistant | `ai-assistant-card.tsx` | `h-24 -mt-2 -mb-4 -ml-4` |
-| Favicon | `index.html` | PNG format |
+| Location     | File                    | Classes                    |
+| ------------ | ----------------------- | -------------------------- |
+| Navbar       | `Navbar.tsx`            | `h-40 -mt-6 -mb-10 -ml-10` |
+| Contact Form | `LandingPage.tsx`       | `h-32 -mt-10 -ml-10`       |
+| AI Assistant | `ai-assistant-card.tsx` | `h-24 -mt-2 -mb-4 -ml-4`   |
+| Favicon      | `index.html`            | PNG format                 |
 
 ## AI Assistant
 
@@ -127,16 +128,16 @@ All logos use `public/logo-full.png` (combined icon + "KHANECT" text).
 
 ## Key Files
 
-| File | Purpose |
-|------|---------|
-| `src/App.tsx` | Main routing + chat widget |
-| `src/components/LandingPage.tsx` | Landing page + contact form |
-| `src/components/Navbar.tsx` | Navigation + theme toggle |
-| `src/components/ui/ai-assistant-card.tsx` | AI chat widget |
-| `src/contexts/ThemeContext.tsx` | Theme state |
-| `src/services/n8nChatbotService.ts` | Chat API |
-| `src/index.css` | Global styles + typography + theme variables |
-| `tailwind.config.js` | Tailwind theme config |
+| File                                      | Purpose                                      |
+| ----------------------------------------- | -------------------------------------------- |
+| `src/App.tsx`                             | Main routing + chat widget                   |
+| `src/components/LandingPage.tsx`          | Landing page + contact form                  |
+| `src/components/Navbar.tsx`               | Navigation + theme toggle                    |
+| `src/components/ui/ai-assistant-card.tsx` | AI chat widget                               |
+| `src/contexts/ThemeContext.tsx`           | Theme state                                  |
+| `src/services/n8nChatbotService.ts`       | Chat API                                     |
+| `src/index.css`                           | Global styles + typography + theme variables |
+| `tailwind.config.js`                      | Tailwind theme config                        |
 
 ## Code Conventions
 

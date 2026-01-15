@@ -288,7 +288,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
 
           {/* Left Content */}
           <div className="text-left">
-            <h1 className="font-logo text-3xl md:text-4xl font-bold tracking-tight mb-8 text-gray-900 dark:text-white uppercase">
+            <h1 className="font-logo text-2xl md:text-3xl font-bold tracking-tight mb-8 text-gray-900 dark:text-white uppercase">
               DEEP <span className="inline-block relative">
                 <span className="relative z-10">WORK</span>
                 <span className="absolute bottom-2 left-0 w-full h-2 bg-brand-lime/20 -rotate-1 z-0"></span>

@@ -45,7 +45,7 @@ const FAQItem: React.FC<FAQItemProps> = ({ question, answer, isOpen, onToggle })
         `}
       >
         <div className="overflow-hidden">
-          <p className="pb-6 text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+          <p className="pb-6 text-base text-gray-600 dark:text-gray-400 leading-relaxed">
             {answer}
           </p>
         </div>

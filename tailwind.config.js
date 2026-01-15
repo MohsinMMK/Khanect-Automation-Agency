@@ -8,8 +8,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-        display: ['"Space Grotesk"', 'sans-serif'],
+        sans: ['Genos', 'sans-serif'],
+        display: ['"Astro Outline"', 'sans-serif'],
         logo: ['Astro', 'sans-serif'],
         'logo-outline': ['"Astro Outline"', 'sans-serif'],
       },
