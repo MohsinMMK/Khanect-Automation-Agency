@@ -54,6 +54,11 @@ VITE_N8N_WEBHOOK_URL=      # N8N webhook for leads
 | Dark  | `#0F0F11`         | Teal `#14B8A6` |
 | Dusk  | `#F0FFFF` (Azure) | Blue `#26538D` |
 
+**Logo Customization**:
+
+- Light/Dark themes: Teal (`#14B8A6`) filter applied via CSS
+- Dusk theme: Dusk Blue (`#26538D`) filter applied via CSS
+
 **Files**: `src/contexts/ThemeContext.tsx`, `src/index.css`
 
 ## Typography System
