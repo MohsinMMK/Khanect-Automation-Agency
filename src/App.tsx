@@ -21,7 +21,7 @@ import { Toaster } from '@/components/ui/sonner';
 const App: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { theme, setTheme } = useTheme();
+  const { theme } = useTheme();
   const showScrollTop = useScrolled(500);
   const [chatOpen, setChatOpen] = useState(false);
 
@@ -41,16 +41,7 @@ const App: React.FC = () => {
 
   const currentView = getCurrentView();
 
-  const toggleTheme = () => {
-    // Cycle through: light -> dark -> dusk -> light
-    if (theme === 'light') {
-      setTheme('dark');
-    } else if (theme === 'dark') {
-      setTheme('dusk');
-    } else {
-      setTheme('light');
-    }
-  };
+
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -87,8 +78,6 @@ const App: React.FC = () => {
       <Navbar
         currentView={currentView}
         onNavigate={handleNavigate}
-        theme={theme}
-        toggleTheme={toggleTheme}
       />
 
       <main id="main-content" className="flex-grow" tabIndex={-1}>

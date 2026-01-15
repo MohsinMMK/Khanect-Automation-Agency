@@ -46,18 +46,11 @@ VITE_N8N_WEBHOOK_URL=      # N8N webhook for leads
 
 ## Theme System
 
-3 themes (default: Light), toggle cycles: Light -> Dark -> Dusk -> Light
+Dark mode only (no theme switcher).
 
-| Theme | Background        | Primary        |
-| :---- | :---------------- | :------------- |
-| Light | `#FFFFFF`         | Teal `#14B8A6` |
-| Dark  | `#0F0F11`         | Teal `#14B8A6` |
-| Dusk  | `#F0FFFF` (Azure) | Blue `#26538D` |
-
-**Logo Customization**:
-
-- Light/Dark themes: Teal (`#14B8A6`) filter applied via CSS
-- Dusk theme: Dusk Blue (`#26538D`) filter applied via CSS
+| Background | Primary        |
+| :--------- | :------------- |
+| `#0F0F11`  | Teal `#14B8A6` |
 
 **Files**: `src/contexts/ThemeContext.tsx`, `src/index.css`
 
@@ -112,6 +105,16 @@ VITE_N8N_WEBHOOK_URL=      # N8N webhook for leads
 // Logo text
 <span className="font-logo tracking-widest">
 ```
+
+### Component Heading Sizes
+
+| Component             | Size                   | Notes                   |
+| --------------------- | ---------------------- | ----------------------- |
+| Contact form heading  | `text-2xl md:text-3xl` | "We'd love to help"     |
+| Pricing page title    | `text-2xl md:text-3xl` | Single line             |
+| Pricing CTA heading   | `text-2xl md:text-3xl` | "Ready to Get Started?" |
+| Pricing card "Custom" | `text-2xl`             | Enterprise tier price   |
+| Pricing card prices   | `text-5xl`             | Numeric prices          |
 
 ## Logo Configuration
 

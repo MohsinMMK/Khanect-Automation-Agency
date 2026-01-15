@@ -50,7 +50,7 @@ const PricingCard: React.FC<PricingCardProps> = ({
               </span>
             </>
           ) : (
-            <span className="text-4xl font-bold text-gray-900 dark:text-white tracking-tight">
+            <span className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">
               {price}
             </span>
           )}

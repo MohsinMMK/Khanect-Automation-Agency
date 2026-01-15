@@ -85,13 +85,11 @@ const Pricing: React.FC<PricingProps> = ({ onNavigate }) => {
             <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Flexible Pricing Plans</span>
           </div>
 
-          <h1 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900 dark:text-white tracking-tight">
-            Simple, Transparent
-            <span className="block mt-2">
-              <span className="relative inline-block">
-                <span className="relative z-10">Pricing</span>
-                <span className="absolute bottom-1 md:bottom-2 left-0 w-full h-2 md:h-3 bg-brand-lime/30 dark:bg-brand-lime/20 -rotate-1 z-0"></span>
-              </span>
+          <h1 className="text-2xl md:text-3xl font-bold mb-6 text-gray-900 dark:text-white tracking-tight">
+            Simple, Transparent{' '}
+            <span className="relative inline-block">
+              <span className="relative z-10">Pricing</span>
+              <span className="absolute bottom-1 md:bottom-2 left-0 w-full h-2 md:h-3 bg-brand-lime/30 dark:bg-brand-lime/20 -rotate-1 z-0"></span>
             </span>
           </h1>
 
@@ -261,7 +259,7 @@ const Pricing: React.FC<PricingProps> = ({ onNavigate }) => {
       {/* CTA Section */}
       <section className="px-6 py-24 lg:py-32">
         <div className="max-w-3xl mx-auto glass-card p-10 md:p-14 rounded-3xl text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900 dark:text-white tracking-tight">
+          <h2 className="text-2xl md:text-3xl font-bold mb-4 text-gray-900 dark:text-white tracking-tight">
             Ready to Get Started?
           </h2>
           <p className="text-lg text-gray-500 dark:text-gray-400 mb-10 leading-relaxed">
