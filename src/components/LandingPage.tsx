@@ -309,7 +309,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
             </button>
             <button
               onClick={scrollToSolutions}
-              className="btn-secondary text-lg px-8 py-4"
+              className="btn-secondary text-lg px-8 py-4 hover:!text-[#14B8A6] hover:!border-[#14B8A6] hover:!bg-[#14B8A6]/10 dark:hover:!text-[#14B8A6] dark:hover:!border-[#14B8A6] dark:hover:!bg-[#14B8A6]/10"
             >
               Discover Khanect
             </button>
