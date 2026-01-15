@@ -74,7 +74,7 @@ VITE_N8N_WEBHOOK_URL=      # N8N webhook for leads
 
 | Class       | Size | Line Height | Tracking | Use Case   |
 | ----------- | ---- | ----------- | -------- | ---------- |
-| `text-xs`   | 12px | 1.6         | +0.01em  | Captions   |
+| `text-xs`   | 13px | 1.6         | +0.01em  | Captions   |
 | `text-sm`   | 15px | 1.6         | +0.01em  | Small text |
 | `text-base` | 16px | 1.5         | 0        | Body       |
 | `text-lg`   | 22px | 1.5         | 0        | Lead text  |
