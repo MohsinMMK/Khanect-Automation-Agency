@@ -11,7 +11,7 @@ export function generateOrganizationSchema() {
     '@type': 'Organization',
     name: ORG_NAME,
     url: BASE_URL,
-    logo: `${BASE_URL}/favicon.svg`,
+    logo: `${BASE_URL}/logo-full.png`,
     description: ORG_DESCRIPTION,
     foundingDate: '2024',
     areaServed: 'Worldwide',

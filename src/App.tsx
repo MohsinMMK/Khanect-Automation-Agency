@@ -133,9 +133,16 @@ const App: React.FC = () => {
 
       {/* Floating Chat Widget */}
       {chatOpen && (
-        <div className="fixed bottom-6 right-6 z-[100] w-[380px] max-w-[calc(100vw-32px)] h-[600px] max-h-[calc(100vh-120px)] shadow-soft-xl rounded-2xl animate-fade-in-up overflow-hidden">
-          <AiAssistantCard onClose={() => setChatOpen(false)} />
-        </div>
+        <>
+          <div
+            className="fixed inset-0 z-[99]"
+            onClick={() => setChatOpen(false)}
+            aria-hidden="true"
+          />
+          <div className="fixed bottom-6 right-6 z-[100] w-[380px] max-w-[calc(100vw-32px)] h-[600px] max-h-[calc(100vh-120px)] shadow-soft-xl rounded-2xl animate-fade-in-up overflow-hidden">
+            <AiAssistantCard onClose={() => setChatOpen(false)} />
+          </div>
+        </>
       )}
 
       <Footer />

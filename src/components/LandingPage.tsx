@@ -472,16 +472,12 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
             {/* Left Side - Form */}
             <div className="bg-white dark:bg-gray-900 p-8 md:p-12">
               {/* Logo */}
-              <div className="flex items-center gap-2 mb-8">
-                <div className="w-8 h-8 bg-gray-900 dark:bg-white rounded-lg flex items-center justify-center">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="text-white dark:text-gray-900">
-                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" fill="currentColor"/>
-                  </svg>
-                </div>
-                <span className="font-blockat tracking-widest text-lg">
-                  <span className="text-gray-900 dark:text-white">KHAN</span>
-                  <span className="text-brand-lime">ECT</span>
-                </span>
+              <div className="mb-2">
+                <img
+                  src="/logo-full.png"
+                  alt="Khanect"
+                  className="h-32 -mt-10 -ml-10 object-contain"
+                />
               </div>
 
               {/* Heading */}

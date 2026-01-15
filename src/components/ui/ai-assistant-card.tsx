@@ -123,50 +123,20 @@ export function AiAssistantCard({ onClose }: AiAssistantCardProps) {
   return (
     <Card className="flex h-full w-full flex-col gap-0 p-0 shadow-xl border-0 bg-white dark:bg-[#0f0f11] overflow-hidden">
       {/* Header */}
-      <div className="shrink-0 px-4 py-3 flex items-center justify-between border-b border-border/50">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-brand-lime/20 to-brand-lime/5 flex items-center justify-center border border-brand-lime/20">
-            <KhanectBoltIcon size={18} />
-          </div>
-          <div>
-            <TextShimmer
-              as="h3"
-              className="text-sm font-semibold leading-tight"
-              duration={3}
-              spread={1.5}
-            >
-              Khanect AI
-            </TextShimmer>
-            <div className="flex items-center gap-1.5 mt-0.5">
-              <span className="w-1.5 h-1.5 bg-brand-lime rounded-full animate-pulse"></span>
-              <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">
-                Online
-              </span>
-            </div>
-          </div>
+      <div className="shrink-0 px-4 py-0 flex items-center justify-between border-b border-border/50">
+        <div className="flex-1">
+          <img
+            src="/logo-full.png"
+            alt="Khanect"
+            className="h-24 -mt-2 -mb-4 -ml-4 object-contain"
+          />
         </div>
-        {onClose && (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="size-8 text-muted-foreground hover:text-foreground"
-            onClick={onClose}
-            aria-label="Close chat"
-          >
-            <XIcon className="size-4" aria-hidden="true" />
-          </Button>
-        )}
       </div>
 
       <CardContent className="flex flex-1 flex-col p-0 min-h-0">
         {/* Welcome Screen or Chat Messages */}
         {!hasMessages ? (
           <div className="flex flex-col items-center justify-center flex-1 space-y-6 p-6">
-            {/* Logo */}
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-gray-900 to-gray-800 dark:from-gray-800 dark:to-gray-900 flex items-center justify-center shadow-lg border border-white/10">
-              <KhanectBoltIcon size={28} className="text-brand-lime" />
-            </div>
-
             {/* Welcome Text */}
             <div className="flex flex-col space-y-2 text-center">
               <h2 className="text-lg font-medium text-muted-foreground">

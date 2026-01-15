@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <!-- Upper leaf/diamond shape -->
-  <polygon points="50,22 72,35 50,48" fill="#4A3728"/>
-  <!-- Lower arrow/chevron shape -->
-  <polygon points="22,52 50,38 50,52 78,70 50,85 50,70 22,52" fill="#4A3728"/>
-</svg>
