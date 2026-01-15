@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-type Theme = 'light' | 'dark' | 'oak' | 'dusk';
+type Theme = 'light' | 'dark' | 'dusk';
 
 interface ThemeContextType {
   theme: Theme;
@@ -17,13 +17,13 @@ interface ThemeProviderProps {
 
 export function ThemeProvider({
   children,
-  defaultTheme = 'oak',
+  defaultTheme = 'light',
   storageKey = 'theme',
 }: ThemeProviderProps) {
   const [theme, setThemeState] = useState<Theme>(() => {
     if (typeof window !== 'undefined') {
       const savedTheme = localStorage.getItem(storageKey) as Theme | null;
-      if (savedTheme && ['light', 'dark', 'oak', 'dusk'].includes(savedTheme)) {
+      if (savedTheme && ['light', 'dark', 'dusk'].includes(savedTheme)) {
         return savedTheme;
       }
     }
@@ -34,12 +34,10 @@ export function ThemeProvider({
     const root = window.document.documentElement;
 
     // Apply theme to DOM - remove all theme classes first
-    root.classList.remove('dark', 'oak', 'dusk');
+    root.classList.remove('dark', 'dusk');
 
     if (theme === 'dark') {
       root.classList.add('dark');
-    } else if (theme === 'oak') {
-      root.classList.add('oak');
     } else if (theme === 'dusk') {
       root.classList.add('dusk');
     }

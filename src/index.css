@@ -210,6 +210,26 @@ html {
     }
 }
 
+/* Teal Logo Color for Light and Dark Themes (#14B8A6) */
+:root img[alt="Khanect"],
+.dark img[alt="Khanect"] {
+    filter: brightness(0) saturate(100%) invert(59%) sepia(52%) saturate(1000%) hue-rotate(131deg) brightness(92%) contrast(87%);
+}
+
+:root .logo-text,
+.dark .logo-text {
+    color: #14B8A6;
+}
+
+/* Dusk theme logo uses Dusk Blue */
+.dusk img[alt="Khanect"] {
+    filter: brightness(0) saturate(100%) invert(27%) sepia(61%) saturate(1141%) hue-rotate(191deg) brightness(92%) contrast(94%);
+}
+
+.dusk .logo-text {
+    color: #26538D;
+}
+
 /* Custom Scrollbar - Ultra thin */
 ::-webkit-scrollbar {
     width: 6px;

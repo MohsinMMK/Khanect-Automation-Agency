@@ -46,13 +46,13 @@ VITE_N8N_WEBHOOK_URL=      # N8N webhook for leads
 
 ## Theme System
 
-3 themes (default: Oak), toggle cycles: Oak -> Light -> Dark -> Oak
+3 themes (default: Light), toggle cycles: Light -> Dark -> Dusk -> Light
 
-| Theme | Background | Primary         |
-| ----- | ---------- | --------------- |
-| Light | `#FFFFFF`  | Teal `#14B8A6`  |
-| Dark  | `#0F0F11`  | Teal `#14B8A6`  |
-| Oak   | `#DDD9CE`  | Brown `#3C2415` |
+| Theme | Background        | Primary        |
+| :---- | :---------------- | :------------- |
+| Light | `#FFFFFF`         | Teal `#14B8A6` |
+| Dark  | `#0F0F11`         | Teal `#14B8A6` |
+| Dusk  | `#F0FFFF` (Azure) | Blue `#26538D` |
 
 **Files**: `src/contexts/ThemeContext.tsx`, `src/index.css`
 
