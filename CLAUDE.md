@@ -138,6 +138,9 @@ All logos use `public/logo-full.png` (combined icon + "KHANECT" text).
 | `src/App.tsx`                             | Main routing + chat widget                   |
 | `src/components/LandingPage.tsx`          | Landing page + contact form                  |
 | `src/components/Navbar.tsx`               | Navigation + theme toggle                    |
+| `src/components/ProvenProcess.tsx`        | Timeline component for process steps         |
+| `src/components/ui/accordion.tsx`         | Neobrutalist accordion (FAQ sections)        |
+| `src/components/ui/timeline.tsx`          | Timeline UI components                       |
 | `src/components/ui/shader-lines.tsx`      | Hero background shader animation             |
 | `src/components/ui/ai-assistant-card.tsx` | AI chat widget                               |
 | `src/contexts/ThemeContext.tsx`           | Theme state                                  |

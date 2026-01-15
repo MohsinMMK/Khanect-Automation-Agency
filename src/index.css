@@ -47,6 +47,26 @@
   --leading-snug: 1.2;
   --leading-normal: 1.5;
   --leading-relaxed: 1.6;
+
+  /* Neobrutalist Theme Variables */
+  --main: #1A7F7F; /* Dusky teal - matches brand but muted */
+  --overlay: rgba(0, 0, 0, 0.8);
+  --bg: #dfe5f2;
+  --bw: #fff;
+  --blank: #000;
+  --border: #000;
+  --text: #000;
+  --mtext: #000;
+  --ring: #000;
+  --ring-offset: #fff;
+  --border-radius: 5px;
+  --box-shadow-x: 4px;
+  --box-shadow-y: 4px;
+  --reverse-box-shadow-x: -4px;
+  --reverse-box-shadow-y: -4px;
+  --base-font-weight: 500;
+  --heading-font-weight: 700;
+  --shadow: var(--box-shadow-x) var(--box-shadow-y) 0px 0px var(--border);
 }
 
 /* Responsive Base Font Size */
@@ -135,6 +155,15 @@ html {
     --sidebar-accent-foreground: oklch(0.985 0 0);
     --sidebar-border: oklch(1 0 0 / 10%);
     --sidebar-ring: oklch(0.556 0 0);
+
+    /* Neobrutalist Dark Mode Overrides */
+    --bg: #272933;
+    --bw: #212121;
+    --blank: #fff;
+    --text: #e6e6e6;
+    --mtext: #000;
+    --ring: #fff;
+    --ring-offset: #000;
 }
 
 .oak {

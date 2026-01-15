@@ -1,7 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ViewState } from '../types';
 import PricingCard from './PricingCard';
-import FAQItem from './FAQItem';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import StaggerContainer from './StaggerContainer';
 import { pricingPackages } from '../data/pricing';
 import { useStructuredData } from '../hooks/useStructuredData';
@@ -17,7 +22,6 @@ interface PricingProps {
 }
 
 const Pricing: React.FC<PricingProps> = ({ onNavigate }) => {
-  const [openFAQ, setOpenFAQ] = useState<number | null>(null);
 
   // Structured data for SEO rich snippets
   useStructuredData(
@@ -243,17 +247,14 @@ const Pricing: React.FC<PricingProps> = ({ onNavigate }) => {
             </p>
           </div>
 
-          <div className="glass-card rounded-3xl p-8">
+          <Accordion className="space-y-4" type="single" collapsible>
             {pricingFAQs.map(faq => (
-              <FAQItem
-                key={faq.id}
-                question={faq.question}
-                answer={faq.answer}
-                isOpen={openFAQ === faq.id}
-                onToggle={() => setOpenFAQ(openFAQ === faq.id ? null : faq.id)}
-              />
+              <AccordionItem key={faq.id} value={String(faq.id)}>
+                <AccordionTrigger>{faq.question}</AccordionTrigger>
+                <AccordionContent>{faq.answer}</AccordionContent>
+              </AccordionItem>
             ))}
-          </div>
+          </Accordion>
         </div>
       </section>
 

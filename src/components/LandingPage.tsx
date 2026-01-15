@@ -7,8 +7,13 @@ import { processLead } from '../services/n8nService';
 import { useDebouncedCallback } from '../hooks/useDebouncedCallback';
 import TabSwitch from './TabSwitch';
 import ServiceCard from './ServiceCard';
-import ProcessStep from './ProcessStep';
-import FAQItem from './FAQItem';
+import ProvenProcess from './ProvenProcess';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import StaggerContainer from './StaggerContainer';
 import CountryCodeSelect from './CountryCodeSelect';
 import { services } from '../data/services';
@@ -366,28 +371,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
       </section>
 
       {/* Process Section */}
-      <section id="process" className="py-24 lg:py-32 px-6 relative z-10">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16 lg:mb-20">
-            <h2 className="text-2xl md:text-3xl font-bold mb-6 text-gray-900 dark:text-white tracking-tight">
-              Our Proven Process
-            </h2>
-            <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto text-lg leading-relaxed">
-              From discovery to deployment, we guide you every step of the way
-            </p>
-          </div>
-
-          <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {processSteps.map((step, index) => (
-              <ProcessStep
-                key={step.number}
-                {...step}
-                isLast={index === processSteps.length - 1}
-              />
-            ))}
-          </StaggerContainer>
-        </div>
-      </section>
+      <ProvenProcess />
 
       {/* FAQ Section */}
       <section id="faq" className="py-24 lg:py-32 px-6 relative z-10 bg-gray-50/50 dark:bg-white/[0.02]">
@@ -401,17 +385,14 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
             </p>
           </div>
 
-          <div className="space-y-0">
+          <Accordion className="space-y-4" type="single" collapsible>
             {faqs.map(faq => (
-              <FAQItem
-                key={faq.id}
-                question={faq.question}
-                answer={faq.answer}
-                isOpen={openFAQ === faq.id}
-                onToggle={() => setOpenFAQ(openFAQ === faq.id ? null : faq.id)}
-              />
+              <AccordionItem key={faq.id} value={faq.id}>
+                <AccordionTrigger>{faq.question}</AccordionTrigger>
+                <AccordionContent>{faq.answer}</AccordionContent>
+              </AccordionItem>
             ))}
-          </div>
+          </Accordion>
         </div>
       </section>
 
@@ -431,7 +412,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
               </div>
 
               {/* Heading */}
-              <h2 className="text-3xl md:text-4xl font-bold mb-3 text-gray-900 dark:text-white tracking-tight">
+              <h2 className="text-2xl md:text-3xl font-bold mb-3 text-gray-900 dark:text-white tracking-tight">
                 We'd love to help
               </h2>
               <p className="text-gray-500 dark:text-gray-400 mb-8">
