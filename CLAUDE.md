@@ -190,21 +190,21 @@ Logo files in `public/`:
 
 ## Key Files
 
-| File                                      | Purpose                                             |
-| ----------------------------------------- | --------------------------------------------------- |
-| `src/App.tsx`                             | Router config + RootLayout + error boundaries       |
-| `src/components/LandingPage.tsx`          | Landing page with hero, services, FAQs, CTA         |
-| `src/components/ContactPage.tsx`          | Dedicated contact page with form + contact info     |
-| `src/components/StaggerContainer.tsx`     | Scroll-triggered stagger animations (Framer Motion) |
-| `src/components/Navbar.tsx`               | Navigation (Mobile Menu z-index: 99999)             |
-| `src/components/ProvenProcess.tsx`        | Timeline component for process steps                |
-| `src/components/ui/accordion.tsx`         | Neobrutalist accordion (FAQ sections)               |
-| `src/components/ui/shader-lines.tsx`      | Hero background shader animation (Three.js)         |
-| `src/components/ui/ai-assistant-card.tsx` | AI chat widget                                      |
-| `src/contexts/ThemeContext.tsx`           | Theme state (dark mode only)                        |
-| `src/services/n8nChatbotService.ts`       | Chat API                                            |
-| `src/index.css`                           | Global styles + typography + theme variables        |
-| `tailwind.config.js`                      | Tailwind theme config                               |
+| File                                      | Purpose                                                               |
+| ----------------------------------------- | --------------------------------------------------------------------- |
+| `src/App.tsx`                             | Router config + RootLayout + error boundaries                         |
+| `src/components/LandingPage.tsx`          | Landing page with hero, services, FAQs, CTA                           |
+| `src/components/ContactPage.tsx`          | Dedicated contact page with form + contact info                       |
+| `src/components/StaggerContainer.tsx`     | Scroll-triggered stagger animations (Framer Motion)                   |
+| `src/components/Navbar.tsx`               | Navigation (Mobile Menu z-index: 99999, Desktop Contact: Transparent) |
+| `src/components/ProvenProcess.tsx`        | Timeline component for process steps                                  |
+| `src/components/ui/accordion.tsx`         | Neobrutalist accordion (FAQ sections)                                 |
+| `src/components/ui/shader-lines.tsx`      | Hero background shader animation (Three.js)                           |
+| `src/components/ui/ai-assistant-card.tsx` | AI chat widget                                                        |
+| `src/contexts/ThemeContext.tsx`           | Theme state (dark mode only)                                          |
+| `src/services/n8nChatbotService.ts`       | Chat API                                                              |
+| `src/index.css`                           | Global styles + typography + theme variables                          |
+| `tailwind.config.js`                      | Tailwind theme config                                                 |
 
 ## Code Conventions
 

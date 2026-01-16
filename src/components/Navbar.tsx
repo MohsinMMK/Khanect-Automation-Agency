@@ -80,7 +80,7 @@ function Navbar({ currentView, onNavigate, onMobileMenuChange }: NavbarProps) {
         </button>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-8">
+        <div className="hidden md:flex items-center gap-6">
           <div className="flex items-center gap-6 text-sm font-medium">
             <button
               onClick={handleLandingClick}
@@ -117,7 +117,7 @@ function Navbar({ currentView, onNavigate, onMobileMenuChange }: NavbarProps) {
           <div className="flex items-center gap-3">
              <button
                 onClick={handleContactClick}
-                className="btn-primary text-sm px-4 py-2"
+                className="inline-flex items-center gap-2 text-sm font-medium py-2 text-[#14B8A6] hover:text-[#0D9488] transition-colors duration-180"
             >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
                 <span>Contact</span>
