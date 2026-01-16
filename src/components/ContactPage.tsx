@@ -6,6 +6,7 @@ import { processLead } from '../services/n8nService';
 import { useDebouncedCallback } from '../hooks/useDebouncedCallback';
 import CountryCodeSelect from './CountryCodeSelect';
 import { toast } from 'sonner';
+import { BackgroundGradient } from './ui/background-gradient';
 
 interface FormData {
   fullName: string;
@@ -421,9 +422,10 @@ function ContactPage() {
             </div>
           </div>
 
+
           {/* Contact Form - shows first on mobile, second on desktop */}
           <div className="lg:col-span-3 order-1 lg:order-2">
-            <div className="p-8 md:p-10 rounded-3xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-white/[0.06] shadow-xl">
+            <BackgroundGradient className="rounded-3xl bg-white dark:bg-gray-900 p-8 md:p-10 h-full">
               <h2 className="text-xl md:text-2xl font-bold mb-2 text-gray-900 dark:text-white">
                 Send us a message
               </h2>
@@ -619,7 +621,7 @@ function ContactPage() {
 
                 <SubmitButton cooldown={rateLimitCooldown} />
               </form>
-            </div>
+            </BackgroundGradient>
           </div>
         </div>
       </div>
