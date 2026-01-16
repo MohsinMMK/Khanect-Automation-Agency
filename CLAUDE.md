@@ -200,6 +200,7 @@ Logo files in `public/`:
 | `src/components/ProvenProcess.tsx`        | Timeline component for process steps                                  |
 | `src/components/ui/accordion.tsx`         | Neobrutalist accordion (FAQ sections)                                 |
 | `src/components/ui/shader-lines.tsx`      | Hero background shader animation (Three.js)                           |
+| `src/components/ui/hover-footer.tsx`      | Footer component with Background Gradient & Text Hover Effect         |
 | `src/components/ui/ai-assistant-card.tsx` | AI chat widget                                                        |
 | `src/contexts/ThemeContext.tsx`           | Theme state (dark mode only)                                          |
 | `src/services/n8nChatbotService.ts`       | Chat API                                                              |
