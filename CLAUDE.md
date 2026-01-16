@@ -167,7 +167,6 @@ Dark mode only (no theme switcher).
 Logo files in `public/`:
 
 - `logo.svg` - K logo icon (teal `#14b8a6`)
-- `logo.png` - K logo icon (original brown)
 - `logo-teal.png` - K logo icon (teal PNG)
 - `logo-full.png` - Full logo with "KHANECT" text
 - `favicon.svg` - Favicon (teal K logo)
