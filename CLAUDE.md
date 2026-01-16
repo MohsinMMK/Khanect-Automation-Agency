@@ -15,8 +15,45 @@ Business Automation Agency SaaS platform - React landing page and client portal 
 - **Framework**: React 19.2 + Vite 6 + TypeScript
 - **Styling**: Tailwind CSS v4 + CVA components
 - **Backend**: Supabase (PostgreSQL + Auth) + N8N webhooks
-- **Animations**: GSAP, Framer Motion, Three.js (Shader Lines)
+- **Routing**: React Router v7 with `createBrowserRouter` + loaders
+- **Animations**: Framer Motion (scroll animations), Three.js (Shader Lines)
 - **Package Manager**: Bun
+
+## React 19 Patterns
+
+### Form Handling
+Contact form uses React 19's `useActionState` and `useFormStatus`:
+
+```tsx
+// Form action with useActionState
+const [formState, formAction, isPending] = useActionState(submitAction, initialState);
+
+// Submit button with useFormStatus
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  return <button disabled={pending}>Submit</button>;
+}
+
+// Form with action
+<form action={formAction}>...</form>
+```
+
+### Router Data Patterns
+Routes use `createBrowserRouter` with loaders for data prefetching:
+
+```tsx
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <RootLayout />,
+    errorElement: <RouteErrorBoundary />,
+    children: [
+      { index: true, element: <LandingPage /> },
+      { path: 'services/:slug', element: <ServiceDetailPage />, loader: serviceLoader },
+    ],
+  },
+]);
+```
 
 ## Commands
 
@@ -136,20 +173,20 @@ All logos use `public/logo-full.png` (combined icon + "KHANECT" text).
 
 ## Key Files
 
-| File                                      | Purpose                                      |
-| ----------------------------------------- | -------------------------------------------- |
-| `src/App.tsx`                             | Main routing + chat widget                   |
-| `src/components/LandingPage.tsx`          | Landing page + contact form                  |
-| `src/components/Navbar.tsx`               | Navigation + theme toggle                    |
-| `src/components/ProvenProcess.tsx`        | Timeline component for process steps         |
-| `src/components/ui/accordion.tsx`         | Neobrutalist accordion (FAQ sections)        |
-| `src/components/ui/timeline.tsx`          | Timeline UI components                       |
-| `src/components/ui/shader-lines.tsx`      | Hero background shader animation             |
-| `src/components/ui/ai-assistant-card.tsx` | AI chat widget                               |
-| `src/contexts/ThemeContext.tsx`           | Theme state                                  |
-| `src/services/n8nChatbotService.ts`       | Chat API                                     |
-| `src/index.css`                           | Global styles + typography + theme variables |
-| `tailwind.config.js`                      | Tailwind theme config                        |
+| File                                      | Purpose                                            |
+| ----------------------------------------- | -------------------------------------------------- |
+| `src/App.tsx`                             | Router config + RootLayout + error boundaries      |
+| `src/components/LandingPage.tsx`          | Landing page + contact form (useActionState)       |
+| `src/components/StaggerContainer.tsx`     | Scroll-triggered stagger animations (Framer Motion)|
+| `src/components/Navbar.tsx`               | Navigation                                         |
+| `src/components/ProvenProcess.tsx`        | Timeline component for process steps               |
+| `src/components/ui/accordion.tsx`         | Neobrutalist accordion (FAQ sections)              |
+| `src/components/ui/shader-lines.tsx`      | Hero background shader animation (Three.js)        |
+| `src/components/ui/ai-assistant-card.tsx` | AI chat widget                                     |
+| `src/contexts/ThemeContext.tsx`           | Theme state (dark mode only)                       |
+| `src/services/n8nChatbotService.ts`       | Chat API                                           |
+| `src/index.css`                           | Global styles + typography + theme variables       |
+| `tailwind.config.js`                      | Tailwind theme config                              |
 
 ## Code Conventions
 
@@ -157,6 +194,7 @@ All logos use `public/logo-full.png` (combined icon + "KHANECT" text).
 - Styling: Tailwind classes + `cn()` utility
 - Icons: Lucide React or `components/icons/`
 - Forms: Always validate + rate-limit (60s cooldown)
+- Components: Use `function Component(props: Props)` syntax (not `React.FC`)
 
 ## SEO
 

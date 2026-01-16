@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useParams, Navigate, Link, useLocation } from 'react-router-dom';
 import { services } from '../data/services';
 import { industries } from '../data/industries';
@@ -13,7 +13,7 @@ import {
   combineSchemas
 } from '../utils/structuredData';
 
-const ServiceDetailPage: React.FC = () => {
+function ServiceDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   const location = useLocation();
 
@@ -177,6 +177,6 @@ const ServiceDetailPage: React.FC = () => {
       </div>
     </div>
   );
-};
+}
 
 export default ServiceDetailPage;

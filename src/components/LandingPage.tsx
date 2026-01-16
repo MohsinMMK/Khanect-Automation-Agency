@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
 import { ShaderAnimation } from './ui/shader-lines';
-import { ViewState } from '../types';
 import { validateEmail, validatePhone, validateUrl, validateName, validateBusinessName, validateMessage, MAX_LENGTHS } from '../utils/validation';
 import { supabase } from '../lib/supabase';
 import { processLead } from '../services/n8nService';
@@ -31,7 +31,7 @@ import {
 import { toast } from 'sonner';
 
 interface LandingPageProps {
-  onNavigate: (view: ViewState) => void;
+  // Props are optional - component can work standalone
 }
 
 interface FormData {
@@ -50,13 +50,73 @@ interface FormErrors {
   businessName?: string;
   website?: string;
   message?: string;
+  submit?: string;
+}
+
+interface FormState {
+  errors: FormErrors;
+  success: boolean;
+  message?: string;
 }
 
 // Rate limiting: 60 seconds between submissions
 const RATE_LIMIT_SECONDS = 60;
 const RATE_LIMIT_KEY = 'khanect_last_submission';
 
-const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
+// Submit button component using useFormStatus for pending state
+function SubmitButton({ cooldown }: { cooldown: number }) {
+  const { pending } = useFormStatus();
+  const isDisabled = pending || cooldown > 0;
+
+  return (
+    <button
+      type="submit"
+      disabled={isDisabled}
+      className="w-full py-3 px-6 rounded-lg bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-semibold text-sm hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+    >
+      {pending ? (
+        <span className="flex items-center justify-center gap-2">
+          <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          Sending...
+        </span>
+      ) : cooldown > 0 ? (
+        <span className="flex items-center justify-center gap-2">
+          <svg className="h-4 w-4" viewBox="0 0 36 36">
+            <circle
+              cx="18"
+              cy="18"
+              r="16"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              opacity="0.3"
+            />
+            <circle
+              cx="18"
+              cy="18"
+              r="16"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeDasharray={`${(cooldown / RATE_LIMIT_SECONDS) * 100} 100`}
+              strokeLinecap="round"
+              transform="rotate(-90 18 18)"
+              className="transition-all duration-1000"
+            />
+          </svg>
+          Wait {cooldown}s
+        </span>
+      ) : (
+        'Send message'
+      )}
+    </button>
+  );
+}
+
+function LandingPage(_props: LandingPageProps = {}) {
   const [formData, setFormData] = useState<FormData>({
     fullName: '',
     email: '',
@@ -66,12 +126,138 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
     message: '',
   });
   const [countryCode, setCountryCode] = useState('+1');
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formErrors, setFormErrors] = useState<FormErrors>({});
   const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
   const [activeTab, setActiveTab] = useState<'services' | 'industries'>('services');
-  const [openFAQ, setOpenFAQ] = useState<string | null>(null);
   const [rateLimitCooldown, setRateLimitCooldown] = useState(0);
+
+  // Form action using React 19 useActionState
+  const [formState, formAction, isPending] = useActionState<FormState, globalThis.FormData>(
+    async (prevState, submittedFormData) => {
+      // Check rate limiting
+      const lastSubmission = sessionStorage.getItem(RATE_LIMIT_KEY);
+      if (lastSubmission) {
+        const elapsed = Math.floor((Date.now() - parseInt(lastSubmission, 10)) / 1000);
+        if (elapsed < RATE_LIMIT_SECONDS) {
+          toast.error(`Please wait ${RATE_LIMIT_SECONDS - elapsed} seconds before submitting again.`);
+          return { errors: {}, success: false };
+        }
+      }
+
+      // Extract form data
+      const data = {
+        fullName: submittedFormData.get('fullName') as string,
+        email: submittedFormData.get('email') as string,
+        phone: submittedFormData.get('phone') as string,
+        businessName: submittedFormData.get('businessName') as string,
+        website: submittedFormData.get('website') as string || '',
+        message: submittedFormData.get('message') as string || '',
+        countryCode: submittedFormData.get('countryCode') as string,
+      };
+
+      // Validate all fields
+      const errors: FormErrors = {};
+      const nameResult = validateName(data.fullName, 'Full name');
+      if (!nameResult.isValid) errors.fullName = nameResult.error;
+
+      const emailResult = validateEmail(data.email);
+      if (!emailResult.isValid) errors.email = emailResult.error;
+
+      const phoneResult = validatePhone(data.phone);
+      if (!phoneResult.isValid) errors.phone = phoneResult.error;
+
+      const businessResult = validateBusinessName(data.businessName);
+      if (!businessResult.isValid) errors.businessName = businessResult.error;
+
+      if (data.website.trim()) {
+        const urlResult = validateUrl(data.website);
+        if (!urlResult.isValid) errors.website = urlResult.error;
+      }
+
+      const messageResult = validateMessage(data.message);
+      if (!messageResult.isValid) errors.message = messageResult.error;
+
+      if (Object.keys(errors).length > 0) {
+        setTouchedFields(new Set(['fullName', 'email', 'phone', 'businessName', 'website', 'message']));
+        setFormErrors(errors);
+        toast.error('Please fix the errors above before submitting.');
+        return { errors, success: false };
+      }
+
+      try {
+        const submissionId = crypto.randomUUID();
+        let supabaseSuccess = false;
+
+        if (supabase) {
+          const fullPhoneNumber = `${data.countryCode} ${data.phone}`;
+          const { error: supabaseError } = await supabase
+            .from('contact_submissions')
+            .insert([{
+              id: submissionId,
+              full_name: data.fullName,
+              email: data.email,
+              phone: fullPhoneNumber,
+              business_name: data.businessName,
+              website: data.website || null,
+              message: data.message || null,
+            }]);
+
+          if (supabaseError) {
+            console.error('Supabase error:', supabaseError);
+            if (supabaseError.message.includes('policy')) {
+              throw new Error('Database configuration error. Please contact support.');
+            }
+            throw new Error('Failed to save your submission. Please try again.');
+          }
+          supabaseSuccess = true;
+        } else {
+          console.warn('Supabase not configured. Skipping database save.');
+          if (!import.meta.env.DEV) {
+            throw new Error('Service temporarily unavailable. Please try again later.');
+          }
+        }
+
+        // Process lead via N8N webhook (non-blocking)
+        if (supabaseSuccess) {
+          processLead({
+            submissionId,
+            fullName: data.fullName,
+            email: data.email,
+            phone: `${data.countryCode} ${data.phone}`,
+            businessName: data.businessName,
+            website: data.website,
+            message: data.message,
+          }).then((result) => {
+            if (result.success) {
+              console.log('Lead processed via N8N');
+            } else {
+              console.warn('Lead processing error (non-blocking):', result.error);
+            }
+          });
+        }
+
+        if (!supabaseSuccess) {
+          throw new Error('Unable to process your submission. Please try again.');
+        }
+
+        // Reset form on success
+        setFormData({ fullName: '', email: '', phone: '', businessName: '', website: '', message: '' });
+        setFormErrors({});
+        setTouchedFields(new Set());
+        sessionStorage.setItem(RATE_LIMIT_KEY, Date.now().toString());
+        setRateLimitCooldown(RATE_LIMIT_SECONDS);
+
+        toast.success("Thank you! We've received your submission and will be in touch soon.");
+        return { errors: {}, success: true, message: 'Submission successful!' };
+      } catch (error) {
+        console.error('Form submission error:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Something went wrong. Please try again.';
+        toast.error(errorMessage);
+        return { errors: { submit: errorMessage }, success: false };
+      }
+    },
+    { errors: {}, success: false }
+  );
 
   // Structured data for SEO rich snippets
   useStructuredData(
@@ -108,11 +294,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
     const interval = setInterval(checkCooldown, 1000);
     return () => clearInterval(interval);
   }, []);
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = e.target;
-    setFormData(prev => ({ ...prev, [id]: value }));
-  };
 
   const validateField = (fieldName: keyof FormData, value: string): string | undefined => {
     switch (fieldName) {
@@ -176,111 +357,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
       return `${baseClasses} border-red-500 dark:border-red-500 focus:border-red-500 focus:ring-red-500/30`;
     }
     return `${baseClasses} border-gray-200 dark:border-white/[0.08] focus:border-brand-lime focus:ring-brand-lime/30`;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    // Check rate limiting
-    if (rateLimitCooldown > 0) {
-      toast.error(`Please wait ${rateLimitCooldown} seconds before submitting again.`);
-      return;
-    }
-
-    const errors: FormErrors = {
-      fullName: validateField('fullName', formData.fullName),
-      email: validateField('email', formData.email),
-      phone: validateField('phone', formData.phone),
-      businessName: validateField('businessName', formData.businessName),
-      website: validateField('website', formData.website),
-      message: validateField('message', formData.message),
-    };
-    setTouchedFields(new Set(['fullName', 'email', 'phone', 'businessName', 'website', 'message']));
-    const hasErrors = Object.values(errors).some(error => error !== undefined);
-    if (hasErrors) {
-      setFormErrors(errors);
-      toast.error('Please fix the errors above before submitting.');
-      return;
-    }
-    setIsSubmitting(true);
-    setFormErrors({});
-
-    try {
-      // Generate a client-side UUID for tracking
-      const submissionId = crypto.randomUUID();
-      let supabaseSuccess = false;
-
-      if (supabase) {
-        try {
-          const fullPhoneNumber = `${countryCode} ${formData.phone}`;
-          const { error: supabaseError } = await supabase
-            .from('contact_submissions')
-            .insert([{
-              id: submissionId,
-              full_name: formData.fullName,
-              email: formData.email,
-              phone: fullPhoneNumber,
-              business_name: formData.businessName,
-              website: formData.website || null,
-              message: formData.message || null,
-            }]);
-
-          if (supabaseError) {
-            console.error('Supabase error:', supabaseError);
-            if (supabaseError.message.includes('policy')) {
-              throw new Error('Database configuration error. Please contact support.');
-            }
-            throw new Error('Failed to save your submission. Please try again.');
-          }
-          supabaseSuccess = true;
-        } catch (dbErr) {
-          console.error('Database error:', dbErr);
-          throw dbErr;
-        }
-      } else {
-        console.warn('Supabase not configured. Skipping database save.');
-        if (!import.meta.env.DEV) {
-          throw new Error('Service temporarily unavailable. Please try again later.');
-        }
-      }
-
-      // Process lead via N8N webhook (non-blocking)
-      if (supabaseSuccess) {
-        processLead({
-          submissionId,
-          fullName: formData.fullName,
-          email: formData.email,
-          phone: `${countryCode} ${formData.phone}`,
-          businessName: formData.businessName,
-          website: formData.website,
-          message: formData.message,
-        }).then((result) => {
-          if (result.success) {
-            console.log('Lead processed via N8N');
-          } else {
-            console.warn('Lead processing error (non-blocking):', result.error);
-          }
-        });
-      }
-
-      if (!supabaseSuccess) {
-        throw new Error('Unable to process your submission. Please try again.');
-      }
-
-      setFormData({ fullName: '', email: '', phone: '', businessName: '', website: '', message: '' });
-      setFormErrors({});
-      setTouchedFields(new Set());
-      // Store submission timestamp for rate limiting
-      sessionStorage.setItem(RATE_LIMIT_KEY, Date.now().toString());
-      setRateLimitCooldown(RATE_LIMIT_SECONDS);
-
-      toast.success("Thank you! We've received your submission and will be in touch soon.");
-    } catch (error) {
-      console.error('Form submission error:', error);
-      toast.error(error instanceof Error ? error.message : 'Something went wrong. Please try again.');
-    } finally {
-      setIsSubmitting(false);
-    }
   };
 
   return (
@@ -420,13 +496,16 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
               </p>
 
               {/* Form */}
-              <form className="space-y-5" onSubmit={handleSubmit}>
+              <form className="space-y-5" action={formAction}>
+                {/* Hidden field for country code */}
+                <input type="hidden" name="countryCode" value={countryCode} />
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
                     <label htmlFor="fullName" className="text-sm font-medium text-gray-700 dark:text-gray-300 block">Full name</label>
                     <input
                       type="text"
                       id="fullName"
+                      name="fullName"
                       value={formData.fullName}
                       onChange={handleInputChangeWithValidation}
                       onBlur={handleFieldBlur}
@@ -434,7 +513,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                       placeholder="Full name"
                       required
                       maxLength={MAX_LENGTHS.name}
-                      disabled={isSubmitting}
+                      disabled={isPending}
                       aria-invalid={touchedFields.has('fullName') && !!formErrors.fullName}
                       aria-describedby={formErrors.fullName ? 'fullName-error' : undefined}
                     />
@@ -447,6 +526,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                     <input
                       type="text"
                       id="businessName"
+                      name="businessName"
                       value={formData.businessName}
                       onChange={handleInputChangeWithValidation}
                       onBlur={handleFieldBlur}
@@ -454,7 +534,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                       placeholder="Business name"
                       required
                       maxLength={MAX_LENGTHS.businessName}
-                      disabled={isSubmitting}
+                      disabled={isPending}
                       aria-invalid={touchedFields.has('businessName') && !!formErrors.businessName}
                       aria-describedby={formErrors.businessName ? 'businessName-error' : undefined}
                     />
@@ -469,6 +549,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                   <input
                     type="email"
                     id="email"
+                    name="email"
                     value={formData.email}
                     onChange={handleInputChangeWithValidation}
                     onBlur={handleFieldBlur}
@@ -476,7 +557,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                     placeholder="you@company.com"
                     required
                     maxLength={MAX_LENGTHS.email}
-                    disabled={isSubmitting}
+                    disabled={isPending}
                     aria-invalid={touchedFields.has('email') && !!formErrors.email}
                     aria-describedby={formErrors.email ? 'email-error' : undefined}
                   />
@@ -491,11 +572,12 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                     <CountryCodeSelect
                       value={countryCode}
                       onChange={setCountryCode}
-                      disabled={isSubmitting}
+                      disabled={isPending}
                     />
                     <input
                       type="tel"
                       id="phone"
+                      name="phone"
                       value={formData.phone}
                       onChange={handleInputChangeWithValidation}
                       onBlur={handleFieldBlur}
@@ -503,7 +585,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                       placeholder="(555) 000-0000"
                       required
                       maxLength={MAX_LENGTHS.phone}
-                      disabled={isSubmitting}
+                      disabled={isPending}
                       aria-invalid={touchedFields.has('phone') && !!formErrors.phone}
                       aria-describedby={formErrors.phone ? 'phone-error' : undefined}
                     />
@@ -520,13 +602,14 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                   <input
                     type="text"
                     id="website"
+                    name="website"
                     value={formData.website}
                     onChange={handleInputChangeWithValidation}
                     onBlur={handleFieldBlur}
                     className="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-lime/50 focus:border-brand-lime transition-all text-sm"
                     placeholder="yourwebsite.com"
                     maxLength={MAX_LENGTHS.website}
-                    disabled={isSubmitting}
+                    disabled={isPending}
                     aria-invalid={touchedFields.has('website') && !!formErrors.website}
                     aria-describedby={formErrors.website ? 'website-error' : undefined}
                   />
@@ -539,6 +622,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                   <label htmlFor="message" className="text-sm font-medium text-gray-700 dark:text-gray-300 block">Message</label>
                   <textarea
                     id="message"
+                    name="message"
                     value={formData.message}
                     onChange={(e) => {
                       setFormData(prev => ({ ...prev, message: e.target.value }));
@@ -556,7 +640,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                     placeholder="Leave us a message..."
                     rows={4}
                     maxLength={MAX_LENGTHS.message}
-                    disabled={isSubmitting}
+                    disabled={isPending}
                     aria-invalid={touchedFields.has('message') && !!formErrors.message}
                     aria-describedby={formErrors.message ? 'message-error' : undefined}
                   />
@@ -576,50 +660,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                   </label>
                 </div>
 
-                <button
-                  type="submit"
-                  disabled={isSubmitting || rateLimitCooldown > 0}
-                  className="w-full py-3 px-6 rounded-lg bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-semibold text-sm hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isSubmitting ? (
-                    <span className="flex items-center justify-center gap-2">
-                      <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      Sending...
-                    </span>
-                  ) : rateLimitCooldown > 0 ? (
-                    <span className="flex items-center justify-center gap-2">
-                      <svg className="h-4 w-4" viewBox="0 0 36 36">
-                        <circle
-                          cx="18"
-                          cy="18"
-                          r="16"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          opacity="0.3"
-                        />
-                        <circle
-                          cx="18"
-                          cy="18"
-                          r="16"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeDasharray={`${(rateLimitCooldown / RATE_LIMIT_SECONDS) * 100} 100`}
-                          strokeLinecap="round"
-                          transform="rotate(-90 18 18)"
-                          className="transition-all duration-1000"
-                        />
-                      </svg>
-                      Wait {rateLimitCooldown}s
-                    </span>
-                  ) : (
-                    'Send message'
-                  )}
-                </button>
+                <SubmitButton cooldown={rateLimitCooldown} />
               </form>
             </div>
 

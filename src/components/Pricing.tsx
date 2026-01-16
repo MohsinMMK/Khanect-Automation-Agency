@@ -1,5 +1,4 @@
-import React from 'react';
-import { ViewState } from '../types';
+import { useNavigate } from 'react-router-dom';
 import PricingCard from './PricingCard';
 import {
   Accordion,
@@ -17,11 +16,8 @@ import {
   combineSchemas
 } from '../utils/structuredData';
 
-interface PricingProps {
-  onNavigate: (view: ViewState) => void;
-}
-
-const Pricing: React.FC<PricingProps> = ({ onNavigate }) => {
+function Pricing() {
+  const navigate = useNavigate();
 
   // Structured data for SEO rich snippets
   useStructuredData(
@@ -37,8 +33,8 @@ const Pricing: React.FC<PricingProps> = ({ onNavigate }) => {
   );
 
   const handleStartFreeTrial = () => {
-    onNavigate(ViewState.LANDING);
-    // Wait for view change, DOM update, and scroll reset, then scroll to contact form
+    navigate('/');
+    // Wait for navigation and DOM update, then scroll to contact form
     setTimeout(() => {
       document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
     }, 200);
@@ -275,6 +271,6 @@ const Pricing: React.FC<PricingProps> = ({ onNavigate }) => {
       </section>
     </div>
   );
-};
+}
 
 export default Pricing;

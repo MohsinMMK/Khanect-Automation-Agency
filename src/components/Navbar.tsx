@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { ViewState } from '../types';
 import { useScrolled } from '../hooks/useScrolled';
 import { useBodyOverflow } from '../hooks/useBodyOverflow';
@@ -9,7 +9,7 @@ interface NavbarProps {
   onNavigate: (view: ViewState) => void;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate }) => {
+function Navbar({ currentView, onNavigate }: NavbarProps) {
   const isScrolled = useScrolled(20);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -215,6 +215,6 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate }) => {
       </div>
     </nav>
   );
-};
+}
 
 export default Navbar;

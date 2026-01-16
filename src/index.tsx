@@ -1,10 +1,8 @@
-import React from 'react';
+import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider } from './contexts/ThemeContext';
 import './index.css';
 import App from './App';
-
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
@@ -13,11 +11,9 @@ if (!rootElement) {
 
 const root = ReactDOM.createRoot(rootElement);
 root.render(
-  <React.StrictMode>
+  <StrictMode>
     <ThemeProvider defaultTheme="light">
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
+      <App />
     </ThemeProvider>
-  </React.StrictMode>
+  </StrictMode>
 );

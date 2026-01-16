@@ -1,11 +1,8 @@
-import React, { useEffect, useRef } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-gsap.registerPlugin(ScrollTrigger);
+import { useEffect, useRef, Children, cloneElement, isValidElement, type ReactNode, type ReactElement } from 'react';
+import { useAnimate, useInView, stagger } from 'framer-motion';
 
 interface StaggerContainerProps {
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
   stagger?: number;
   duration?: number;
@@ -16,59 +13,60 @@ interface StaggerContainerProps {
 
 /**
  * Container component that animates its children with a stagger effect
- * when scrolled into view using GSAP
+ * when scrolled into view using Framer Motion
  */
-const StaggerContainer: React.FC<StaggerContainerProps> = ({
+function StaggerContainer({
   children,
   className = '',
-  stagger = 0.12,
+  stagger: staggerDelay = 0.12,
   duration = 0.6,
   y = 24,
   delay = 0.1,
   as: Component = 'div',
-}) => {
-  const containerRef = useRef<HTMLDivElement>(null);
+}: StaggerContainerProps) {
+  const [scope, animate] = useAnimate();
+  const isInView = useInView(scope, {
+    once: true,
+    margin: '-15% 0px' // Equivalent to GSAP's 'top 85%'
+  });
+  const hasAnimated = useRef(false);
 
   useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
+    if (isInView && !hasAnimated.current && scope.current) {
+      hasAnimated.current = true;
 
-    const children = container.children;
-    if (children.length === 0) return;
-
-    // Set initial state
-    gsap.set(children, { y, opacity: 0 });
-
-    // Create stagger animation
-    const animation = gsap.to(children, {
-      y: 0,
-      opacity: 1,
-      duration,
-      delay,
-      ease: 'power2.out',
-      stagger,
-      scrollTrigger: {
-        trigger: container,
-        start: 'top 85%',
-        once: true,
-      },
-    });
-
-    return () => {
-      animation.kill();
-      ScrollTrigger.getAll().forEach(trigger => {
-        if (trigger.trigger === container) {
-          trigger.kill();
+      // Animate direct children using CSS transform
+      animate(
+        Array.from(scope.current.children),
+        { opacity: 1, transform: 'translateY(0px)' },
+        {
+          duration,
+          delay: stagger(staggerDelay, { startDelay: delay }),
+          ease: [0.4, 0, 0.2, 1] // Equivalent to 'power2.out'
         }
+      );
+    }
+  }, [isInView, animate, scope, duration, staggerDelay, delay]);
+
+  // Set initial styles on children
+  const styledChildren = Children.map(children, (child) => {
+    if (isValidElement(child)) {
+      return cloneElement(child as ReactElement<{ style?: React.CSSProperties }>, {
+        style: {
+          ...(child.props as { style?: React.CSSProperties }).style,
+          opacity: 0,
+          transform: `translateY(${y}px)`,
+        },
       });
-    };
-  }, [stagger, duration, y, delay]);
+    }
+    return child;
+  });
 
   return (
-    <Component ref={containerRef as any} className={className}>
-      {children}
+    <Component ref={scope} className={className}>
+      {styledChildren}
     </Component>
   );
-};
+}
 
 export default StaggerContainer;
