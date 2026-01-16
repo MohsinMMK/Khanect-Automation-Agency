@@ -44,7 +44,7 @@ function Navbar({ currentView, onNavigate }: NavbarProps) {
   const handleLandingClick = () => handleNavigation(ViewState.LANDING);
   const handlePricingClick = () => handleNavigation(ViewState.PRICING);
   const handlePortalClick = () => handleNavigation(ViewState.PORTAL);
-  const handleContactClick = () => handleNavigation(ViewState.LANDING, 'contact');
+  const handleContactClick = () => handleNavigation(ViewState.CONTACT);
 
   const handleNavigate = (view: ViewState) => {
     onNavigate(view);

@@ -4,7 +4,8 @@ export enum ViewState {
   LANDING = 'LANDING',
   DEMO = 'DEMO',
   PORTAL = 'PORTAL',
-  PRICING = 'PRICING'
+  PRICING = 'PRICING',
+  CONTACT = 'CONTACT'
 }
 
 export interface ChatMessage {

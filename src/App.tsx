@@ -16,6 +16,7 @@ import Pricing from './components/Pricing';
 import ClientPortal from './components/ClientPortal';
 import Footer from './components/Footer';
 import ServiceDetailPage from './components/ServiceDetailPage';
+import ContactPage from './components/ContactPage';
 import DottedSurfaceDemo from './components/DottedSurfaceDemo';
 import ScrollToTop from './components/ScrollToTop';
 import AiAssistantCard from './components/ui/ai-assistant-card';
@@ -103,6 +104,7 @@ function RootLayout() {
     const path = location.pathname;
     if (path === '/pricing') return ViewState.PRICING;
     if (path === '/portal') return ViewState.PORTAL;
+    if (path === '/contact') return ViewState.CONTACT;
     return ViewState.LANDING;
   };
 
@@ -119,6 +121,9 @@ function RootLayout() {
         break;
       case ViewState.PORTAL:
         navigate('/portal');
+        break;
+      case ViewState.CONTACT:
+        navigate('/contact');
         break;
       case ViewState.LANDING:
       default:
@@ -210,6 +215,10 @@ const router = createBrowserRouter([
       {
         path: 'pricing',
         element: <Pricing />,
+      },
+      {
+        path: 'contact',
+        element: <ContactPage />,
       },
       {
         path: 'portal',
