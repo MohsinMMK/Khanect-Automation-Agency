@@ -14,6 +14,7 @@ interface FormData {
   businessName: string;
   website: string;
   message: string;
+  privacyConsent: boolean;
 }
 
 interface FormErrors {
@@ -23,6 +24,7 @@ interface FormErrors {
   businessName?: string;
   website?: string;
   message?: string;
+  privacyConsent?: string;
   submit?: string;
 }
 
@@ -103,6 +105,7 @@ function ContactPage() {
     businessName: '',
     website: '',
     message: '',
+    privacyConsent: false,
   });
   const [countryCode, setCountryCode] = useState('+1');
   const [formErrors, setFormErrors] = useState<FormErrors>({});
@@ -131,6 +134,7 @@ function ContactPage() {
         website: submittedFormData.get('website') as string || '',
         message: submittedFormData.get('message') as string || '',
         countryCode: submittedFormData.get('countryCode') as string,
+        privacyConsent: submittedFormData.get('privacyConsent') === 'true',
       };
 
       // Validate all fields
@@ -154,6 +158,10 @@ function ContactPage() {
 
       const messageResult = validateMessage(data.message);
       if (!messageResult.isValid) errors.message = messageResult.error;
+
+      if (!data.privacyConsent) {
+        errors.privacyConsent = 'You must agree to the privacy policy to continue';
+      }
 
       if (Object.keys(errors).length > 0) {
         setTouchedFields(new Set(['fullName', 'email', 'phone', 'businessName', 'website', 'message']));
@@ -219,7 +227,7 @@ function ContactPage() {
         }
 
         // Reset form on success
-        setFormData({ fullName: '', email: '', phone: '', businessName: '', website: '', message: '' });
+        setFormData({ fullName: '', email: '', phone: '', businessName: '', website: '', message: '', privacyConsent: false });
         setFormErrors({});
         setTouchedFields(new Set());
         sessionStorage.setItem(RATE_LIMIT_KEY, Date.now().toString());
@@ -253,29 +261,31 @@ function ContactPage() {
     return () => clearInterval(interval);
   }, []);
 
-  const validateField = (fieldName: keyof FormData, value: string): string | undefined => {
+  const validateField = (fieldName: keyof FormData, value: string | boolean): string | undefined => {
     switch (fieldName) {
       case 'fullName':
-        const nameResult = validateName(value, 'Full name');
+        const nameResult = validateName(value as string, 'Full name');
         return nameResult.isValid ? undefined : nameResult.error;
       case 'email':
-        const emailResult = validateEmail(value);
+        const emailResult = validateEmail(value as string);
         return emailResult.isValid ? undefined : emailResult.error;
       case 'phone':
-        const phoneResult = validatePhone(value);
+        const phoneResult = validatePhone(value as string);
         return phoneResult.isValid ? undefined : phoneResult.error;
       case 'businessName':
-        const businessResult = validateBusinessName(value);
+        const businessResult = validateBusinessName(value as string);
         return businessResult.isValid ? undefined : businessResult.error;
       case 'website':
         // Website is optional - only validate if not empty
-        if (!value.trim()) return undefined;
-        const urlResult = validateUrl(value);
+        if (!(value as string).trim()) return undefined;
+        const urlResult = validateUrl(value as string);
         return urlResult.isValid ? undefined : urlResult.error;
       case 'message':
         // Message is optional - validate max length
-        const messageResult = validateMessage(value);
+        const messageResult = validateMessage(value as string);
         return messageResult.isValid ? undefined : messageResult.error;
+      case 'privacyConsent':
+        return value ? undefined : 'You must agree to the privacy policy';
       default:
         return undefined;
     }
@@ -283,7 +293,7 @@ function ContactPage() {
 
   // Debounced validation to prevent rapid error message flickering
   const debouncedValidate = useDebouncedCallback(
-    (fieldName: keyof FormData, value: string) => {
+    (fieldName: keyof FormData, value: string | boolean) => {
       const error = validateField(fieldName, value);
       setFormErrors(prev => ({ ...prev, [fieldName]: error }));
     },
@@ -291,20 +301,24 @@ function ContactPage() {
   );
 
   const handleInputChangeWithValidation = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = e.target;
+    const { id, value, type, checked } = e.target;
     const fieldName = id as keyof FormData;
-    setFormData(prev => ({ ...prev, [fieldName]: value }));
+    const fieldValue = type === 'checkbox' ? checked : value;
+
+    setFormData(prev => ({ ...prev, [fieldName]: fieldValue }));
     if (touchedFields.has(fieldName)) {
       // Use debounced validation for smoother UX
-      debouncedValidate(fieldName, value);
+      debouncedValidate(fieldName, fieldValue);
     }
   };
 
   const handleFieldBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    const { id, value } = e.target;
+    const { id, value, type, checked } = e.target;
     const fieldName = id as keyof FormData;
+    const fieldValue = type === 'checkbox' ? checked : value;
+    
     setTouchedFields(prev => new Set(prev).add(fieldName));
-    const error = validateField(fieldName, value);
+    const error = validateField(fieldName, fieldValue);
     setFormErrors(prev => ({ ...prev, [fieldName]: error }));
   };
 
@@ -325,8 +339,8 @@ function ContactPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12">
-          {/* Contact Info Cards */}
-          <div className="lg:col-span-2 space-y-6">
+          {/* Contact Info Cards - shows second on mobile, first on desktop */}
+          <div className="lg:col-span-2 space-y-6 order-2 lg:order-1">
             {/* Email Card */}
             <div className="group p-6 rounded-2xl bg-white dark:bg-white/[0.03] border border-gray-100 dark:border-white/[0.06] hover:border-brand-lime/30 transition-all duration-300 hover:shadow-lg">
               <div className="flex items-start gap-4">
@@ -407,8 +421,8 @@ function ContactPage() {
             </div>
           </div>
 
-          {/* Contact Form */}
-          <div className="lg:col-span-3">
+          {/* Contact Form - shows first on mobile, second on desktop */}
+          <div className="lg:col-span-3 order-1 lg:order-2">
             <div className="p-8 md:p-10 rounded-3xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-white/[0.06] shadow-xl">
               <h2 className="text-xl md:text-2xl font-bold mb-2 text-gray-900 dark:text-white">
                 Send us a message
@@ -581,15 +595,26 @@ function ContactPage() {
                   )}
                 </div>
 
-                <div className="flex items-start gap-3 pt-2">
-                  <input
-                    type="checkbox"
-                    id="privacy"
-                    className="mt-1 w-4 h-4 rounded border-gray-300 text-brand-lime focus:ring-brand-lime"
-                  />
-                  <label htmlFor="privacy" className="text-sm text-gray-500 dark:text-gray-400">
-                    I agree to the <a href="#" className="underline hover:text-gray-700 dark:hover:text-gray-200">privacy policy</a> and consent to receiving communications from Khanect AI.
-                  </label>
+                <div className="space-y-2 pt-2">
+                  <div className="flex items-start gap-3">
+                    <input
+                      type="checkbox"
+                      id="privacyConsent"
+                      name="privacyConsent"
+                      value="true"
+                      checked={formData.privacyConsent}
+                      onChange={handleInputChangeWithValidation}
+                      onBlur={handleFieldBlur}
+                      className="mt-1 w-4 h-4 rounded border-gray-300 text-brand-lime focus:ring-brand-lime cursor-pointer"
+                      aria-invalid={touchedFields.has('privacyConsent') && !!formErrors.privacyConsent}
+                    />
+                    <label htmlFor="privacyConsent" className="text-sm text-gray-500 dark:text-gray-400 cursor-pointer select-none">
+                      I agree to the <a href="#" className="underline hover:text-gray-700 dark:hover:text-gray-200">privacy policy</a> and consent to receiving communications from Khanect AI.
+                    </label>
+                  </div>
+                  {touchedFields.has('privacyConsent') && formErrors.privacyConsent && (
+                    <p id="privacyConsent-error" className="text-xs text-red-500 pl-7" role="alert">{formErrors.privacyConsent}</p>
+                  )}
                 </div>
 
                 <SubmitButton cooldown={rateLimitCooldown} />

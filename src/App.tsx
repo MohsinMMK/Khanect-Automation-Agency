@@ -92,6 +92,7 @@ function RootLayout() {
   const navigate = useNavigate();
   const showScrollTop = useScrolled(500);
   const [chatOpen, setChatOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Lock body scroll when chat is open
   useBodyOverflow(chatOpen);
@@ -148,6 +149,7 @@ function RootLayout() {
       <Navbar
         currentView={currentView}
         onNavigate={handleNavigate}
+        onMobileMenuChange={setMobileMenuOpen}
       />
 
       <main id="main-content" className="flex-grow" tabIndex={-1}>
@@ -170,7 +172,7 @@ function RootLayout() {
       </button>
 
       {/* Floating Action Button - Chat Trigger */}
-      {!chatOpen && (location.pathname === '/' || location.pathname === '/pricing') && (
+      {!chatOpen && !mobileMenuOpen && (location.pathname === '/' || location.pathname === '/pricing' || location.pathname === '/contact') && (
         <button
           onClick={() => setChatOpen(true)}
           className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-gray-950 hover:bg-black border border-white/[0.08] hover:border-brand-lime/40 text-brand-lime rounded-full shadow-soft-lg flex items-center justify-center transition-all duration-300 ease-out hover:scale-105 group animate-fade-in-up hover:shadow-glow-lime"

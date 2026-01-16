@@ -184,7 +184,7 @@ Logo files in `public/`:
 ## AI Assistant
 
 - **File**: `src/components/ui/ai-assistant-card.tsx`
-- **Trigger**: Floating button on landing/pricing pages
+- **Trigger**: Floating button on landing/pricing/contact pages (hidden when mobile menu open)
 - **Close**: Click outside (backdrop overlay)
 - **Logo**: `logo-full.png` in header
 
@@ -196,7 +196,7 @@ Logo files in `public/`:
 | `src/components/LandingPage.tsx`          | Landing page with hero, services, FAQs, CTA         |
 | `src/components/ContactPage.tsx`          | Dedicated contact page with form + contact info     |
 | `src/components/StaggerContainer.tsx`     | Scroll-triggered stagger animations (Framer Motion) |
-| `src/components/Navbar.tsx`               | Navigation                                          |
+| `src/components/Navbar.tsx`               | Navigation (Mobile Menu z-index: 99999)             |
 | `src/components/ProvenProcess.tsx`        | Timeline component for process steps                |
 | `src/components/ui/accordion.tsx`         | Neobrutalist accordion (FAQ sections)               |
 | `src/components/ui/shader-lines.tsx`      | Hero background shader animation (Three.js)         |
@@ -211,7 +211,7 @@ Logo files in `public/`:
 - Path alias: `@/` for `src/`
 - Styling: Tailwind classes + `cn()` utility
 - Icons: Lucide React or `components/icons/`
-- Forms: Always validate + rate-limit (60s cooldown)
+- Forms: Always validate (incl. Privacy Consent) + rate-limit (60s cooldown)
 - Components: Use `function Component(props: Props)` syntax (not `React.FC`)
 
 ## SEO

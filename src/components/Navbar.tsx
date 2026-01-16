@@ -7,11 +7,18 @@ import { useFocusTrap } from '../hooks/useFocusTrap';
 interface NavbarProps {
   currentView: ViewState;
   onNavigate: (view: ViewState) => void;
+  onMobileMenuChange?: (isOpen: boolean) => void;
 }
 
-function Navbar({ currentView, onNavigate }: NavbarProps) {
+function Navbar({ currentView, onNavigate, onMobileMenuChange }: NavbarProps) {
   const isScrolled = useScrolled(20);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Notify parent when mobile menu state changes
+  const updateMobileMenuState = (isOpen: boolean) => {
+    setIsMobileMenuOpen(isOpen);
+    onMobileMenuChange?.(isOpen);
+  };
 
   // Lock body scroll when mobile menu is open
   useBodyOverflow(isMobileMenuOpen);
@@ -19,7 +26,7 @@ function Navbar({ currentView, onNavigate }: NavbarProps) {
   // Focus trap for mobile menu with ESC key support
   const mobileMenuRef = useFocusTrap<HTMLDivElement>(
     isMobileMenuOpen,
-    () => setIsMobileMenuOpen(false)
+    () => updateMobileMenuState(false)
   );
 
   // Parameterized navigation handler
@@ -38,7 +45,7 @@ function Navbar({ currentView, onNavigate }: NavbarProps) {
         }, 200);
       }
     }
-    setIsMobileMenuOpen(false);
+    updateMobileMenuState(false);
   }, [currentView, onNavigate]);
 
   const handleLandingClick = () => handleNavigation(ViewState.LANDING);
@@ -48,13 +55,13 @@ function Navbar({ currentView, onNavigate }: NavbarProps) {
 
   const handleNavigate = (view: ViewState) => {
     onNavigate(view);
-    setIsMobileMenuOpen(false);
+    updateMobileMenuState(false);
   };
 
   return (
     <nav
         className={`fixed top-0 w-full z-50 px-6 transition-all duration-300 ${
-            isScrolled && !isMobileMenuOpen
+            isScrolled
                 ? 'py-0 bg-white/80 dark:bg-gray-950/80 navbar-scrolled backdrop-blur-xl border-b border-black/[0.06] dark:border-white/[0.06]'
                 : 'py-0 bg-transparent'
         }`}
@@ -119,16 +126,16 @@ function Navbar({ currentView, onNavigate }: NavbarProps) {
         </div>
 
         {/* Mobile Toggle Button */}
-        <div className="flex md:hidden items-center gap-2">
+        <div className="flex md:hidden items-center gap-2" style={{ zIndex: 100000, position: 'relative' }}>
             <button
                 onClick={handleContactClick}
-                className="btn-primary p-2.5 z-50 relative"
+                className="p-2.5 text-brand-lime hover:text-brand-lime/80 transition-colors"
             >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
             </button>
             <button
-                className="mobile-menu-toggle z-50 relative text-gray-900 dark:text-white p-2 focus:outline-none hover:text-brand-lime transition-colors duration-180"
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="mobile-menu-toggle text-gray-900 dark:text-white p-2 focus:outline-none hover:text-brand-lime transition-colors duration-180"
+                onClick={() => updateMobileMenuState(!isMobileMenuOpen)}
                 aria-label="Toggle Menu"
             >
                 {isMobileMenuOpen ? (
@@ -147,17 +154,28 @@ function Navbar({ currentView, onNavigate }: NavbarProps) {
         role="dialog"
         aria-modal="true"
         aria-label="Navigation menu"
-        className={`mobile-menu-overlay fixed inset-0 bg-white/98 dark:bg-gray-950/98 backdrop-blur-2xl z-40 transition-all duration-300 ease-out md:hidden ${
+        className={`md:hidden transition-opacity duration-300 ease-out ${
           isMobileMenuOpen
             ? 'opacity-100 visible'
             : 'opacity-0 invisible pointer-events-none'
         }`}
         style={{
-          clipPath: isMobileMenuOpen ? 'inset(0 0 0 0)' : 'inset(0 0 100% 0)',
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          width: '100vw',
+          height: '100vh',
+          backgroundColor: 'var(--background, #030712)',
+          zIndex: 99999,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}
         aria-hidden={!isMobileMenuOpen}
       >
-        <div className="flex flex-col items-center justify-center h-full space-y-6 px-6">
+        <div className="flex flex-col items-center space-y-6 px-6">
             <button
               onClick={handleLandingClick}
               className={`text-2xl font-medium transition-all duration-300 ${
@@ -199,17 +217,6 @@ function Navbar({ currentView, onNavigate }: NavbarProps) {
               style={{ transitionDelay: isMobileMenuOpen ? '320ms' : '0ms' }}
             >
               Contact Us
-            </button>
-
-             <button
-                onClick={() => handleNavigate(ViewState.DEMO)}
-                className={`btn-primary text-lg px-8 py-3.5 mt-4 transition-all duration-300 ${
-                  isMobileMenuOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-                }`}
-                style={{ transitionDelay: isMobileMenuOpen ? '480ms' : '0ms' }}
-            >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                <span>Try Demo</span>
             </button>
         </div>
       </div>
