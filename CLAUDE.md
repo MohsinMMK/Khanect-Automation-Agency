@@ -22,11 +22,15 @@ Business Automation Agency SaaS platform - React landing page and client portal 
 ## React 19 Patterns
 
 ### Form Handling
+
 Contact form uses React 19's `useActionState` and `useFormStatus`:
 
 ```tsx
 // Form action with useActionState
-const [formState, formAction, isPending] = useActionState(submitAction, initialState);
+const [formState, formAction, isPending] = useActionState(
+  submitAction,
+  initialState
+);
 
 // Submit button with useFormStatus
 function SubmitButton() {
@@ -35,21 +39,26 @@ function SubmitButton() {
 }
 
 // Form with action
-<form action={formAction}>...</form>
+<form action={formAction}>...</form>;
 ```
 
 ### Router Data Patterns
+
 Routes use `createBrowserRouter` with loaders for data prefetching:
 
 ```tsx
 const router = createBrowserRouter([
   {
-    path: '/',
+    path: "/",
     element: <RootLayout />,
     errorElement: <RouteErrorBoundary />,
     children: [
       { index: true, element: <LandingPage /> },
-      { path: 'services/:slug', element: <ServiceDetailPage />, loader: serviceLoader },
+      {
+        path: "services/:slug",
+        element: <ServiceDetailPage />,
+        loader: serviceLoader,
+      },
     ],
   },
 ]);
@@ -155,14 +164,22 @@ Dark mode only (no theme switcher).
 
 ## Logo Configuration
 
-All logos use `public/logo-full.png` (combined icon + "KHANECT" text).
+Logo files in `public/`:
 
-| Location     | File                    | Classes                    |
-| ------------ | ----------------------- | -------------------------- |
-| Navbar       | `Navbar.tsx`            | `h-40 -mt-6 -mb-10 -ml-10` |
-| Contact Form | `LandingPage.tsx`       | `h-32 -mt-10 -ml-10`       |
-| AI Assistant | `ai-assistant-card.tsx` | `h-24 -mt-2 -mb-4 -ml-4`   |
-| Favicon      | `index.html`            | PNG format                 |
+- `logo.svg` - K logo icon (teal `#14b8a6`)
+- `logo.png` - K logo icon (original brown)
+- `logo-teal.png` - K logo icon (teal PNG)
+- `logo-full.png` - Full logo with "KHANECT" text
+- `favicon.svg` - Favicon (teal K logo)
+
+| Location       | File                    | Classes                    |
+| -------------- | ----------------------- | -------------------------- |
+| Navbar         | `Navbar.tsx`            | `h-40 -mt-6 -mb-10 -ml-10` |
+| Contact Form   | `LandingPage.tsx`       | `h-32 -mt-10 -ml-10`       |
+| AI Assistant   | `ai-assistant-card.tsx` | `h-24 -mt-2 -mb-4 -ml-4`   |
+| Favicon        | `index.html`            | SVG format with cache-bust |
+| OG Image       | `og-image.svg`          | K logo in teal box         |
+| Icon Component | `KhanectBoltIcon.tsx`   | `fill-teal-500`            |
 
 ## AI Assistant
 
@@ -173,20 +190,20 @@ All logos use `public/logo-full.png` (combined icon + "KHANECT" text).
 
 ## Key Files
 
-| File                                      | Purpose                                            |
-| ----------------------------------------- | -------------------------------------------------- |
-| `src/App.tsx`                             | Router config + RootLayout + error boundaries      |
-| `src/components/LandingPage.tsx`          | Landing page + contact form (useActionState)       |
-| `src/components/StaggerContainer.tsx`     | Scroll-triggered stagger animations (Framer Motion)|
-| `src/components/Navbar.tsx`               | Navigation                                         |
-| `src/components/ProvenProcess.tsx`        | Timeline component for process steps               |
-| `src/components/ui/accordion.tsx`         | Neobrutalist accordion (FAQ sections)              |
-| `src/components/ui/shader-lines.tsx`      | Hero background shader animation (Three.js)        |
-| `src/components/ui/ai-assistant-card.tsx` | AI chat widget                                     |
-| `src/contexts/ThemeContext.tsx`           | Theme state (dark mode only)                       |
-| `src/services/n8nChatbotService.ts`       | Chat API                                           |
-| `src/index.css`                           | Global styles + typography + theme variables       |
-| `tailwind.config.js`                      | Tailwind theme config                              |
+| File                                      | Purpose                                             |
+| ----------------------------------------- | --------------------------------------------------- |
+| `src/App.tsx`                             | Router config + RootLayout + error boundaries       |
+| `src/components/LandingPage.tsx`          | Landing page + contact form (useActionState)        |
+| `src/components/StaggerContainer.tsx`     | Scroll-triggered stagger animations (Framer Motion) |
+| `src/components/Navbar.tsx`               | Navigation                                          |
+| `src/components/ProvenProcess.tsx`        | Timeline component for process steps                |
+| `src/components/ui/accordion.tsx`         | Neobrutalist accordion (FAQ sections)               |
+| `src/components/ui/shader-lines.tsx`      | Hero background shader animation (Three.js)         |
+| `src/components/ui/ai-assistant-card.tsx` | AI chat widget                                      |
+| `src/contexts/ThemeContext.tsx`           | Theme state (dark mode only)                        |
+| `src/services/n8nChatbotService.ts`       | Chat API                                            |
+| `src/index.css`                           | Global styles + typography + theme variables        |
+| `tailwind.config.js`                      | Tailwind theme config                               |
 
 ## Code Conventions
 
