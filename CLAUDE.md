@@ -193,7 +193,7 @@ Logo files in `public/`:
 | File                                      | Purpose                                                               |
 | ----------------------------------------- | --------------------------------------------------------------------- |
 | `src/App.tsx`                             | Router config + RootLayout + error boundaries                         |
-| `src/components/LandingPage.tsx`          | Landing page with hero, services, FAQs, CTA                           |
+| `src/components/LandingPage.tsx`          | Landing page with glassmorphism hero buttons, services, FAQs          |
 | `src/components/ContactPage.tsx`          | Dedicated contact page with form + contact info                       |
 | `src/components/StaggerContainer.tsx`     | Scroll-triggered stagger animations (Framer Motion)                   |
 | `src/components/Navbar.tsx`               | Navigation (Mobile Menu z-index: 99999, Desktop Contact: Transparent) |

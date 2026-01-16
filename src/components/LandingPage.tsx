@@ -11,6 +11,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import StaggerContainer from './StaggerContainer';
+import { InteractiveHoverButton } from './ui/interactive-hover-button';
 import { services } from '../data/services';
 import { industries } from '../data/industries';
 import { faqs } from '../data/faqs';
@@ -74,16 +75,15 @@ function LandingPage(_props: LandingPageProps = {}) {
           </h1>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
-            <button
+            <InteractiveHoverButton
               onClick={goToContact}
-              className="btn-primary text-lg px-8 py-4"
+              className="text-base px-6 py-2"
             >
               Book a Demo
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
-            </button>
+            </InteractiveHoverButton>
             <button
               onClick={scrollToSolutions}
-              className="btn-secondary text-lg px-8 py-4 hover:!text-[#14B8A6] hover:!border-[#14B8A6] hover:!bg-[#14B8A6]/10 dark:hover:!text-[#14B8A6] dark:hover:!border-[#14B8A6] dark:hover:!bg-[#14B8A6]/10"
+              className="inline-flex items-center justify-center rounded-full border border-black/5 dark:border-white/10 bg-black/5 dark:bg-white/5 backdrop-blur-md px-6 py-2 text-base font-medium text-gray-900 dark:text-white transition-all hover:bg-black/10 dark:hover:bg-white/10 hover:scale-105"
             >
               Discover Khanect
             </button>
