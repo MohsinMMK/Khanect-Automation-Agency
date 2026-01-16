@@ -24,7 +24,7 @@ import KhanectBoltIcon from './components/icons/KhanectBoltIcon';
 import { ViewState } from './types';
 import { useScrolled } from './hooks/useScrolled';
 import { useBodyOverflow } from './hooks/useBodyOverflow';
-import { useCanonicalUrl } from './hooks/useCanonicalUrl';
+
 import { Toaster } from '@/components/ui/sonner';
 import { services } from './data/services';
 import { industries } from './data/industries';
@@ -98,7 +98,7 @@ function RootLayout() {
   useBodyOverflow(chatOpen);
 
   // Update canonical URL on route change for SEO
-  useCanonicalUrl();
+
 
   // Derive currentView from location for Navbar compatibility
   const getCurrentView = (): ViewState => {

@@ -1,5 +1,6 @@
 import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
+import { HelmetProvider } from 'react-helmet-async';
 import { ThemeProvider } from './contexts/ThemeContext';
 import './index.css';
 import App from './App';
@@ -12,8 +13,10 @@ if (!rootElement) {
 const root = ReactDOM.createRoot(rootElement);
 root.render(
   <StrictMode>
-    <ThemeProvider defaultTheme="light">
-      <App />
-    </ThemeProvider>
+    <HelmetProvider>
+      <ThemeProvider>
+        <App />
+      </ThemeProvider>
+    </HelmetProvider>
   </StrictMode>
 );

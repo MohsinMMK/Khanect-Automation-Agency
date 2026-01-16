@@ -9,6 +9,7 @@ import {
 import StaggerContainer from './StaggerContainer';
 import { pricingPackages } from '../data/pricing';
 import { useStructuredData } from '../hooks/useStructuredData';
+import SEO from './SEO';
 import {
   generateOrganizationSchema,
   generatePricingSchema,
@@ -70,6 +71,11 @@ function Pricing() {
 
   return (
     <div className="min-h-screen pt-24 md:pt-32 lg:pt-40 pb-16 md:pb-24 lg:pb-32">
+      <SEO 
+        title="Pricing - Khanect AI"
+        description="Transparent pricing for AI automation services. Choose from our Starter, Growth, Scale, and Enterprise plans tailored to your business needs."
+        canonical="https://khanect.com/pricing"
+      />
       {/* Hero Section */}
       <section className="px-6 mb-16 md:mb-20 lg:mb-24">
         <div className="max-w-6xl mx-auto text-center">

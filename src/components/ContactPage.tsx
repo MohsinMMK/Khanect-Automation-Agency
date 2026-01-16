@@ -7,6 +7,7 @@ import { useDebouncedCallback } from '../hooks/useDebouncedCallback';
 import CountryCodeSelect from './CountryCodeSelect';
 import { toast } from 'sonner';
 import { BackgroundGradient } from './ui/background-gradient';
+import SEO from './SEO';
 
 interface FormData {
   fullName: string;
@@ -325,6 +326,11 @@ function ContactPage() {
 
   return (
     <div className="min-h-screen pt-24 pb-16 px-6 relative">
+      <SEO 
+        title="Contact Us - Khanect AI"
+        description="Ready to transform your business with AI automation? Get in touch with our team for a free consultation."
+        canonical="https://khanect.com/contact"
+      />
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-brand-lime/5 to-transparent pointer-events-none" />
       

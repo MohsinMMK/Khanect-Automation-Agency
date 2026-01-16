@@ -16,6 +16,7 @@ import { services } from '../data/services';
 import { industries } from '../data/industries';
 import { faqs } from '../data/faqs';
 import { useStructuredData } from '../hooks/useStructuredData';
+import SEO from './SEO';
 import {
   generateOrganizationSchema,
   generateFAQSchema,
@@ -55,6 +56,11 @@ function LandingPage(_props: LandingPageProps = {}) {
 
   return (
     <>
+      <SEO 
+        title="Khanect AI - Business Automation Agency"
+        description="Transform your business with AI-powered automation. We build custom workflows, chatbots, CRM integrations, and lead generation systems that save you time and increase revenue."
+        canonical="https://khanect.com/"
+      />
       {/* Hero Section */}
       <header className="relative pt-32 lg:pt-40 pb-20 lg:pb-32 px-6 min-h-screen flex items-center overflow-hidden">
         {/* Animated Background */}

@@ -12,6 +12,7 @@ import {
   generateBreadcrumbSchema,
   combineSchemas
 } from '../utils/structuredData';
+import SEO from './SEO';
 
 function ServiceDetailPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -57,6 +58,11 @@ function ServiceDetailPage() {
 
   return (
     <div className="pt-32 pb-20 min-h-screen">
+      <SEO 
+        title={`${title} - Khanect AI`}
+        description={item.description}
+        canonical={`https://khanect.com${location.pathname}`}
+      />
       <div className="container mx-auto px-6 max-w-6xl">
         
         {/* Breadcrumb / Back Link */}

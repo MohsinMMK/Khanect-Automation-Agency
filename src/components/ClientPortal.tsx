@@ -11,6 +11,7 @@ import {
 import { ChartDataPoint } from '../types';
 import { supabase, Client } from '../lib/supabase';
 import type { User } from '@supabase/supabase-js';
+import SEO from './SEO';
 import {
   Dialog,
   DialogContent,
@@ -365,6 +366,11 @@ const ClientPortal: React.FC = () => {
   if (loading) {
     return (
       <div className="pt-32 pb-20 px-6 min-h-[85vh] flex items-center justify-center">
+        <SEO 
+          title="Client Portal - Khanect AI" 
+          description="Login to your Khanect AI client portal."
+          noindex={true}
+        />
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-brand-lime/20 border-t-brand-lime rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-gray-500 dark:text-gray-400">Loading...</p>
@@ -377,6 +383,11 @@ const ClientPortal: React.FC = () => {
   if (!user || !client) {
     return (
       <div className="pt-32 pb-20 px-6 min-h-[85vh] flex items-center justify-center">
+        <SEO 
+          title="Login - Client Portal - Khanect AI" 
+          description="Login to your Khanect AI client portal."
+          noindex={true}
+        />
         <div className="glass-card w-full max-w-md p-8 rounded-2xl animate-scale-up shadow-xl dark:shadow-2xl">
 
             <div className="text-center mb-8">
@@ -470,6 +481,11 @@ const ClientPortal: React.FC = () => {
   // Authenticated - show dashboard
   return (
     <div className="pt-24 md:pt-32 pb-20 px-6 max-w-7xl mx-auto">
+      <SEO 
+        title="Dashboard - Client Portal - Khanect AI" 
+        description="View your automation performance and activity."
+        noindex={true}
+      />
       {/* Header with Logout Button */}
       <div className="mb-10 flex flex-col md:flex-row justify-between items-end gap-4 stagger-fade">
         <div>

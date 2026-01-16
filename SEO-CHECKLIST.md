@@ -33,7 +33,10 @@ A comprehensive guide for setting up SEO, structured data, and Google indexing f
   <meta property="twitter:url" content="https://yourdomain.com/" />
   <meta property="twitter:title" content="Brand Name - Description" />
   <meta property="twitter:description" content="Short description" />
-  <meta property="twitter:image" content="https://yourdomain.com/og-image.jpg" />
+  <meta
+    property="twitter:image"
+    content="https://yourdomain.com/og-image.jpg"
+  />
 </head>
 ```
 
@@ -79,6 +82,7 @@ Place in `public/sitemap.xml`:
 ```
 
 **Priority Guidelines:**
+
 - Homepage: `1.0`
 - Main pages (pricing, about): `0.9`
 - Content pages (services, blog): `0.8`
@@ -384,11 +388,14 @@ server {
 ### 3.1 Hook: `useStructuredData.ts`
 
 ```typescript
-import { useEffect } from 'react';
+import { useEffect } from "react";
 
-const SCRIPT_ID = 'structured-data-json-ld';
+const SCRIPT_ID = "structured-data-json-ld";
 
-export function useStructuredData(schema: object | object[] | null, id?: string): void {
+export function useStructuredData(
+  schema: object | object[] | null,
+  id?: string
+): void {
   useEffect(() => {
     if (!schema) return;
 
@@ -401,9 +408,9 @@ export function useStructuredData(schema: object | object[] | null, id?: string)
     }
 
     // Create new script element
-    const script = document.createElement('script');
+    const script = document.createElement("script");
     script.id = scriptId;
-    script.type = 'application/ld+json';
+    script.type = "application/ld+json";
     script.textContent = JSON.stringify(schema);
 
     // Append to head
@@ -422,95 +429,123 @@ export function useStructuredData(schema: object | object[] | null, id?: string)
 export default useStructuredData;
 ```
 
-### 3.2 Hook: `useCanonicalUrl.ts`
+### 3.2 Dynamic Metadata Management (react-helmet-async)
 
-```typescript
-import { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+We use `react-helmet-async` to dynamically manage the document head (Title, Description, Canonical URL) for each page. This logic replaces manual DOM manipulation hooks like `useCanonicalUrl`.
 
-const BASE_URL = 'https://yourdomain.com';
+#### 1. Setup in `index.tsx`:
 
-export function useCanonicalUrl(): void {
-  const location = useLocation();
+```tsx
+import { HelmetProvider } from "react-helmet-async";
 
-  useEffect(() => {
-    const path = location.pathname;
-    const canonicalUrl = path === '/' ? BASE_URL + '/' : BASE_URL + path;
+root.render(
+  <HelmetProvider>
+    <App />
+  </HelmetProvider>
+);
+```
 
-    let canonicalLink = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+#### 2. Reusable `SEO` Component:
 
-    if (!canonicalLink) {
-      canonicalLink = document.createElement('link');
-      canonicalLink.rel = 'canonical';
-      document.head.appendChild(canonicalLink);
-    }
+Create `src/components/SEO.tsx` to handle meta tags consistently:
 
-    canonicalLink.href = canonicalUrl;
+```tsx
+import { Helmet } from "react-helmet-async";
 
-    // Also update OG URL meta tag
-    const ogUrl = document.querySelector('meta[property="og:url"]') as HTMLMetaElement | null;
-    if (ogUrl) {
-      ogUrl.content = canonicalUrl;
-    }
-  }, [location.pathname]);
+interface SEOProps {
+  title: string;
+  description: string;
+  canonical?: string;
+  noindex?: boolean;
 }
 
-export default useCanonicalUrl;
+export default function SEO({
+  title,
+  description,
+  canonical,
+  noindex = false,
+}: SEOProps) {
+  return (
+    <Helmet>
+      <title>{title}</title>
+      <meta name="description" content={description} />
+      {canonical && <link rel="canonical" href={canonical} />}
+      {noindex && <meta name="robots" content="noindex, nofollow" />}
+      {!noindex && <meta name="robots" content="index, follow" />}
+
+      {/* Open Graph Tags... */}
+    </Helmet>
+  );
+}
+```
+
+#### 3. Usage in Pages:
+
+```tsx
+<SEO
+  title="Page Title - Brand"
+  description="Detailed description for this specific page."
+  canonical="https://yourdomain.com/path"
+/>
 ```
 
 ### 3.3 Utility: `structuredData.ts`
 
 ```typescript
-const BASE_URL = 'https://yourdomain.com';
-const ORG_NAME = 'Your Company';
+const BASE_URL = "https://yourdomain.com";
+const ORG_NAME = "Your Company";
 
 export function generateOrganizationSchema() {
   return {
-    '@context': 'https://schema.org',
-    '@type': 'Organization',
+    "@context": "https://schema.org",
+    "@type": "Organization",
     name: ORG_NAME,
     url: BASE_URL,
     logo: `${BASE_URL}/logo.png`,
-    description: 'Your company description',
-    sameAs: []
+    description: "Your company description",
+    sameAs: [],
   };
 }
 
-export function generateFAQSchema(faqs: Array<{ question: string; answer: string }>) {
+export function generateFAQSchema(
+  faqs: Array<{ question: string; answer: string }>
+) {
   return {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
     mainEntity: faqs.map((faq) => ({
-      '@type': 'Question',
+      "@type": "Question",
       name: faq.question,
       acceptedAnswer: {
-        '@type': 'Answer',
-        text: faq.answer
-      }
-    }))
+        "@type": "Answer",
+        text: faq.answer,
+      },
+    })),
   };
 }
 
-export function generateBreadcrumbSchema(items: Array<{ name: string; url: string }>) {
+export function generateBreadcrumbSchema(
+  items: Array<{ name: string; url: string }>
+) {
   return {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
     itemListElement: items.map((item, index) => ({
-      '@type': 'ListItem',
+      "@type": "ListItem",
       position: index + 1,
       name: item.name,
-      item: item.url.startsWith('http') ? item.url : `${BASE_URL}${item.url}`
-    }))
+      item: item.url.startsWith("http") ? item.url : `${BASE_URL}${item.url}`,
+    })),
   };
 }
 
 export function combineSchemas(...schemas: object[]) {
   return {
-    '@context': 'https://schema.org',
-    '@graph': schemas.map((schema) => {
-      const { '@context': _, ...rest } = schema as { '@context'?: string };
+    "@context": "https://schema.org",
+    "@graph": schemas.map((schema) => {
+      const { "@context": _, ...rest } = schema as { "@context"?: string };
       return rest;
-    })
+    }),
   };
 }
 ```
@@ -519,7 +554,7 @@ export function combineSchemas(...schemas: object[]) {
 
 ```tsx
 // In App.tsx or layout component
-import { useCanonicalUrl } from './hooks/useCanonicalUrl';
+import { useCanonicalUrl } from "./hooks/useCanonicalUrl";
 
 function App() {
   useCanonicalUrl(); // Updates canonical on every route change
@@ -527,16 +562,17 @@ function App() {
 }
 
 // In a page component
-import { useStructuredData } from './hooks/useStructuredData';
-import { generateOrganizationSchema, generateFAQSchema, combineSchemas } from './utils/structuredData';
+import { useStructuredData } from "./hooks/useStructuredData";
+import {
+  generateOrganizationSchema,
+  generateFAQSchema,
+  combineSchemas,
+} from "./utils/structuredData";
 
 function HomePage() {
   useStructuredData(
-    combineSchemas(
-      generateOrganizationSchema(),
-      generateFAQSchema(faqs)
-    ),
-    'home-page'
+    combineSchemas(generateOrganizationSchema(), generateFAQSchema(faqs)),
+    "home-page"
   );
 
   return <div>...</div>;
@@ -577,6 +613,7 @@ function HomePage() {
 ### 4.4 Set Preferred Domain (if needed)
 
 If you have both www and non-www:
+
 1. Go to **Settings** → **Property settings**
 2. Set your preferred domain version
 
@@ -586,13 +623,13 @@ If you have both www and non-www:
 
 ### 5.1 Testing Tools
 
-| Tool | URL | Purpose |
-|------|-----|---------|
-| Rich Results Test | https://search.google.com/test/rich-results | Validate structured data for rich snippets |
-| Schema Validator | https://validator.schema.org | Debug schema.org markup errors |
-| PageSpeed Insights | https://pagespeed.web.dev | Performance & Core Web Vitals |
-| Mobile-Friendly Test | https://search.google.com/test/mobile-friendly | Mobile usability |
-| SSL Test | https://www.ssllabs.com/ssltest | HTTPS configuration |
+| Tool                 | URL                                            | Purpose                                    |
+| -------------------- | ---------------------------------------------- | ------------------------------------------ |
+| Rich Results Test    | https://search.google.com/test/rich-results    | Validate structured data for rich snippets |
+| Schema Validator     | https://validator.schema.org                   | Debug schema.org markup errors             |
+| PageSpeed Insights   | https://pagespeed.web.dev                      | Performance & Core Web Vitals              |
+| Mobile-Friendly Test | https://search.google.com/test/mobile-friendly | Mobile usability                           |
+| SSL Test             | https://www.ssllabs.com/ssltest                | HTTPS configuration                        |
 
 ### 5.2 Manual Checks
 
@@ -716,48 +753,52 @@ project/
 
 ## Timeline Template
 
-| Day | Task |
-|-----|------|
-| Day 1 | Set up meta tags, robots.txt, sitemap.xml |
-| Day 1 | Configure server redirects (.htaccess) |
-| Day 2 | Implement structured data schemas |
-| Day 2 | Create useStructuredData and useCanonicalUrl hooks |
-| Day 2 | Add schemas to all pages |
-| Day 3 | Verify site in Google Search Console |
-| Day 3 | Submit sitemap |
-| Day 3 | Request indexing for key pages |
-| Day 3 | Run all validation tests |
-| Day 4-7 | Monitor indexing progress |
-| Week 2 | Check coverage report, fix any errors |
-| Week 3-4 | Monitor search performance |
-| Monthly | Ongoing maintenance and updates |
+| Day      | Task                                               |
+| -------- | -------------------------------------------------- |
+| Day 1    | Set up meta tags, robots.txt, sitemap.xml          |
+| Day 1    | Configure server redirects (.htaccess)             |
+| Day 2    | Implement structured data schemas                  |
+| Day 2    | Create useStructuredData and useCanonicalUrl hooks |
+| Day 2    | Add schemas to all pages                           |
+| Day 3    | Verify site in Google Search Console               |
+| Day 3    | Submit sitemap                                     |
+| Day 3    | Request indexing for key pages                     |
+| Day 3    | Run all validation tests                           |
+| Day 4-7  | Monitor indexing progress                          |
+| Week 2   | Check coverage report, fix any errors              |
+| Week 3-4 | Monitor search performance                         |
+| Monthly  | Ongoing maintenance and updates                    |
 
 ---
 
 ## Common Issues & Fixes
 
 ### "URL is not available to Google"
+
 - Verify site ownership in Search Console
 - Check robots.txt isn't blocking
 - Ensure HTTPS is working
 - Try again after 24 hours
 
 ### "Discovered pages: 1" in sitemap
+
 - Normal for new sitemaps, wait 24-72 hours
 - Ensure all URLs in sitemap return 200 status
 - Check for redirect chains
 
 ### Structured data not detected
+
 - For SPAs, Google needs to render JavaScript
 - Use Rich Results Test (renders JS)
 - Ensure JSON-LD is valid JSON
 
 ### Duplicate content warning
+
 - Add canonical tags to all pages
 - Ensure only one domain version (www or non-www)
 - Check for HTTP/HTTPS duplicates
 
 ---
 
-*Last updated: January 2026*
-*Based on implementation for khanect.com*
+_Last updated: January 2026_
+_Based on implementation for khanect.com_
