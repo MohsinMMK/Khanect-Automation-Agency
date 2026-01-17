@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Search } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
-import { blogPosts } from '../data/blogPosts';
+import { blogService } from '../services/blogService';
+import { BlogPost } from '../types';
 import Navbar from './Navbar';
 import Footer from './Footer';
 
@@ -17,17 +18,34 @@ const BackgroundGradient = () => (
 
 export default function Blog() {
   const navigate = useNavigate();
+  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
-  // Get unique tags
-  const allTags = Array.from(new Set(blogPosts.flatMap(post => post.tags)));
+  useEffect(() => {
+    async function loadPosts() {
+      try {
+        setLoading(true);
+        const data = await blogService.getLatestPosts();
+        setPosts(data);
+      } catch (err) {
+        console.error("Failed to load blog posts", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadPosts();
+  }, []);
+
+  // Get unique tags from real data
+  const allTags = Array.from(new Set(posts.flatMap(post => post.tags || [])));
 
   // Filter posts
-  const filteredPosts = blogPosts.filter(post => {
+  const filteredPosts = posts.filter(post => {
     const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           post.excerpt.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesTag = selectedTag ? post.tags.includes(selectedTag) : true;
+    const matchesTag = selectedTag ? post.tags?.includes(selectedTag) : true;
     return matchesSearch && matchesTag;
   });
 
@@ -103,59 +121,65 @@ export default function Blog() {
           </div>
 
           {/* Blog Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-20">
-            {filteredPosts.map((post, index) => (
-              <motion.article 
-                key={post.slug}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                onClick={() => navigate(`/blog/${post.slug}`)}
-                className="group cursor-pointer bg-white/[0.02] border border-white/[0.05] rounded-2xl overflow-hidden hover:border-brand-lime/30 transition-all duration-300 hover:bg-white/[0.04]"
-              >
-                <div className="aspect-[16/9] overflow-hidden relative">
-                  <img 
-                    src={post.coverImage || '/placeholder-blog.jpg'} 
-                    alt={post.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-gray-950/80 to-transparent" />
-                  <div className="absolute bottom-4 left-4 flex gap-2">
-                    {post.tags.slice(0, 2).map(tag => (
-                      <span key={tag} className="px-2 py-1 bg-black/50 backdrop-blur-md border border-white/10 rounded-md text-xs text-brand-lime">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                
-                <div className="p-6">
-                  <div className="flex items-center gap-2 text-xs text-gray-500 mb-3">
-                    <span>{post.date}</span>
-                    <span>•</span>
-                    <span>{post.readTime}</span>
+          {loading ? (
+             <div className="flex justify-center py-20">
+               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-lime"></div>
+             </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-20">
+              {filteredPosts.map((post, index) => (
+                <motion.article 
+                  key={post.slug}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  onClick={() => navigate(`/blog/${post.slug}`)}
+                  className="group cursor-pointer bg-white/[0.02] border border-white/[0.05] rounded-2xl overflow-hidden hover:border-brand-lime/30 transition-all duration-300 hover:bg-white/[0.04]"
+                >
+                  <div className="aspect-[16/9] overflow-hidden relative">
+                    <img 
+                      src={post.coverImage || '/placeholder-blog.jpg'} 
+                      alt={post.title}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-gray-950/80 to-transparent" />
+                    <div className="absolute bottom-4 left-4 flex gap-2">
+                      {post.tags?.slice(0, 2).map(tag => (
+                        <span key={tag} className="px-2 py-1 bg-black/50 backdrop-blur-md border border-white/10 rounded-md text-xs text-brand-lime">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                   
-                  <h2 className="text-xl font-semibold mb-3 leading-snug group-hover:text-brand-lime transition-colors">
-                    {post.title}
-                  </h2>
-                  
-                  <p className="text-gray-400 text-sm line-clamp-3 mb-4">
-                    {post.excerpt}
-                  </p>
-                  
-                  <div className="flex items-center text-brand-lime text-sm font-medium">
-                    Read Article 
-                    <svg className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M5 12h14M12 5l7 7-7 7" />
-                    </svg>
+                  <div className="p-6">
+                    <div className="flex items-center gap-2 text-xs text-gray-500 mb-3">
+                      <span>{post.date}</span>
+                      <span>•</span>
+                      <span>{post.readTime}</span>
+                    </div>
+                    
+                    <h2 className="text-xl font-semibold mb-3 leading-snug group-hover:text-brand-lime transition-colors">
+                      {post.title}
+                    </h2>
+                    
+                    <p className="text-gray-400 text-sm line-clamp-3 mb-4">
+                      {post.excerpt}
+                    </p>
+                    
+                    <div className="flex items-center text-brand-lime text-sm font-medium">
+                      Read Article 
+                      <svg className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M5 12h14M12 5l7 7-7 7" />
+                      </svg>
+                    </div>
                   </div>
-                </div>
-              </motion.article>
-            ))}
-          </div>
+                </motion.article>
+              ))}
+            </div>
+          )}
 
-          {filteredPosts.length === 0 && (
+          {!loading && filteredPosts.length === 0 && (
             <div className="text-center py-20 text-gray-500">
               No articles found matching your search.
             </div>
