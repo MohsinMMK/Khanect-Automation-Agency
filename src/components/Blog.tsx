@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Search } from 'lucide-react';
-import { Helmet } from 'react-helmet-async';
+import EmailCapture from './EmailCapture';
+import SEO from './SEO';
 import { blogService } from '../services/blogService';
 import { BlogPost } from '../types';
 import Navbar from './Navbar';
@@ -51,10 +52,10 @@ export default function Blog() {
 
   return (
     <>
-      <Helmet>
-        <title>Insights & Strategy | Khanect AI Blog</title>
-        <meta name="description" content="Expert insights on AI automation, agency growth algorithms, and the future of work. Read our latest articles." />
-      </Helmet>
+      <SEO 
+        title="Insights & Strategy | Khanect AI Blog"
+        description="Expert insights on AI automation, agency growth algorithms, and the future of work. Read our latest articles."
+      />
 
       <div className="min-h-screen bg-gray-950 text-white relative flex flex-col pt-24">
         <BackgroundGradient />
@@ -184,6 +185,10 @@ export default function Blog() {
               No articles found matching your search.
             </div>
           )}
+          
+          <div className="mt-12 mb-20">
+             <EmailCapture source="blog_index_footer" />
+          </div>
         </div>
       </div>
     </>

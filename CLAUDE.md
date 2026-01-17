@@ -4,6 +4,13 @@
 
 Business Automation Agency SaaS platform - React landing page, client portal, and **automated AI content engine**.
 
+## Current Status (Jan 2026)
+
+- **AI Content Agent**: ✅ Live. Automated daily curation (RSS -> OpenAI -> Supabase).
+- **Blog**: ✅ Verified. Dynamic content with SEO optimization (Meta tags, Sitemap).
+- **Lead Magnet**: ✅ Implemented. Email capture integrated in blog posts.
+- **Infrastructure**: ✅ Stabilized. Supabase connection fixed.
+
 ## Guidelines
 
 1. **Read before editing** - Always read files before making changes
@@ -30,7 +37,7 @@ Contact form uses React 19's `useActionState` and `useFormStatus`:
 // Form action with useActionState
 const [formState, formAction, isPending] = useActionState(
   submitAction,
-  initialState
+  initialState,
 );
 
 // Submit button with useFormStatus
@@ -220,6 +227,6 @@ Logo files in `public/`:
 ## SEO
 
 - **Structured Data**: `src/utils/structuredData.ts` (Organization, FAQPage, etc.)
-- **Sitemap**: `public/sitemap.xml`
+- **Meta Tags**: Managed via `src/components/SEO.tsx` (`react-helmet-async`)
+- **Sitemap**: `public/sitemap.xml` (Generated via `bun run generate:sitemap`)
 - **Robots**: `public/robots.txt` (blocks `/portal`, `/demo/`)
-- **Canonical URLs**: `useCanonicalUrl` hook

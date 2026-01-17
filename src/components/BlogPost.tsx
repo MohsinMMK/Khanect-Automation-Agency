@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Calendar, User, Clock, Share2, Tag } from 'lucide-react';
-import { Helmet } from 'react-helmet-async';
+import EmailCapture from './EmailCapture';
+import SEO from './SEO';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import { blogService } from '../services/blogService';
@@ -21,7 +22,7 @@ const SimpleMarkdown = ({ content }: { content: string }) => {
   const lines = content.split('\n');
   const elements: React.ReactNode[] = [];
   
-  let currentList: JSX.Element[] = [];
+  let currentList: React.ReactNode[] = [];
   let inList = false;
 
   const flushList = (keyPrefix: number) => {
@@ -134,18 +135,19 @@ export default function BlogPost() {
         // ignore
       }
     } else {
-      navigator.clipboard.writeText(shareUrl);
+      await navigator.clipboard.writeText(shareUrl);
       // Could add toast here
     }
   };
 
   return (
     <>
-      <Helmet>
-        <title>{post.title} | Khanect AI Blog</title>
-        <meta name="description" content={post.excerpt} />
-        {/* Open Graph tags would go here */}
-      </Helmet>
+      <SEO 
+        title={`${post.title} | Khanect AI Blog`}
+        description={post.excerpt}
+        type="article"
+        image={post.coverImage}
+      />
 
       <div className="min-h-screen bg-gray-950 text-white relative">
         <BackgroundGradient />
@@ -164,7 +166,7 @@ export default function BlogPost() {
             {/* Header */}
             <header className="mb-12">
               <div className="flex flex-wrap gap-2 mb-6">
-                {post.tags.map(tag => (
+                {post.tags?.map(tag => (
                   <span key={tag} className="px-3 py-1 bg-brand-lime/10 border border-brand-lime/20 rounded-full text-brand-lime text-xs font-medium">
                     {tag}
                   </span>
@@ -182,15 +184,15 @@ export default function BlogPost() {
               <div className="flex flex-wrap items-center gap-6 text-gray-400 text-sm border-b border-white/10 pb-8">
                 <div className="flex items-center gap-2">
                   <User className="w-4 h-4" />
-                  <span>{post.author}</span>
+                  <span>{post.author || 'Khanect AI'}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Calendar className="w-4 h-4" />
-                  <span>{post.date}</span>
+                  <span>{new Date(post.created_at).toLocaleDateString()}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Clock className="w-4 h-4" />
-                  <span>{post.readTime}</span>
+                  <span>{post.readTime || '5 min read'}</span>
                 </div>
                 
                 <button 
@@ -207,6 +209,9 @@ export default function BlogPost() {
             <div className="prose prose-invert prose-lg max-w-none">
               <SimpleMarkdown content={post.content} />
             </div>
+
+            {/* Email Capture */}
+            <EmailCapture className="mt-16" source="blog_post_footer" />
 
             {/* Footer / CTA */}
             <div className="mt-16 p-8 rounded-2xl bg-gradient-to-br from-gray-900 to-black border border-white/10 text-center">
