@@ -10,7 +10,8 @@
     "test": "vitest",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "generate:sitemap": "bun run scripts/generate-sitemap.ts"
+    "generate:sitemap": "bun run scripts/generate-sitemap.ts",
+    "docs:update": "bun run scripts/reflect-docs.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

@@ -230,3 +230,17 @@ Logo files in `public/`:
 - **Meta Tags**: Managed via `src/components/SEO.tsx` (`react-helmet-async`)
 - **Sitemap**: `public/sitemap.xml` (Generated via `bun run generate:sitemap`)
 - **Robots**: `public/robots.txt` (blocks `/portal`, `/demo/`)
+
+
+## Project Stats (Auto-generated)
+- **Total Source Files**: 109
+- **Total Lines of Code**: 11348
+- **Last Updated**: 2026-01-17T15:57:52.809Z
+## Active Skills (Auto-generated)
+- **[Automated Content Pipeline](/skills/automated_content_pipeline/SKILL.md)**: A reuseable skill for setting up an automated AI content agent using RSS feeds, OpenAI, and Supabase.
+- **[Social Media Repurposing](/skills/social-media-repurposing/SKILL.md)**: Automatically generates social media captions for blog posts using AI.
+## Available Scripts (Auto-generated)
+- **[content-agent.ts](/scripts/content-agent.ts)**: Load environment variables
+- **[create_invite.js](/scripts/create_invite.js)**: Invite Script - Create new client user
+- **[generate-sitemap.ts](/scripts/generate-sitemap.ts)**: Load environment variables from .env.local
+- **[reflect-docs.ts](/scripts/reflect-docs.ts)**: Helper to count lines in a file

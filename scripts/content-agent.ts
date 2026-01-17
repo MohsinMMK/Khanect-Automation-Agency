@@ -80,6 +80,38 @@ async function generateBlogPost(article: any) {
   }
 }
 
+async function generateSocialPost(postTitle: string, postContent: string) {
+  const prompt = `
+    You are a Social Media Manager for Khanect.com.
+    
+    Blog Post Title: ${postTitle}
+    Blog Post Content (excerpt): ${postContent.substring(0, 500)}...
+    
+    Task: Write a LinkedIn post and a Twitter/X thread starter to promote this article.
+    
+    Format JSON:
+    {
+      "linkedin": "...",
+      "twitter": "..."
+    }
+  `;
+
+  try {
+     const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [
+        { role: "system", content: "You are a helpful AI assistant that generates JSON." },
+        { role: "user", content: prompt }
+      ],
+      response_format: { type: "json_object" }
+    });
+    return JSON.parse(completion.choices[0].message.content || '{}');
+  } catch (e) {
+    console.error("Error generating social output", e);
+    return null;
+  }
+}
+
 async function runAgent() {
   console.log('🤖 Agent Starting...');
   let newPostsCount = 0;
@@ -109,6 +141,15 @@ async function runAgent() {
         // 3. AI Generation
         const aiPost = await generateBlogPost(item);
         if (!aiPost) continue;
+
+        // 3.5. Social Media Repurposing
+        const socialContent = await generateSocialPost(aiPost.title, aiPost.content);
+        if (socialContent) {
+            console.log(`📱 Generated Social Content for ${slug}:`);
+            console.log(`   LI: ${socialContent.linkedin?.substring(0, 50)}...`);
+            console.log(`   TW: ${socialContent.twitter?.substring(0, 50)}...`);
+            // In a future version, we would save this to a 'social_posts' table or column.
+        }
 
         // 4. Upsert to Supabase
         const { error } = await supabase
