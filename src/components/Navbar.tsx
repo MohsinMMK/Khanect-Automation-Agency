@@ -75,7 +75,7 @@ function Navbar({ currentView, onNavigate, onMobileMenuChange }: NavbarProps) {
           <img 
             src="/logo-full.png" 
             alt="Khanect" 
-            className="h-10 w-auto object-contain"
+            className="h-40 -mt-6 -mb-10 -ml-10 object-contain transition-transform duration-180 group-hover:scale-105"
           />
         </button>
 
