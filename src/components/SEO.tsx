@@ -16,7 +16,7 @@ export default function SEO({
   canonical,
   name = 'Khanect AI',
   type = 'website',
-  image = 'https://khanect.com/og-image.svg',
+  image = 'https://khanect.com/og-image.png',
   noindex = false
 }: SEOProps) {
   // Use the canonical URL if provided, otherwise default to a safe value or don't set it (Helmet handles duplicates well)
