@@ -203,6 +203,11 @@ function RootLayout() {
   );
 }
 
+import Blog from './components/Blog';
+import BlogPost from './components/BlogPost';
+
+// ... existing imports ...
+
 // Create router with data patterns
 const router = createBrowserRouter([
   {
@@ -225,6 +230,14 @@ const router = createBrowserRouter([
       {
         path: 'portal',
         element: <ClientPortal />,
+      },
+      {
+        path: 'blog',
+        element: <Blog />,
+      },
+      {
+        path: 'blog/:slug',
+        element: <BlogPost />,
       },
       {
         path: 'services/:slug',

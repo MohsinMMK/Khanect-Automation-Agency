@@ -2,7 +2,7 @@
 
 ## Overview
 
-Business Automation Agency SaaS platform - React landing page and client portal for AI-powered workflow automation.
+Business Automation Agency SaaS platform - React landing page, client portal, and **automated AI content engine**.
 
 ## Guidelines
 
@@ -14,7 +14,8 @@ Business Automation Agency SaaS platform - React landing page and client portal 
 
 - **Framework**: React 19.2 + Vite 6 + TypeScript
 - **Styling**: Tailwind CSS v4 + CVA components
-- **Backend**: Supabase (PostgreSQL + Auth) + N8N webhooks
+- **Backend**: Supabase (PostgreSQL + Auth + **Edge Functions**) + N8N webhooks
+- **Content Engine**: Custom Node.js Agent (RSS -> Deepseek/OpenAI -> Supabase)
 - **Routing**: React Router v7 with `createBrowserRouter` + loaders
 - **Animations**: Framer Motion (scroll animations), Three.js (Shader Lines)
 - **Package Manager**: Bun
@@ -70,6 +71,7 @@ const router = createBrowserRouter([
 bun dev              # Dev server (port 3000)
 bun run build        # Production build
 bun test             # Run tests
+bun run scripts/content-agent.ts # Run AI Content Agent manually
 ```
 
 ## Routes
@@ -79,6 +81,8 @@ bun test             # Run tests
 | `/`                 | LandingPage       | Hero, services, FAQs, CTA |
 | `/pricing`          | Pricing           | Pricing tiers             |
 | `/contact`          | ContactPage       | Dedicated contact page    |
+| `/blog`             | Blog              | **Dynamic Blog Listing**  |
+| `/blog/:slug`       | BlogPost          | **Dynamic Blog Post**     |
 | `/portal`           | ClientPortal      | Authenticated dashboard   |
 | `/services/:slug`   | ServiceDetailPage | Service details           |
 | `/industries/:slug` | ServiceDetailPage | Industry details          |
@@ -88,6 +92,7 @@ bun test             # Run tests
 ```env
 VITE_SUPABASE_URL=         # Supabase project URL
 VITE_SUPABASE_ANON_KEY=    # Supabase anonymous key
+SUPABASE_SERVICE_ROLE_KEY= # Service role key (Backend/Agent only)
 VITE_N8N_WEBHOOK_URL=      # N8N webhook for leads
 ```
 
@@ -190,23 +195,19 @@ Logo files in `public/`:
 
 ## Key Files
 
-| File                                        | Purpose                                                               |
-| ------------------------------------------- | --------------------------------------------------------------------- |
-| `src/App.tsx`                               | Router config + RootLayout + error boundaries                         |
-| `src/components/LandingPage.tsx`            | Landing page with glassmorphism hero buttons, services, FAQs          |
-| `src/components/ContactPage.tsx`            | Dedicated contact page with form + contact info                       |
-| `src/components/StaggerContainer.tsx`       | Scroll-triggered stagger animations (Framer Motion)                   |
-| `src/components/Navbar.tsx`                 | Navigation (Mobile Menu z-index: 99999, Desktop Contact: Transparent) |
-| `src/components/ProvenProcess.tsx`          | Timeline component for process steps                                  |
-| `src/components/ui/accordion.tsx`           | Neobrutalist accordion (FAQ sections)                                 |
-| `src/components/ui/shader-lines.tsx`        | Hero background shader animation (Three.js)                           |
-| `src/components/ui/hover-footer.tsx`        | Footer component with Background Gradient & Text Hover Effect         |
-| `src/components/ui/background-gradient.tsx` | Animated radial gradient component                                    |
-| `src/components/ui/ai-assistant-card.tsx`   | AI chat widget                                                        |
-| `src/contexts/ThemeContext.tsx`             | Theme state (dark mode only)                                          |
-| `src/services/n8nChatbotService.ts`         | Chat API                                                              |
-| `src/index.css`                             | Global styles + typography + theme variables                          |
-| `tailwind.config.js`                        | Tailwind theme config                                                 |
+| File                                  | Purpose                                                               |
+| ------------------------------------- | --------------------------------------------------------------------- |
+| `src/App.tsx`                         | Router config + RootLayout + error boundaries                         |
+| `scripts/content-agent.ts`            | **Automated Content Agent (RSS Fetcher)**                             |
+| `.github/workflows/daily-content.yml` | **GitHub Action for Daily Content**                                   |
+| `src/services/blogService.ts`         | **Supabase Data Fetching Service**                                    |
+| `src/components/Blog.tsx`             | **Dynamic Blog Listing**                                              |
+| `src/components/BlogPost.tsx`         | **Dynamic Blog Post Detail**                                          |
+| `src/components/LandingPage.tsx`      | Landing page with glassmorphism hero buttons, services, FAQs          |
+| `src/components/ContactPage.tsx`      | Dedicated contact page with form + contact info                       |
+| `src/components/Navbar.tsx`           | Navigation (Mobile Menu z-index: 99999, Desktop Contact: Transparent) |
+| `src/components/ui/shader-lines.tsx`  | Hero background shader animation (Three.js)                           |
+| `src/lib/supabase.ts`                 | **Supabase Client Config**                                            |
 
 ## Code Conventions
 

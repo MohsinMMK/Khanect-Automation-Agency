@@ -21,7 +21,7 @@ function Footer() {
       links: [
         { label: "Company History", href: "#" },
         { label: "Meet the Team", href: "#" },
-        { label: "Employee Handbook", href: "#" },
+        { label: "Blog", href: "/blog" },
         { label: "Careers", href: "#" },
       ],
     },

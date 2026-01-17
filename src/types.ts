@@ -59,3 +59,22 @@ export interface FAQ {
   question: string;
   answer: string;
 }
+
+export interface BlogPost {
+  id?: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  content: string; // Markdown or HTML
+  // Mapped fields
+  date?: string; 
+  created_at?: string; 
+  author?: string;
+  readTime?: string;
+  read_time?: string;
+  tags: string[];
+  coverImage?: string;
+  cover_image?: string;
+  source_url?: string;
+  is_published?: boolean;
+}
