@@ -13,7 +13,6 @@ import {
 import Navbar from './components/Navbar';
 import LandingPage from './components/LandingPage';
 import Pricing from './components/Pricing';
-import ClientPortal from './components/ClientPortal';
 import Footer from './components/Footer';
 import ServiceDetailPage from './components/ServiceDetailPage';
 import ContactPage from './components/ContactPage';
@@ -28,6 +27,18 @@ import { useBodyOverflow } from './hooks/useBodyOverflow';
 import { Toaster } from '@/components/ui/sonner';
 import { services } from './data/services';
 import { industries } from './data/industries';
+
+// Auth and Portal imports
+import { AuthProvider } from './contexts/AuthContext';
+import { ProtectedRoute } from './components/ProtectedRoute';
+import {
+  PortalLayout,
+  LoginPage,
+  DashboardPage,
+  LeadsPage,
+  ActivityPage,
+  SettingsPage,
+} from './components/portal';
 
 // Route error boundary component
 function RouteErrorBoundary() {
@@ -228,10 +239,6 @@ const router = createBrowserRouter([
         element: <ContactPage />,
       },
       {
-        path: 'portal',
-        element: <ClientPortal />,
-      },
-      {
         path: 'blog',
         element: <Blog />,
       },
@@ -255,8 +262,44 @@ const router = createBrowserRouter([
       },
     ],
   },
+  // Portal routes - separate layout, protected by auth
+  {
+    path: '/portal/login',
+    element: <LoginPage />,
+  },
+  {
+    path: '/portal',
+    element: (
+      <ProtectedRoute>
+        <PortalLayout />
+      </ProtectedRoute>
+    ),
+    errorElement: <RouteErrorBoundary />,
+    children: [
+      {
+        index: true,
+        element: <DashboardPage />,
+      },
+      {
+        path: 'leads',
+        element: <LeadsPage />,
+      },
+      {
+        path: 'activity',
+        element: <ActivityPage />,
+      },
+      {
+        path: 'settings',
+        element: <SettingsPage />,
+      },
+    ],
+  },
 ]);
 
 export default function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
+  );
 }

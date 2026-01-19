@@ -10,6 +10,7 @@ Business Automation Agency SaaS platform - React landing page, client portal, an
 - **Blog**: ✅ Verified. Dynamic content with SEO optimization (Meta tags, Sitemap).
 - **Lead Magnet**: ✅ Implemented. Email capture integrated in blog posts.
 - **Infrastructure**: ✅ Stabilized. Supabase connection fixed.
+- **Client Portal**: ✅ Enhanced. Full lead management, dashboard, activity tracking, settings.
 
 ## Guidelines
 
@@ -83,6 +84,8 @@ bun run scripts/content-agent.ts # Run AI Content Agent manually
 
 ## Routes
 
+### Public Routes
+
 | Path                | Component         | Description               |
 | ------------------- | ----------------- | ------------------------- |
 | `/`                 | LandingPage       | Hero, services, FAQs, CTA |
@@ -90,9 +93,18 @@ bun run scripts/content-agent.ts # Run AI Content Agent manually
 | `/contact`          | ContactPage       | Dedicated contact page    |
 | `/blog`             | Blog              | **Dynamic Blog Listing**  |
 | `/blog/:slug`       | BlogPost          | **Dynamic Blog Post**     |
-| `/portal`           | ClientPortal      | Authenticated dashboard   |
 | `/services/:slug`   | ServiceDetailPage | Service details           |
 | `/industries/:slug` | ServiceDetailPage | Industry details          |
+
+### Portal Routes (Protected)
+
+| Path                | Component      | Description                  |
+| ------------------- | -------------- | ---------------------------- |
+| `/portal/login`     | LoginPage      | Portal login + password reset|
+| `/portal`           | DashboardPage  | Dashboard with real metrics  |
+| `/portal/leads`     | LeadsPage      | Lead management with table   |
+| `/portal/activity`  | ActivityPage   | AI activity logs & filters   |
+| `/portal/settings`  | SettingsPage   | Profile, notifications, security |
 
 ## Environment Variables
 
