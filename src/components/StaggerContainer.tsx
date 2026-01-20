@@ -1,4 +1,4 @@
-import { useEffect, useRef, Children, cloneElement, isValidElement, type ReactNode, type ReactElement } from 'react';
+import React, { useEffect, useRef, Children, cloneElement, isValidElement, type ReactNode, type ReactElement } from 'react';
 import { useAnimate, useInView, stagger } from 'framer-motion';
 
 interface StaggerContainerProps {
@@ -8,7 +8,7 @@ interface StaggerContainerProps {
   duration?: number;
   y?: number;
   delay?: number;
-  as?: keyof JSX.IntrinsicElements;
+  as?: React.ElementType;
 }
 
 /**

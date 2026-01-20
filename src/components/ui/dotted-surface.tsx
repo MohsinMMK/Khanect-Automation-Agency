@@ -119,22 +119,11 @@ export function DottedSurface({
 
                     if (useBrandColors) {
                         const t = (ix + iy) / (AMOUNTX + AMOUNTY);
-                        if (theme === 'oak') {
-                            const r = 60 / 255 + t * (74 - 60) / 255;
-                            const g = 36 / 255 + t * (48 - 36) / 255;
-                            const b = 21 / 255 + t * (32 - 21) / 255;
-                            colors.push(r, g, b);
-                        } else if (theme === 'dark') {
-                            const r = 20 / 255 + t * (211 - 20) / 255;
-                            const g = 184 / 255 + t * (243 - 184) / 255;
-                            const b = 166 / 255 + t * (107 - 166) / 255;
-                            colors.push(r, g, b);
-                        } else {
-                            const r = (20 / 255 + t * (180 - 20) / 255) * 0.7;
-                            const g = (184 / 255 + t * (200 - 184) / 255) * 0.7;
-                            const b = (166 / 255 + t * (80 - 166) / 255) * 0.7;
-                            colors.push(r, g, b);
-                        }
+                        // Always use dark theme colors since theme is fixed to 'dark'
+                        const r = 20 / 255 + t * (211 - 20) / 255;
+                        const g = 184 / 255 + t * (243 - 184) / 255;
+                        const b = 166 / 255 + t * (107 - 166) / 255;
+                        colors.push(r, g, b);
                     } else {
                         if (theme === 'dark') {
                             colors.push(0.7, 0.7, 0.7);
@@ -236,12 +225,8 @@ export function DottedSurface({
 
     // Get fallback gradient colors based on theme
     const getFallbackGradient = () => {
-        if (theme === 'oak') {
-            return 'radial-gradient(ellipse at center, rgba(60,36,21,0.3) 0%, transparent 70%)';
-        } else if (theme === 'dark') {
-            return 'radial-gradient(ellipse at center, rgba(20,184,166,0.15) 0%, transparent 70%)';
-        }
-        return 'radial-gradient(ellipse at center, rgba(20,184,166,0.1) 0%, transparent 70%)';
+        // Theme is always 'dark'
+        return 'radial-gradient(ellipse at center, rgba(20,184,166,0.15) 0%, transparent 70%)';
     };
 
     return (
