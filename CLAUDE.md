@@ -9,7 +9,7 @@ Business Automation Agency SaaS platform - React landing page, client portal, an
 - **AI Content Agent**: ✅ Live. Automated daily curation (RSS -> OpenAI -> Supabase).
 - **Blog**: ✅ Verified. Dynamic content with SEO optimization (Meta tags, Sitemap).
 - **Lead Magnet**: ✅ Implemented. Email capture integrated in blog posts.
-- **Infrastructure**: ✅ Stabilized. Supabase connection fixed.
+- **Infrastructure**: ✅ Stabilized. Supabase connection fixed. Hostinger build compatibility fixed (React 19).
 - **Client Portal**: ✅ Enhanced. Full lead management, dashboard, activity tracking, settings.
 
 ## Guidelines
@@ -26,7 +26,7 @@ Business Automation Agency SaaS platform - React landing page, client portal, an
 - **Content Engine**: Custom Node.js Agent (RSS -> Deepseek/OpenAI -> Supabase)
 - **Routing**: React Router v7 with `createBrowserRouter` + loaders
 - **Animations**: Framer Motion (scroll animations), Three.js (Shader Lines)
-- **Package Manager**: Bun
+- **Package Manager**: Bun (Deployed with npm/Hostinger compatibility)
 
 ## React 19 Patterns
 
