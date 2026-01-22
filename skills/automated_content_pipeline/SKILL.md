@@ -45,7 +45,7 @@ OPENAI_API_KEY=your_openai_key
 
 ### 3. The Agent Script
 
-Create `scripts/content-agent.ts`. This script should:
+Create `scripts/run-content-workflow.ts`. This script should:
 
 1.  **Fetch RSS Feeds**: Use `rss-parser` to get latest news.
 2.  **Filter**: Select relevant articles (e.g., "AI", "Automation").
@@ -71,7 +71,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v1
       - run: bun install
-      - run: bun run scripts/content-agent.ts
+      - run: bun run scripts/run-content-workflow.ts
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
@@ -80,7 +80,7 @@ jobs:
 
 ## Usage
 
-- **Manual Run**: `bun run scripts/content-agent.ts`
+- **Manual Run**: `bun run scripts/run-content-workflow.ts`
 - **Production**: Trigger via GitHub Actions.
 
 ## Customization

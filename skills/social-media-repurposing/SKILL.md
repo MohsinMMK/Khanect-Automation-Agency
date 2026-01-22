@@ -9,7 +9,7 @@ This skill extends the content agent to generate social media content (LinkedIn,
 
 ## functionality
 
-When `scripts/content-agent.ts` runs:
+When `scripts/run-content-workflow.ts` runs:
 
 1.  Fetches and rewrites articles (standard agent behavior).
 2.  **NEW**: Calls `generateSocialPost(title, content)`.

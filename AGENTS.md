@@ -22,14 +22,14 @@ You operate within a 3-layer architecture that separates concerns to maximize re
 
 - This is you. Your job: intelligent routing.
 - Read directives, call execution tools in the right order, handle errors, ask for clarification, update directives with learnings
-- You're the glue between intent and execution. E.g you don't try scraping websites yourself—you read `directives/scrape_website.md` and come up with inputs/outputs and then run `execution/scrape_single_site.py`
+- You're the glue between intent and execution. E.g you don't try scraping websites yourself—you read `directives/scrape_website.md` and come up with inputs/outputs and then run `execution/fetch-rss.ts`
 
 **Layer 3: Execution (Doing the work)**
 
-- Deterministic Python scripts in `execution/`
-- Environment variables, api tokens, etc are stored in `.env`
+- Deterministic TypeScript/Bun tools in `execution/`
+- Environment variables, api tokens, etc are stored in `.env.local`
 - Handle API calls, data processing, file operations, database interactions
-- Reliable, testable, fast. Use scripts instead of manual work.
+- Reliable, testable, fast. Use tools instead of manual work.
 
 **Why this works:** if you do everything yourself, errors compound. 90% accuracy per step = 59% success over 5 steps. The solution is push complexity into deterministic code. That way you just focus on decision-making.
 
@@ -68,7 +68,7 @@ Errors are learning opportunities. When something breaks:
 **Directory structure:**
 
 - `.tmp/` - All intermediate files (dossiers, scraped data, temp exports). Never commit, always regenerated.
-- `execution/` - Python scripts (the deterministic tools)
+- `execution/` - TypeScript tools (the deterministic layer)
 - `directives/` - SOPs in Markdown (the instruction set)
 - `.env` - Environment variables and API keys
 - `credentials.json`, `token.json` - Google OAuth credentials (required files, in `.gitignore`)
@@ -156,7 +156,7 @@ const router = createBrowserRouter([
 bun dev              # Dev server (port 3000)
 bun run build        # Production build
 bun test             # Run tests
-bun run scripts/content-agent.ts # Run AI Content Agent manually
+bun run scripts/run-content-workflow.ts # Run AI Content Workflow
 ```
 
 ## Routes
@@ -175,13 +175,13 @@ bun run scripts/content-agent.ts # Run AI Content Agent manually
 
 ### Portal Routes (Protected)
 
-| Path                | Component      | Description                  |
-| ------------------- | -------------- | ---------------------------- |
-| `/portal/login`     | LoginPage      | Portal login + password reset|
-| `/portal`           | DashboardPage  | Dashboard with real metrics  |
-| `/portal/leads`     | LeadsPage      | Lead management with table   |
-| `/portal/activity`  | ActivityPage   | AI activity logs & filters   |
-| `/portal/settings`  | SettingsPage   | Profile, notifications, security |
+| Path               | Component     | Description                      |
+| ------------------ | ------------- | -------------------------------- |
+| `/portal/login`    | LoginPage     | Portal login + password reset    |
+| `/portal`          | DashboardPage | Dashboard with real metrics      |
+| `/portal/leads`    | LeadsPage     | Lead management with table       |
+| `/portal/activity` | ActivityPage  | AI activity logs & filters       |
+| `/portal/settings` | SettingsPage  | Profile, notifications, security |
 
 ## Environment Variables
 
@@ -294,7 +294,7 @@ Logo files in `public/`:
 | File                                  | Purpose                                                               |
 | ------------------------------------- | --------------------------------------------------------------------- |
 | `src/App.tsx`                         | Router config + RootLayout + error boundaries                         |
-| `scripts/content-agent.ts`            | **Automated Content Agent (RSS Fetcher)**                             |
+| `scripts/run-content-workflow.ts`     | **Automated Content Workflow (Orchestrator)**                         |
 | `.github/workflows/daily-content.yml` | **GitHub Action for Daily Content**                                   |
 | `src/services/blogService.ts`         | **Supabase Data Fetching Service**                                    |
 | `src/components/Blog.tsx`             | **Dynamic Blog Listing**                                              |
@@ -321,14 +321,19 @@ Logo files in `public/`:
 - **Robots**: `public/robots.txt` (blocks `/portal`, `/demo/`)
 
 ## Project Stats (Auto-generated)
+
 - **Total Source Files**: 109
 - **Total Lines of Code**: 11348
 - **Last Updated**: 2026-01-17T15:57:52.809Z
+
 ## Active Skills (Auto-generated)
+
 - **[Automated Content Pipeline](/skills/automated_content_pipeline/SKILL.md)**: A reuseable skill for setting up an automated AI content agent using RSS feeds, OpenAI, and Supabase.
 - **[Social Media Repurposing](/skills/social-media-repurposing/SKILL.md)**: Automatically generates social media captions for blog posts using AI.
+
 ## Available Scripts (Auto-generated)
-- **[content-agent.ts](/scripts/content-agent.ts)**: Load environment variables
+
+- **[run-content-workflow.ts](/scripts/run-content-workflow.ts)**: Orchestrate daily content logic
 - **[create_invite.js](/scripts/create_invite.js)**: Invite Script - Create new client user
 - **[generate-sitemap.ts](/scripts/generate-sitemap.ts)**: Load environment variables from .env.local
 - **[reflect-docs.ts](/scripts/reflect-docs.ts)**: Helper to count lines in a file
