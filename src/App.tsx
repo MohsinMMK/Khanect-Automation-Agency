@@ -216,6 +216,9 @@ function RootLayout() {
 
 import Blog from './components/Blog';
 import BlogPost from './components/BlogPost';
+import PrivacyPolicy from './components/PrivacyPolicy';
+import TermsAndConditions from './components/TermsAndConditions';
+import UserDataDeletion from './components/UserDataDeletion';
 
 // ... existing imports ...
 
@@ -259,6 +262,18 @@ const router = createBrowserRouter([
       {
         path: 'demo/dotted-surface',
         element: <DottedSurfaceDemo />,
+      },
+      {
+        path: 'privacy-policy',
+        element: <PrivacyPolicy />,
+      },
+      {
+        path: 'terms',
+        element: <TermsAndConditions />,
+      },
+      {
+        path: 'data-deletion',
+        element: <UserDataDeletion />,
       },
     ],
   },
