@@ -14,25 +14,8 @@ if (!openaiApiKey) {
 
 const openai = new OpenAI({ apiKey: openaiApiKey });
 
-// Parse CLI args
-const { values } = parseArgs({
-  args: Bun.argv,
-  options: {
-    title: { type: 'string' },
-    content: { type: 'string' },
-    link: { type: 'string' },
-  },
-  strict: true,
-  allowPositionals: true,
-});
-
-if (!values.title) {
-  console.error("Error: --title is required");
-  process.exit(1);
-}
-
 // 1. Generate Blog Post
-async function generateBlogPost(title: string, contentSnippet: string, link: string) {
+export async function generateBlogPost(title: string, contentSnippet: string, link: string) {
   const prompt = `
     You are an expert Automation Consultant for Khanect.com.
     
@@ -72,7 +55,7 @@ async function generateBlogPost(title: string, contentSnippet: string, link: str
 }
 
 // 2. Generate Social Media Posts
-async function generateSocialPost(postTitle: string, postContent: string) {
+export async function generateSocialPost(postTitle: string, postContent: string) {
   const prompt = `
     You are a Social Media Manager for Khanect.com.
     
@@ -100,7 +83,25 @@ async function generateSocialPost(postTitle: string, postContent: string) {
   }
 }
 
-async function run() {
+// CLI Execution
+if (import.meta.main) {
+  // Parse CLI args
+  const { values } = parseArgs({
+    args: Bun.argv,
+    options: {
+      title: { type: 'string' },
+      content: { type: 'string' },
+      link: { type: 'string' },
+    },
+    strict: true,
+    allowPositionals: true,
+  });
+
+  if (!values.title) {
+    console.error("Error: --title is required");
+    process.exit(1);
+  }
+
   const { title, content, link } = values;
   
   // A. Generate Blog Content
@@ -120,5 +121,3 @@ async function run() {
       social: socialPost
   }, null, 2));
 }
-
-run();

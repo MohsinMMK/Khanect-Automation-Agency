@@ -1,5 +1,7 @@
 
-import { spawn } from "bun";
+import { fetchRSS } from "../execution/fetch-rss";
+import { generateBlogPost, generateSocialPost } from "../execution/generate-post";
+import { publishToSupabase } from "../execution/publish-supabase";
 
 // Configuration (Mirroring the Directive)
 const RSS_FEEDS = [
@@ -9,33 +11,6 @@ const RSS_FEEDS = [
 ];
 
 const KEYWORDS = ['agent', 'automation', 'llm', 'gpt', 'business', 'workflow', 'productivity'];
-
-async function runCommand(cmd: string[], input?: any): Promise<any> {
-  const proc = spawn(cmd, {
-    stdin: input ? "pipe" : "ignore",
-    stdout: "pipe",
-    stderr: "inherit", 
-  });
-
-  if (input) {
-      const stdin = proc.stdin; // stream
-      stdin.write(JSON.stringify(input));
-      stdin.end();
-  }
-
-  const output = await new Response(proc.stdout).text();
-  await proc.exited;
-
-  if (proc.exitCode !== 0) {
-    throw new Error(`Command failed with exit code ${proc.exitCode}: ${cmd.join(' ')}`);
-  }
-
-  try {
-      return JSON.parse(output);
-  } catch (e) {
-      return output; // Return raw text if not JSON
-  }
-}
 
 async function main() {
   console.log("🚀 Starting Daily Content Workflow...");
@@ -47,7 +22,7 @@ async function main() {
     
     try {
         // Step 1: Fetch
-        const items = await runCommand(["bun", "execution/fetch-rss.ts", "--url", feedUrl]);
+        const items = await fetchRSS(feedUrl);
         
         if (!Array.isArray(items)) {
             console.error("Invalid feed output");
@@ -68,16 +43,26 @@ async function main() {
 
              // Step 2: Generate
              try {
-                 const generated = await runCommand([
-                     "bun", "execution/generate-post.ts",
-                     "--title", item.title,
-                     "--content", item.contentSnippet || '',
-                     "--link", item.link || ''
-                 ]);
+                 const blogPost = await generateBlogPost(item.title!, item.contentSnippet || '', item.link || '');
+                 if (!blogPost) {
+                     console.error("      ❌ Failed to generate blog post.");
+                     continue;
+                 }
+
+                 const socialPost = await generateSocialPost(blogPost.title, blogPost.content);
+
+                 const generatedData = {
+                     original_title: item.title,
+                     title: blogPost.title,
+                     content: blogPost.content,
+                     is_published: true,
+                     source_url: item.link || '',
+                     social: socialPost
+                 };
                  
                  // Step 3: Publish
                  console.log("      💾 Publishing to Supabase...");
-                 const result = await runCommand(["bun", "execution/publish-supabase.ts"], generated);
+                 const result = await publishToSupabase(generatedData);
                  
                  console.log(`      ✅ Published! Slug: ${result.slug}`);
                  newPosts++;
@@ -90,6 +75,7 @@ async function main() {
                  console.error(`      ❌ Failed to process item: ${err}`);
              }
         }
+        if (newPosts >= 2) break;
 
     } catch (err) {
         console.error(`❌ Failed feed ${feedUrl}: ${err}`);

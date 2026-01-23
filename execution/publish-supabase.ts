@@ -21,10 +21,8 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey);
 // OR simpler: read from stdin if no args provided. 
 // Let's us Bun.stdin.stream() or just `await Bun.stdin.text()`
 
-async function run() {
+export async function publishToSupabase(inputData: any) {
   try {
-    const inputData = await Bun.stdin.json();
-    
     if (!inputData.title || !inputData.content) {
         throw new Error("Missing title or content in input JSON");
     }
@@ -50,15 +48,21 @@ async function run() {
 
     if (error) {
         console.error(`Supabase Error: ${error.message}`);
-        process.exit(1);
+        throw error;
     }
 
-    console.log(JSON.stringify({ status: "success", slug: slug }));
+    return { status: "success", slug: slug };
 
   } catch (err) {
     console.error(`Error publishing to Supabase: ${err}`);
-    process.exit(1);
+    throw err;
   }
 }
 
-run();
+// CLI Execution
+if (import.meta.main) {
+    const inputData = await Bun.stdin.json();
+    publishToSupabase(inputData)
+        .then(result => console.log(JSON.stringify(result)))
+        .catch(() => process.exit(1));
+}
