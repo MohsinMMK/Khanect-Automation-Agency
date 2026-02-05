@@ -192,6 +192,45 @@ SUPABASE_SERVICE_ROLE_KEY= # Service role key (Backend/Agent only)
 VITE_N8N_WEBHOOK_URL=      # N8N webhook for leads
 ```
 
+## MCP Servers
+
+Configuration in `.mcp.json`. Available servers:
+
+| Server    | Purpose                                      |
+| --------- | -------------------------------------------- |
+| context7  | Library documentation lookup                 |
+| ref       | Documentation search and reading             |
+| shadcn    | Component registry management                |
+| supabase  | Database operations (HTTP MCP)               |
+| github    | GitHub API (Docker-based)                    |
+| **n8n**   | **N8N workflow automation API**              |
+
+### N8N MCP Server
+
+Provides tools for managing N8N workflows, executions, and webhooks.
+
+**Config requirements:**
+```json
+"n8n": {
+  "command": "cmd",
+  "args": ["/c", "npx", "-y", "n8n-mcp-server"],
+  "env": {
+    "N8N_API_URL": "https://n8n.srv1222580.hstgr.cloud/api/v1",
+    "N8N_API_KEY": "<api-key>"
+  }
+}
+```
+
+**Important:** `N8N_API_URL` must include `/api/v1` suffix.
+
+**Available N8N tools (after restart):**
+- List/get/create/update/delete workflows
+- Activate/deactivate workflows
+- List/get executions
+- Trigger webhooks
+
+**N8N Instance:** `https://n8n.srv1222580.hstgr.cloud`
+
 ## Theme System
 
 Dark mode only (no theme switcher).
@@ -321,19 +360,14 @@ Logo files in `public/`:
 - **Robots**: `public/robots.txt` (blocks `/portal`, `/demo/`)
 
 ## Project Stats (Auto-generated)
-
-- **Total Source Files**: 109
-- **Total Lines of Code**: 11348
-- **Last Updated**: 2026-01-17T15:57:52.809Z
-
+- **Total Source Files**: 137
+- **Total Lines of Code**: 16289
+- **Last Updated**: 2026-02-05T12:48:42.204Z
 ## Active Skills (Auto-generated)
-
 - **[Automated Content Pipeline](/skills/automated_content_pipeline/SKILL.md)**: A reuseable skill for setting up an automated AI content agent using RSS feeds, OpenAI, and Supabase.
 - **[Social Media Repurposing](/skills/social-media-repurposing/SKILL.md)**: Automatically generates social media captions for blog posts using AI.
-
 ## Available Scripts (Auto-generated)
-
-- **[run-content-workflow.ts](/scripts/run-content-workflow.ts)**: Orchestrate daily content logic
 - **[create_invite.js](/scripts/create_invite.js)**: Invite Script - Create new client user
 - **[generate-sitemap.ts](/scripts/generate-sitemap.ts)**: Load environment variables from .env.local
 - **[reflect-docs.ts](/scripts/reflect-docs.ts)**: Helper to count lines in a file
+- **[run-content-workflow.ts](/scripts/run-content-workflow.ts)**: Configuration (Mirroring the Directive)
