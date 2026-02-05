@@ -196,14 +196,14 @@ VITE_N8N_WEBHOOK_URL=      # N8N webhook for leads
 
 Configuration in `.mcp.json`. Available servers:
 
-| Server    | Purpose                                      |
-| --------- | -------------------------------------------- |
-| context7  | Library documentation lookup                 |
-| ref       | Documentation search and reading             |
-| shadcn    | Component registry management                |
-| supabase  | Database operations (HTTP MCP)               |
-| github    | GitHub API (Docker-based)                    |
-| **n8n**   | **N8N workflow automation API**              |
+| Server   | Purpose                          |
+| -------- | -------------------------------- |
+| context7 | Library documentation lookup     |
+| ref      | Documentation search and reading |
+| shadcn   | Component registry management    |
+| supabase | Database operations (HTTP MCP)   |
+| github   | GitHub API operations            |
+| n8n      | N8N workflow automation API      |
 
 ### N8N MCP Server
 

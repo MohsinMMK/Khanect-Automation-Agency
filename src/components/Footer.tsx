@@ -28,13 +28,8 @@ function Footer() {
     {
       title: "Helpful Links",
       links: [
-        { label: "FAQs", href: "#" },
-        { label: "Support", href: "#" },
-        {
-          label: "Live Chat",
-          href: "#",
-          pulse: true,
-        },
+        { label: "FAQs", href: "/#faq" },
+        { label: "Support", href: "/contact" },
       ],
     },
     {
@@ -67,11 +62,9 @@ function Footer() {
 
   // Social media icons
   const socialLinks = [
-    { icon: <Facebook size={20} />, label: "Facebook", href: "#" },
-    { icon: <Instagram size={20} />, label: "Instagram", href: "#" },
-    { icon: <Twitter size={20} />, label: "Twitter", href: "#" },
-    { icon: <Dribbble size={20} />, label: "Dribbble", href: "#" },
-    { icon: <Globe size={20} />, label: "Globe", href: "#" },
+    { icon: <Instagram size={20} />, label: "Instagram", href: "https://www.instagram.com/khanect.ai/" },
+    { icon: <Facebook size={20} />, label: "Facebook", href: "https://www.facebook.com/connect.khanect" },
+    { icon: <Twitter size={20} />, label: "Twitter", href: "https://x.com/2099Mmk" },
   ];
 
   return (
@@ -96,7 +89,7 @@ function Footer() {
               />
             </div>
             <p className="text-sm leading-relaxed text-gray-500">
-              Nur UI is a modern React and Next.js based UI component library.
+              Empowering businesses with automated AI content engines and intelligent client portals.
             </p>
           </div>
 
