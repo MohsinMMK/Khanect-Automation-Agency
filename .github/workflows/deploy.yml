@@ -28,7 +28,9 @@ jobs:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
 
-      - name: Deploy to Hostinger via SCP
+      - name: Deploy to Hostinger via SCP (primary)
+        id: deploy_primary
+        continue-on-error: true
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.FTP_SERVER }}
@@ -39,5 +41,20 @@ jobs:
           target: ~/domains/khanect.com/public_html
           strip_components: 1
           timeout: 600s
+          command_timeout: 30m
+          debug: true
+
+      - name: Retry deploy to Hostinger via SCP (on primary failure)
+        if: steps.deploy_primary.outcome == 'failure'
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.FTP_SERVER }}
+          port: ${{ secrets.FTP_PORT }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          source: dist/*
+          target: ~/domains/khanect.com/public_html
+          strip_components: 1
+          timeout: 900s
           command_timeout: 30m
           debug: true
