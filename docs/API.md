@@ -2,7 +2,7 @@
 
 ## Overview
 
-KHANECT AI uses **Supabase Edge Functions** for backend API endpoints. These are Deno-based serverless functions that handle AI processing, lead scoring, and email automation.
+KHANECT AI uses a hybrid backend: **Supabase Edge Functions** for AI/email workloads and **n8n webhooks** for lead orchestration.
 
 ## Base URL
 
@@ -170,9 +170,15 @@ interface LeadData {
 
 async function processLead(leadData: LeadData): Promise<{
   success: boolean;
-  error?: string;
+  errorCode?: 'MISSING_CONFIG' | 'TIMEOUT' | 'HTTP_ERROR' | 'NETWORK_ERROR';
+  errorMessage?: string;
+  httpStatus?: number;
 }>
 ```
+
+Notes:
+- Contact form dispatch is non-blocking after Supabase insert success.
+- Webhook failures return structured metadata and trigger a user-visible warning toast.
 
 **Usage:**
 ```typescript
@@ -223,6 +229,17 @@ const result = await sendChatMessage(
 
 ---
 
+## Lead Recovery Automation
+
+Automated retry/backfill for lead webhook dispatch:
+- Script: `scripts/retry-pending-leads.ts`
+- Workflow: `.github/workflows/retry-pending-leads.yml`
+- Cadence: hourly + manual `workflow_dispatch`
+- Scope: retries recent `pending`/`failed` `contact_submissions` rows
+- Status handling: claims rows as `processing`; marks dispatch failures as `failed`
+
+---
+
 ## Environment Variables
 
 ### Frontend (Vite)
@@ -231,6 +248,7 @@ const result = await sendChatMessage(
 VITE_SUPABASE_URL=https://project.supabase.co
 VITE_SUPABASE_ANON_KEY=eyJhbG...
 VITE_N8N_WEBHOOK_URL=https://n8n.example.com/webhook/...
+VITE_N8N_CHAT_WEBHOOK_URL=https://n8n.example.com/webhook/chat
 ```
 
 ### Edge Functions (Supabase Dashboard)
@@ -291,29 +309,10 @@ HTTP Status Codes:
 
 ## Data Flow Diagram
 
-```
-┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│   Browser   │────>│   Supabase  │────>│   Database  │
-│  (React)    │     │  (Insert)   │     │ PostgreSQL  │
-└─────────────┘     └─────────────┘     └─────────────┘
-      │                                        │
-      │                                        │
-      v                                        v
-┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│    N8N      │────>│ process-lead│────>│ lead_scores │
-│  Webhook    │     │ Edge Func   │     │   Table     │
-└─────────────┘     └─────────────┘     └─────────────┘
-                           │
-                           v
-                    ┌─────────────┐
-                    │ followup_   │
-                    │   queue     │
-                    └─────────────┘
-                           │
-                           │ (pg_cron)
-                           v
-                    ┌─────────────┐     ┌─────────────┐
-                    │ followup-   │────>│   Resend    │
-                    │ scheduler   │     │   Email     │
-                    └─────────────┘     └─────────────┘
-```
+1. Contact form inserts into `contact_submissions`.
+2. `ContactPage` dispatches `processLead()` to n8n webhook asynchronously.
+3. UI success remains tied to insert success; webhook dispatch failures show a warning toast.
+4. n8n/Edge Functions update `lead_scores`, `followup_queue`, and related automation tables.
+5. `followup-scheduler` sends queued follow-ups.
+6. Hourly `retry-pending-leads` workflow replays recent `pending`/`failed` submissions.
+

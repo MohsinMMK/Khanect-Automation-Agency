@@ -22,7 +22,7 @@ const supabase = createClient(
 
 ### 1. contact_submissions
 
-Stores lead form submissions from the landing page.
+Stores lead form submissions from the dedicated `/contact` page.
 
 | Column | Type | Nullable | Default | Description |
 |--------|------|----------|---------|-------------|
@@ -39,7 +39,7 @@ Stores lead form submissions from the landing page.
 
 **RLS Policies:**
 - `Allow anonymous inserts` - Anonymous users can INSERT (for public form)
-- `Service role full access` - Edge functions have full access
+- `Service role full access` - Backend automations have full access
 
 ---
 
@@ -185,29 +185,13 @@ Tracks AI usage for cost monitoring and analytics.
 
 ## Data Flow
 
-```
-User submits form
-       ↓
-contact_submissions (INSERT via anon)
-       ↓
-N8N webhook triggers process-lead Edge Function
-       ↓
-GPT-4 analyzes lead
-       ↓
-lead_scores (INSERT)
-       ↓
-followup_queue (INSERT scheduled emails)
-       ↓
-pg_cron triggers followup-scheduler every 15 min
-       ↓
-GPT-4 generates personalized email
-       ↓
-Resend API sends email
-       ↓
-followup_queue (UPDATE status)
-       ↓
-agent_interactions (INSERT for cost tracking)
-```
+1. User submits form on `/contact`.
+2. Browser inserts into `contact_submissions` (anon policy).
+3. Browser asynchronously calls n8n lead webhook (`processLead`) after insert success.
+4. If webhook dispatch fails, UI still shows success and also shows a non-blocking warning toast.
+5. n8n and backend automations process lead scoring/follow-up scheduling and update downstream tables.
+6. Hourly retry job (`retry-pending-leads.yml`) replays recent `pending`/`failed` leads and marks dispatch failures as `failed`.
+7. `followup-scheduler` and email delivery update `followup_queue` and write `agent_interactions`.
 
 ---
 
@@ -250,3 +234,4 @@ export interface ContactSubmission {
   created_at: string;
 }
 ```
+

@@ -219,8 +219,16 @@ function ContactPage() {
             if (result.success) {
               console.log('Lead processed via N8N');
             } else {
-              console.warn('Lead processing error (non-blocking):', result.error);
+              console.warn('Lead processing error (non-blocking):', {
+                errorCode: result.errorCode,
+                httpStatus: result.httpStatus,
+                errorMessage: result.errorMessage,
+              });
+              toast.warning("Thanks, we've received your request. Follow-up email may be delayed.");
             }
+          }).catch((unexpectedError) => {
+            console.warn('Unexpected non-blocking lead processing error:', unexpectedError);
+            toast.warning("Thanks, we've received your request. Follow-up email may be delayed.");
           });
         }
 

@@ -210,8 +210,8 @@ Current security posture in this flow:
 | Client validation | Invalid field/consent | Inline errors + generic fix toast | `formErrors` and `touchedFields` updated |
 | Supabase insert | RLS/policy failure | Error toast with support wording | `console.error('Supabase error:', ...)` |
 | Supabase unavailable | Missing client in non-dev | Error toast service unavailable | Warn in dev, throw in prod path |
-| Webhook timeout | N8N >10s | No user failure (non-blocking) | `console.error('N8N webhook timeout...')` |
-| Webhook non-2xx | N8N error response | No user failure (non-blocking) | `console.error('N8N webhook error:', status, text)` |
+| Webhook timeout | N8N >10s | Success toast + warning toast (non-blocking) | `console.error('N8N webhook timeout...')` |
+| Webhook non-2xx | N8N error response | Success toast + warning toast (non-blocking) | `console.error('N8N webhook error:', status, text)` |
 | Unknown exception | Any thrown error | Error toast from caught message | `console.error('Form submission error:', ...)` |
 
 ## Observability and Debugging Playbook
@@ -229,13 +229,28 @@ Current security posture in this flow:
 4. Verify non-blocking webhook:
 - Check logs for `Lead processed via N8N` / `Lead processing error (non-blocking)` (`src/components/ContactPage.tsx:220`, `src/components/ContactPage.tsx:222`).
 - Confirm request timeout/error logs in `src/services/n8nService.ts`.
+- Confirm warning toast is shown when webhook dispatch fails while form submission still succeeds.
 
 5. Validate cooldown behavior:
 - Check `sessionStorage['khanect_last_submission']` and countdown rendering.
 
+## Automated Recovery and Alerting
+
+- Retry script: `scripts/retry-pending-leads.ts` retries recent `pending` and `failed` submissions.
+- Workflow schedule: `.github/workflows/retry-pending-leads.yml` runs hourly and can be triggered manually.
+- Status handling:
+  - Claims retry candidates by updating `processing_status` to `processing`.
+  - Sets `processing_status` to `failed` when webhook dispatch fails.
+  - Leaves successful dispatches for n8n to complete.
+- Alerting: n8n error trigger workflow sends email alerts with execution context for lead-processing failures.
+
 ## Public Interfaces and Type Contracts
 
-No runtime public API changes are introduced by this document.
+Runtime interface updates:
+- `processLead` now returns structured failure metadata:
+  - `errorCode` (`MISSING_CONFIG`, `TIMEOUT`, `HTTP_ERROR`, `NETWORK_ERROR`)
+  - `errorMessage`
+  - `httpStatus` (when available)
 
 Current interfaces codified here:
 - Form action payload contract from browser form fields.
@@ -358,7 +373,13 @@ Cooldown path:
 Persistence/webhook path:
 1. Verify Supabase row inserted in `contact_submissions`.
 2. Confirm webhook call executes asynchronously after insert success.
-3. Confirm user still sees success even if webhook fails.
+3. Confirm user sees success toast and warning toast if webhook fails.
+
+Retry/backfill path:
+1. Trigger `retry-pending-leads` workflow manually.
+2. Confirm only `pending`/`failed` rows created within retry window are selected.
+3. Confirm dispatch failures are marked back to `failed`.
+4. Confirm successful dispatches move to `processing` and are completed by n8n.
 
 Navigation consistency checks:
 1. From landing CTA, verify direct route to `/contact`.

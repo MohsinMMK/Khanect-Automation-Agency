@@ -11,7 +11,8 @@
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
     "generate:sitemap": "bun run scripts/generate-sitemap.ts",
-    "docs:update": "bun run scripts/reflect-docs.ts"
+    "docs:update": "bun run scripts/reflect-docs.ts",
+    "retry:pending-leads": "bun run scripts/retry-pending-leads.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

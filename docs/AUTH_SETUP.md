@@ -107,7 +107,8 @@ GEMINI_API_KEY=your_gemini_api_key
 VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key  # Add this line
-VITE_N8N_WEBHOOK_URL=your_webhook_url
+VITE_N8N_WEBHOOK_URL=your_n8n_lead_webhook_url
+VITE_N8N_CHAT_WEBHOOK_URL=your_n8n_chat_webhook_url
 ```
 
 ---

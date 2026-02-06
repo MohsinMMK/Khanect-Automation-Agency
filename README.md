@@ -32,7 +32,8 @@ Khanect AI is a modern automation agency platform that helps businesses streamli
 
 ### Lead Management
 - Contact form with validation and rate limiting
-- Automated follow-up email scheduling via Supabase Edge Functions
+- Non-blocking lead dispatch to n8n webhook after Supabase insert
+- Hourly retry/backfill for recent `pending` and `failed` submissions
 - Lead scoring and tracking
 - CRM-ready data structure
 
@@ -69,7 +70,7 @@ Khanect AI is a modern automation agency platform that helps businesses streamli
 | Authentication | Supabase Auth |
 | Database | Supabase (PostgreSQL) |
 | Edge Functions | Supabase Edge Functions (Deno) |
-| AI Backend | n8n Webhook + Supabase Edge Functions |
+| AI Backend | n8n Webhooks + Supabase Edge Functions |
 | Animations | GSAP, Framer Motion, Three.js |
 | Charts | Recharts |
 | Smooth Scroll | Lenis |
@@ -79,7 +80,7 @@ Khanect AI is a modern automation agency platform that helps businesses streamli
 
 - **Bun** 1.0+ (recommended: 1.3+) - [Install Bun](https://bun.sh)
 - **Supabase Account** (for authentication and database)
-- **n8n Instance** (for chatbot functionality)
+- **n8n Instance** (for chatbot and lead-processing workflows)
 
 ## Installation
 
@@ -102,8 +103,11 @@ Khanect AI is a modern automation agency platform that helps businesses streamli
    VITE_SUPABASE_URL=your_supabase_project_url
    VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 
-   # n8n Chatbot Webhook
-   VITE_N8N_WEBHOOK_URL=your_n8n_webhook_url
+   # n8n lead-processing webhook
+   VITE_N8N_WEBHOOK_URL=your_n8n_lead_webhook_url
+
+   # n8n chatbot webhook
+   VITE_N8N_CHAT_WEBHOOK_URL=your_n8n_chat_webhook_url
    ```
 
 4. **Set up Supabase Database**
@@ -127,6 +131,8 @@ Khanect AI is a modern automation agency platform that helps businesses streamli
 | `bun test` | Run tests in watch mode |
 | `bun run test:run` | Run tests once |
 | `bun run test:coverage` | Run tests with coverage |
+| `bun run retry:pending-leads` | Retry recent `pending`/`failed` lead submissions |
+| `bun run docs:update` | Refresh mirrored agent docs metadata |
 
 ## Project Structure
 
@@ -229,6 +235,10 @@ See [docs/DATABASE.md](docs/DATABASE.md) for complete schema.
 ```bash
 supabase functions deploy followup-scheduler
 ```
+
+### GitHub Actions
+- `daily-content.yml` runs content automation.
+- `retry-pending-leads.yml` runs hourly lead retry/backfill and supports manual dispatch.
 
 ## Authentication
 

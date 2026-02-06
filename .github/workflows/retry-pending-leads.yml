@@ -1,0 +1,35 @@
+name: Retry Pending Leads
+
+on:
+  schedule:
+    # Run hourly to recover non-blocking webhook failures.
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+jobs:
+  retry-pending-leads:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Retry recent pending/failed leads
+        run: bun run retry:pending-leads
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          VITE_N8N_WEBHOOK_URL: ${{ secrets.VITE_N8N_WEBHOOK_URL }}
+          LEAD_RETRY_LOOKBACK_HOURS: '72'
+          LEAD_RETRY_BATCH_SIZE: '50'
+          LEAD_RETRY_MAX_PER_RUN: '200'
+          LEAD_RETRY_TIMEOUT_MS: '10000'

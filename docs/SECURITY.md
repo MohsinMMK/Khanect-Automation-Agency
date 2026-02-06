@@ -189,7 +189,8 @@ export const sanitizeInput = (input: string): string => {
 # These are PUBLIC - safe to expose
 VITE_SUPABASE_URL=https://project.supabase.co
 VITE_SUPABASE_ANON_KEY=eyJhbG...  # Has limited permissions via RLS
-VITE_N8N_WEBHOOK_URL=https://n8n.example.com/webhook/...
+VITE_N8N_WEBHOOK_URL=https://n8n.example.com/webhook/lead-processor
+VITE_N8N_CHAT_WEBHOOK_URL=https://n8n.example.com/webhook/chat
 ```
 
 ### Backend (Never in Frontend)

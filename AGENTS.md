@@ -156,6 +156,8 @@ const router = createBrowserRouter([
 bun dev              # Dev server (port 3000)
 bun run build        # Production build
 bun test             # Run tests
+bun run retry:pending-leads # Retry recent pending/failed leads
+bun run docs:update  # Refresh mirrored docs metadata
 bun run scripts/run-content-workflow.ts # Run AI Content Workflow
 ```
 
@@ -190,6 +192,7 @@ VITE_SUPABASE_URL=         # Supabase project URL
 VITE_SUPABASE_ANON_KEY=    # Supabase anonymous key
 SUPABASE_SERVICE_ROLE_KEY= # Service role key (Backend/Agent only)
 VITE_N8N_WEBHOOK_URL=      # N8N webhook for leads
+VITE_N8N_CHAT_WEBHOOK_URL= # N8N chatbot webhook
 ```
 
 ## MCP Servers
@@ -360,9 +363,9 @@ Logo files in `public/`:
 - **Robots**: `public/robots.txt` (blocks `/portal`, `/demo/`)
 
 ## Project Stats (Auto-generated)
-- **Total Source Files**: 137
-- **Total Lines of Code**: 16282
-- **Last Updated**: 2026-02-05T19:38:53.837Z
+- **Total Source Files**: 138
+- **Total Lines of Code**: 16400
+- **Last Updated**: 2026-02-06T15:26:47.037Z
 ## Active Skills (Auto-generated)
 - **[Automated Content Pipeline](/skills/automated_content_pipeline/SKILL.md)**: A reuseable skill for setting up an automated AI content agent using RSS feeds, OpenAI, and Supabase.
 - **[Social Media Repurposing](/skills/social-media-repurposing/SKILL.md)**: Automatically generates social media captions for blog posts using AI.
@@ -370,4 +373,5 @@ Logo files in `public/`:
 - **[create_invite.js](/scripts/create_invite.js)**: Invite Script - Create new client user
 - **[generate-sitemap.ts](/scripts/generate-sitemap.ts)**: Load environment variables from .env.local
 - **[reflect-docs.ts](/scripts/reflect-docs.ts)**: No description.
+- **[retry-pending-leads.ts](/scripts/retry-pending-leads.ts)**: No description.
 - **[run-content-workflow.ts](/scripts/run-content-workflow.ts)**: Configuration (Mirroring the Directive)
