@@ -108,9 +108,7 @@ function Footer() {
                     >
                       {link.label}
                     </a>
-                    {link.pulse && (
-                      <span className="absolute top-0 right-[-10px] w-2 h-2 rounded-full bg-[#14b8a6] animate-pulse"></span>
-                    )}
+                    {/* Pulse logic removed as it's no longer used */}
                   </li>
                 ))}
               </ul>
@@ -153,6 +151,8 @@ function Footer() {
                 key={label}
                 href={href}
                 aria-label={label}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="hover:text-[#14b8a6] transition-colors"
               >
                 {icon}
