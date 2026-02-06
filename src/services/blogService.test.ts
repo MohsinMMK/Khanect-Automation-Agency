@@ -5,6 +5,7 @@ import { supabase } from '../lib/supabase';
 const queryBuilder = {
   select: vi.fn(),
   eq: vi.fn(),
+  neq: vi.fn(),
   order: vi.fn(),
   limit: vi.fn(),
   single: vi.fn(),
@@ -21,6 +22,7 @@ describe('blogService', () => {
     vi.clearAllMocks();
     queryBuilder.select.mockReturnValue(queryBuilder);
     queryBuilder.eq.mockReturnValue(queryBuilder);
+    queryBuilder.neq.mockReturnValue(queryBuilder);
     queryBuilder.order.mockReturnValue(queryBuilder);
     queryBuilder.limit.mockReset();
     queryBuilder.single.mockReset();
@@ -120,6 +122,59 @@ describe('blogService', () => {
     const result = await blogService.getPostBySlug('missing');
 
     expect(result).toBeNull();
+    expect(consoleSpy).toHaveBeenCalled();
+  });
+
+  it('returns related posts sorted by tag overlap and recency', async () => {
+    queryBuilder.limit.mockResolvedValue({
+      data: [
+        {
+          id: 'a',
+          slug: 'recency-post',
+          title: 'Recent',
+          excerpt: 'excerpt',
+          content: 'content',
+          tags: ['AI'],
+          created_at: '2026-02-06T12:00:00Z',
+          read_time: '5 min read',
+          cover_image: 'https://example.com/a.jpg',
+          is_published: true,
+        },
+        {
+          id: 'b',
+          slug: 'tag-match-post',
+          title: 'Tag Match',
+          excerpt: 'excerpt',
+          content: 'content',
+          tags: ['Automation', 'AI'],
+          created_at: '2026-02-05T09:00:00Z',
+          read_time: '6 min read',
+          cover_image: 'https://example.com/b.jpg',
+          is_published: true,
+        },
+      ],
+      error: null,
+    });
+
+    const result = await blogService.getRelatedPosts('current-post', ['Automation'], 2);
+
+    expect(queryBuilder.eq).toHaveBeenCalledWith('is_published', true);
+    expect(queryBuilder.neq).toHaveBeenCalledWith('slug', 'current-post');
+    expect(queryBuilder.limit).toHaveBeenCalledWith(6);
+    expect(result).toHaveLength(2);
+    expect(result[0].slug).toBe('tag-match-post');
+  });
+
+  it('returns empty array when related posts query fails', async () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    queryBuilder.limit.mockResolvedValue({
+      data: null,
+      error: { message: 'related query failed' },
+    });
+
+    const result = await blogService.getRelatedPosts('current-post', ['AI']);
+
+    expect(result).toEqual([]);
     expect(consoleSpy).toHaveBeenCalled();
   });
 });

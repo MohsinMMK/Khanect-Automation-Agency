@@ -1,101 +1,132 @@
 ## 1. Current Blog Context
 
 1. Routing
-- `src/App.tsx` exposes `/blog` and `/blog/:slug`.
+- `src/App.tsx` keeps `/blog` and `/blog/:slug` unchanged.
 
 2. Data Flow
-- `Blog.tsx` -> `blogService.getLatestPosts()` -> Supabase `posts`.
-- `BlogPost.tsx` -> `blogService.getPostBySlug(slug)` -> Supabase `posts`.
-- Service mapping normalizes DB fields (`read_time`, `cover_image`) into UI fields (`readTime`, `coverImage`).
+- `Blog.tsx` uses `blogService.getLatestPosts()` and applies client-side search, tag filtering, and sort (`Newest` / `Most relevant`).
+- `BlogPost.tsx` uses:
+  - `blogService.getPostBySlug(slug)`
+  - `blogService.getRelatedPosts(currentSlug, tags, limit)`
+- Service mapping still normalizes DB fields (`read_time`, `cover_image`) to UI fields (`readTime`, `coverImage`).
 
-3. Content Pipeline
-- `scripts/run-content-workflow.ts` orchestrates:
-  - `execution/fetch-rss.ts`
-  - `execution/generate-post.ts`
-  - `execution/publish-supabase.ts`
-- `scripts/run-content-workflow.ts` now exports `runContentWorkflow()` with injectable dependencies for deterministic smoke testing.
-- CI workflow `.github/workflows/daily-content.yml` runs `bun run scripts/run-content-workflow.ts`.
-- Package alias exists: `content:workflow -> bun run scripts/run-content-workflow.ts`.
+3. UI Architecture (Editorial Glass)
+- Shared blog UI primitives added:
+  - `src/components/ui/blog-shell.tsx`
+  - `src/components/ui/blog-card.tsx`
+  - `src/components/ui/blog-cta-panel.tsx`
+- Blog tokens/utilities added in `src/index.css`:
+  - `--blog-surface`, `--blog-surface-2`, `--blog-border`, `--blog-glow`
+  - `.blog-editorial-card`, `.blog-section-separator`, `.blog-sticky-rail`
 
-4. SEO and Discovery
-- `scripts/generate-sitemap.ts` generates `public/sitemap.xml`.
-- Sitemap generation queries only published posts and includes `lastmod`.
-- Blog canonical URLs:
-  - Index: `https://khanect.com/blog`
-  - Detail: `https://khanect.com/blog/:slug`
-- Blog detail injects Article structured data via `useStructuredData` + `generateArticleSchema`.
+4. Conversion Rails
+- `/blog` now includes:
+  - Hero CTA pair (newsletter + audit)
+  - Mid-feed CTA insertion
+  - End-of-page CTA panel wrapping `EmailCapture`
+- `/blog/:slug` now includes:
+  - Inline contextual CTA in article body (~40% insertion point)
+  - Sticky rail CTA
+  - End-of-article CTA panel with `EmailCapture`
 
-5. Lead Magnet in Blog
-- `EmailCapture.tsx` is used in blog index and post detail.
+5. Reading Experience
+- Blog list: featured story + editorial staggered grid.
+- Blog detail:
+  - Reading progress bar
+  - Generated TOC from `##` / `###` headings
+  - Sticky desktop rail + mobile collapsible TOC
+  - Mobile-first typography downscale for hero, cards, and article body copy
+  - Related posts section (3 items)
+  - Share button with clipboard fallback toast
+
+6. Navbar/Interaction Fit
+- Resolved mobile overlap where navbar logo blocked the `Back to Articles` link hit target.
+- Adjusted blog post top spacing and mobile logo hitbox/alignment to preserve tap accessibility.
+
+6. SEO and Discovery
+- Canonical URLs remain:
+  - `https://khanect.com/blog`
+  - `https://khanect.com/blog/:slug`
+- Article structured data remains via `useStructuredData` + `generateArticleSchema`.
+- Route and metadata behavior preserved.
 
 ## 2. Known Gaps (Current)
 
-1. `src/data/blogPosts.ts` is still unused legacy/static data and can be removed after confirming no rollback requirement.
-2. Execution-layer modules (`execution/fetch-rss.ts`, `execution/generate-post.ts`, `execution/publish-supabase.ts`) still rely on live dependencies for full-path verification; deterministic coverage is at orchestrator level.
-3. Content workflow observability is log-based; no explicit metrics sink/alerts are defined in-repo.
-4. Migration IDs were normalized (`20241225_*` -> `20241225000000_*`, `20241225000001_*`) to align Supabase history. Keep these filenames stable to avoid future history drift.
+1. CTA analytics instrumentation (explicit click/capture event tracking per placement) is not yet wired in code.
+2. Related-post ranking is lightweight (tag overlap + recency), not semantic.
+3. Markdown renderer intentionally supports a safe subset and does not yet include richer blocks (tables/code syntax highlighting).
+4. Build still reports a large-chunk warning on main bundle; no additional splitting was added in this pass.
 
 ## 3. Phased Execution Plan
 
 ### Phase 1: Pipeline and CI Alignment
 Status: Complete
 1. Workflow script path fixed in `.github/workflows/daily-content.yml`.
-2. Package script alias `content:workflow` added in `package.json`.
-3. Manual workflow dispatch on `main` succeeded after push (`Daily Content Agent` run `21760048111` on 2026-02-06 UTC).
+2. Package alias `content:workflow` exists and maps to `scripts/run-content-workflow.ts`.
+3. Daily workflow execution on `main` is aligned.
 
 ### Phase 2: Data Contract and Schema Hardening
 Status: Complete
-1. `posts` schema migration added at `supabase/migrations/20260206_blog_posts_schema.sql`.
-2. Columns/constraints enforced for `id`, `slug` unique, `title`, `excerpt`, `content`, `tags`, `cover_image`, `read_time`, `source_url`, `is_published`, `created_at`, `updated_at`.
-3. RLS intent implemented:
-- public read for published posts
-- service role full access for writes.
-4. Migration history reconciled and verified with `supabase migration list`.
+1. `posts` schema migration remains in place (`supabase/migrations/20260206_blog_posts_schema.sql`).
+2. Required columns/constraints and publish-state behavior preserved.
+3. No migration changes required for this redesign.
 
 ### Phase 3: Rendering and Security Hardening
 Status: Complete
-1. Removed `dangerouslySetInnerHTML` path from `BlogPost.tsx`.
-2. Added safe markdown rendering with protocol-checked links and malformed content fallback.
-3. Added explicit detail-page load error state.
+1. Safe markdown rendering remains in `BlogPost.tsx`.
+2. Protocol checks for links remain enforced.
+3. Blog loading/error/not-found states remain explicit.
 
 ### Phase 4: SEO and Structured Data Upgrade
 Status: Complete
-1. Canonical URLs added to blog index/detail SEO metadata.
-2. Article structured data added for blog detail pages.
-3. Sitemap behavior remained aligned to published posts with `lastmod`.
+1. Blog canonical metadata remains in index/detail pages.
+2. Article structured data remains injected on detail.
+3. Sitemap flow remains tied to published posts.
 
-### Phase 5: Test and Observability Coverage
-Status: Complete (current target scope)
-1. Added/expanded tests for:
-- Blog list success/loading/empty/error paths.
-- Blog detail success/not-found/error paths.
-- Service mapping (`read_time -> readTime`, `cover_image -> coverImage`).
-2. Added pipeline-level deterministic smoke tests with stubs.
-3. Added operator runbook: `docs/BLOG_PIPELINE_SMOKE_TEST.md`.
+### Phase 5: Core Blog Quality Coverage
+Status: Complete
+1. Integration tests cover blog list states/filtering and blog detail states/markdown safety.
+2. Service tests cover DB-to-UI mapping.
+3. Build verification passes.
+
+### Phase 6: Editorial Glass + Conversion Redesign
+Status: Complete
+1. Redesigned `/blog` with hero strip, sticky filter row, featured story, editorial grid, and mid-feed CTA.
+2. Redesigned `/blog/:slug` with wide hero, progress bar, two-column reading layout, TOC, sticky rail, inline CTA, and related posts.
+3. Added reusable blog UI primitives and blog-specific visual tokens.
+4. Added `blogService.getRelatedPosts(...)` with non-breaking service contract extension.
+5. Tuned mobile typography scale for readability and balanced hierarchy.
+6. Fixed mobile navbar/logo overlap and alignment issues affecting top-of-page interactions.
+7. Preserved existing route structure, SEO behavior, and no schema migration.
 
 ## Public APIs / Interfaces / Types Impact
 
-1. `scripts/run-content-workflow.ts` now exposes:
-- `runContentWorkflow(options)`
-- `WorkflowDependencies`
-- `WorkflowOptions`
-2. `src/utils/structuredData.ts` now exports `generateArticleSchema(post, pathOrUrl)`.
-3. `src/components/Blog.tsx` and `src/components/BlogPost.tsx` include explicit error-state rendering for failed fetch scenarios.
-4. Route paths remain unchanged.
+1. `src/services/blogService.ts` now includes:
+- `getRelatedPosts(currentSlug: string, tags: string[], limit = 3): Promise<BlogPost[]>`
+
+2. `src/types.ts` (`BlogPost`) now includes optional UI helpers:
+- `isFeatured?: boolean`
+- `toc?: Array<{ id: string; title: string; level: 2 | 3 }>`
+
+3. New reusable UI components:
+- `src/components/ui/blog-shell.tsx`
+- `src/components/ui/blog-card.tsx`
+- `src/components/ui/blog-cta-panel.tsx`
 
 ## Test Cases and Scenarios
 
-1. Blog index loads posts, supports search, supports tag filtering, and handles empty/error states.
-2. Blog detail handles success/not-found/error and safe markdown rendering.
-3. Blog service mapping tests validate DB -> UI field mapping.
-4. Pipeline smoke tests validate fetch -> generate -> publish flow using stubs.
-5. Build verification passes (`bun run build`).
-6. CI daily content workflow runs the correct script on `main`.
-7. Live content workflow run completes and publishes without missing-script failure.
+1. Targeted integration/service tests pass:
+- `bun run test:run src/tests/integration/blog.test.tsx src/tests/integration/blog-post.test.tsx src/services/blogService.test.ts`
+- Result: 17/17 tests passed.
+
+2. Production build passes:
+- `bun run build`
+
+3. Full `bun test` currently fails due pre-existing runner/environment mismatches outside this redesign scope (Bun runner vs Vitest-style tests and jsdom-dependent suites).
 
 ## Assumptions and Defaults
 
-1. Blog source of truth remains Supabase `posts`.
-2. Existing route structure remains unchanged.
-3. Reliability/security takes priority over visual changes.
-4. Documentation reflects repository and operational state as of 2026-02-06.
+1. Supabase `posts` remains the source of truth.
+2. No route changes (`/blog`, `/blog/:slug`) and no DB migration.
+3. Dark + teal brand remains mandatory.
+4. Documentation reflects repository state as of 2026-02-06.

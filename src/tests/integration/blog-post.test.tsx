@@ -12,6 +12,7 @@ afterEach(() => {
 vi.mock('../../services/blogService', () => ({
   blogService: {
     getPostBySlug: vi.fn(),
+    getRelatedPosts: vi.fn().mockResolvedValue([]),
   },
 }));
 

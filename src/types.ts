@@ -77,4 +77,6 @@ export interface BlogPost {
   cover_image?: string;
   source_url?: string;
   is_published?: boolean;
+  isFeatured?: boolean;
+  toc?: Array<{ id: string; title: string; level: 2 | 3 }>;
 }
