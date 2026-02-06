@@ -69,7 +69,7 @@ function Footer() {
 
   return (
     <footer className="bg-[#0F0F11]/10 relative h-fit rounded-3xl overflow-hidden m-8">
-      <div className="max-w-7xl mx-auto p-14 z-40 relative">
+      <div className="max-w-7xl mx-auto p-14 z-50 relative">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 md:gap-8 lg:gap-16 pb-12">
           {/* Brand section */}
           <div className="flex flex-col space-y-1">
@@ -171,7 +171,7 @@ function Footer() {
 
       {/* Text hover effect */}
       <div className="flex lg:h-[30rem] h-48 lg:-mt-40 -mt-32 lg:-mb-36 -mb-10">
-        <TextHoverEffect text="KHANECT" className="z-50" />
+        <TextHoverEffect text="KHANECT" className="z-10" />
       </div>
 
       <FooterBackgroundGradient />
