@@ -363,9 +363,9 @@ Logo files in `public/`:
 - **Robots**: `public/robots.txt` (blocks `/portal`, `/demo/`)
 
 ## Project Stats (Auto-generated)
-- **Total Source Files**: 138
-- **Total Lines of Code**: 16400
-- **Last Updated**: 2026-02-06T15:26:47.037Z
+- **Total Source Files**: 141
+- **Total Lines of Code**: 17001
+- **Last Updated**: 2026-02-06T17:42:45.021Z
 ## Active Skills (Auto-generated)
 - **[Automated Content Pipeline](/skills/automated_content_pipeline/SKILL.md)**: A reuseable skill for setting up an automated AI content agent using RSS feeds, OpenAI, and Supabase.
 - **[Social Media Repurposing](/skills/social-media-repurposing/SKILL.md)**: Automatically generates social media captions for blog posts using AI.
@@ -374,4 +374,4 @@ Logo files in `public/`:
 - **[generate-sitemap.ts](/scripts/generate-sitemap.ts)**: Load environment variables from .env.local
 - **[reflect-docs.ts](/scripts/reflect-docs.ts)**: No description.
 - **[retry-pending-leads.ts](/scripts/retry-pending-leads.ts)**: No description.
-- **[run-content-workflow.ts](/scripts/run-content-workflow.ts)**: Configuration (Mirroring the Directive)
+- **[run-content-workflow.ts](/scripts/run-content-workflow.ts)**: No description.

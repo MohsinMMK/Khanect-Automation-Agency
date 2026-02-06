@@ -6,119 +6,96 @@
 2. Data Flow
 - `Blog.tsx` -> `blogService.getLatestPosts()` -> Supabase `posts`.
 - `BlogPost.tsx` -> `blogService.getPostBySlug(slug)` -> Supabase `posts`.
+- Service mapping normalizes DB fields (`read_time`, `cover_image`) into UI fields (`readTime`, `coverImage`).
 
 3. Content Pipeline
 - `scripts/run-content-workflow.ts` orchestrates:
   - `execution/fetch-rss.ts`
   - `execution/generate-post.ts`
   - `execution/publish-supabase.ts`
+- `scripts/run-content-workflow.ts` now exports `runContentWorkflow()` with injectable dependencies for deterministic smoke testing.
+- CI workflow `.github/workflows/daily-content.yml` runs `bun run scripts/run-content-workflow.ts`.
+- Package alias exists: `content:workflow -> bun run scripts/run-content-workflow.ts`.
 
 4. SEO and Discovery
 - `scripts/generate-sitemap.ts` generates `public/sitemap.xml`.
+- Sitemap generation queries only published posts and includes `lastmod`.
+- Blog canonical URLs:
+  - Index: `https://khanect.com/blog`
+  - Detail: `https://khanect.com/blog/:slug`
+- Blog detail injects Article structured data via `useStructuredData` + `generateArticleSchema`.
 
 5. Lead Magnet in Blog
 - `EmailCapture.tsx` is used in blog index and post detail.
 
 ## 2. Known Gaps (Current)
 
-1. CI workflow mismatch
-- `.github/workflows/daily-content.yml` calls missing `scripts/content-agent.ts`.
-
-2. No package script alias for content workflow in `package.json`.
-
-3. `src/data/blogPosts.ts` is currently unused legacy/static data.
-
-4. `BlogPost.tsx` uses `dangerouslySetInnerHTML` in markdown renderer (security risk surface).
+1. `src/data/blogPosts.ts` is still unused legacy/static data and can be removed after confirming no rollback requirement.
+2. Execution-layer modules (`execution/fetch-rss.ts`, `execution/generate-post.ts`, `execution/publish-supabase.ts`) still rely on live dependencies for full-path verification; deterministic coverage is at orchestrator level.
+3. Content workflow observability is log-based; no explicit metrics sink/alerts are defined in-repo.
+4. Migration IDs were normalized (`20241225_*` -> `20241225000000_*`, `20241225000001_*`) to align Supabase history. Keep these filenames stable to avoid future history drift.
 
 ## 3. Phased Execution Plan
 
 ### Phase 1: Pipeline and CI Alignment
-
-1. Fix workflow script path in `.github/workflows/daily-content.yml` to `scripts/run-content-workflow.ts`.
-
-2. Add package script alias in `package.json`:
-- `content:workflow`: `bun run scripts/run-content-workflow.ts`
-
-3. Validate with dry run and workflow lint checks.
-
-4. Exit criteria:
-- CI job references existing script.
-- Manual trigger executes without missing-file failure.
+Status: Complete
+1. Workflow script path fixed in `.github/workflows/daily-content.yml`.
+2. Package script alias `content:workflow` added in `package.json`.
+3. Manual workflow dispatch on `main` succeeded after push (`Daily Content Agent` run `21760048111` on 2026-02-06 UTC).
 
 ### Phase 2: Data Contract and Schema Hardening
-
-1. Document and verify expected `posts` table columns and constraints:
-- `id`, `slug` unique, `title`, `excerpt`, `content`, `tags`, `cover_image`, `read_time`, `source_url`, `is_published`, `created_at`, `updated_at`.
-
-2. Add/verify migration source of truth under `supabase/migrations/` for blog schema.
-
-3. Define RLS intent (public read for published posts; writes via service role).
-
-4. Exit criteria:
-- Schema is reproducible from migrations.
-- Read/write policy intent is documented.
+Status: Complete
+1. `posts` schema migration added at `supabase/migrations/20260206_blog_posts_schema.sql`.
+2. Columns/constraints enforced for `id`, `slug` unique, `title`, `excerpt`, `content`, `tags`, `cover_image`, `read_time`, `source_url`, `is_published`, `created_at`, `updated_at`.
+3. RLS intent implemented:
+- public read for published posts
+- service role full access for writes.
+4. Migration history reconciled and verified with `supabase migration list`.
 
 ### Phase 3: Rendering and Security Hardening
-
-1. Replace ad-hoc markdown rendering in `BlogPost.tsx` with a safe markdown pipeline.
-
-2. Remove direct unsanitized HTML injection path or sanitize via trusted sanitizer.
-
-3. Add explicit handling for malformed markdown content.
-
-4. Exit criteria:
-- No unsafe HTML injection path.
-- Blog content still renders headings/lists/links reliably.
+Status: Complete
+1. Removed `dangerouslySetInnerHTML` path from `BlogPost.tsx`.
+2. Added safe markdown rendering with protocol-checked links and malformed content fallback.
+3. Added explicit detail-page load error state.
 
 ### Phase 4: SEO and Structured Data Upgrade
-
-1. Add canonical URLs on blog index/detail pages via `SEO.tsx`.
-
-2. Add Article structured data for post detail pages.
-
-3. Keep sitemap generation tied to published posts and include `lastmod`.
-
-4. Exit criteria:
-- Blog pages output canonical + article metadata.
-- Sitemap includes dynamic post URLs in production.
+Status: Complete
+1. Canonical URLs added to blog index/detail SEO metadata.
+2. Article structured data added for blog detail pages.
+3. Sitemap behavior remained aligned to published posts with `lastmod`.
 
 ### Phase 5: Test and Observability Coverage
-
-1. Add/expand tests for:
+Status: Complete (current target scope)
+1. Added/expanded tests for:
 - Blog list success/loading/empty/error paths.
-- Blog detail success/not-found/error.
-- Service mapping (`read_time` -> `readTime`, `cover_image` -> `coverImage`).
-
-2. Add pipeline-level smoke test plan (RSS fetch, generate, publish stubs).
-
-3. Exit criteria:
-- Deterministic tests cover critical blog behavior.
-- Failures are detectable before deploy.
+- Blog detail success/not-found/error paths.
+- Service mapping (`read_time -> readTime`, `cover_image -> coverImage`).
+2. Added pipeline-level deterministic smoke tests with stubs.
+3. Added operator runbook: `docs/BLOG_PIPELINE_SMOKE_TEST.md`.
 
 ## Public APIs / Interfaces / Types Impact
 
-1. `src/types.ts` (`BlogPost`) may be tightened:
-- Keep DB fields and UI fields clearly separated or formalize a mapped DTO.
-
-2. `src/services/blogService.ts` response contract should be documented:
-- Always return UI-ready fields (`date`, `readTime`, `coverImage`).
-
-3. No route-path changes expected.
+1. `scripts/run-content-workflow.ts` now exposes:
+- `runContentWorkflow(options)`
+- `WorkflowDependencies`
+- `WorkflowOptions`
+2. `src/utils/structuredData.ts` now exports `generateArticleSchema(post, pathOrUrl)`.
+3. `src/components/Blog.tsx` and `src/components/BlogPost.tsx` include explicit error-state rendering for failed fetch scenarios.
+4. Route paths remain unchanged.
 
 ## Test Cases and Scenarios
 
-1. Blog index loads published posts sorted newest-first.
-2. Blog index search and tag filters compose correctly.
-3. Blog detail returns post by slug and handles 404/not-found cleanly.
-4. Blog detail safely renders content with no script injection.
-5. Sitemap generation includes `/blog` + dynamic `/blog/:slug`.
-6. CI daily content workflow resolves script path and runs.
-7. Pipeline upsert prevents duplicate slug inserts.
+1. Blog index loads posts, supports search, supports tag filtering, and handles empty/error states.
+2. Blog detail handles success/not-found/error and safe markdown rendering.
+3. Blog service mapping tests validate DB -> UI field mapping.
+4. Pipeline smoke tests validate fetch -> generate -> publish flow using stubs.
+5. Build verification passes (`bun run build`).
+6. CI daily content workflow runs the correct script on `main`.
+7. Live content workflow run completes and publishes without missing-script failure.
 
 ## Assumptions and Defaults
 
-1. Default file location: repository root as `blog.md`.
-2. Blog source of truth remains Supabase `posts` (not static `src/data/blogPosts.ts`).
-3. Existing route structure remains unchanged.
-4. Priority order is Phase 1 -> 2 -> 3 -> 4 -> 5.
-5. If a tradeoff is needed, prioritize reliability/security over visual enhancements.
+1. Blog source of truth remains Supabase `posts`.
+2. Existing route structure remains unchanged.
+3. Reliability/security takes priority over visual changes.
+4. Documentation reflects repository and operational state as of 2026-02-06.
