@@ -8,7 +8,8 @@ import { cleanup } from '@testing-library/react';
 
 // Cleanup
 afterEach(() => {
-    cleanup();
+  cleanup();
+  vi.restoreAllMocks();
 });
 
 // Mock blogService
@@ -57,7 +58,7 @@ describe('Blog Component Integration', () => {
   ];
 
   it('renders loading state initially', () => {
-    (blogService.getLatestPosts as any).mockReturnValue(new Promise(() => {})); 
+    (blogService.getLatestPosts as any).mockReturnValue(new Promise(() => {}));
     render(
       <MemoryRouter>
         <Blog />
@@ -69,7 +70,7 @@ describe('Blog Component Integration', () => {
 
   it('renders blog posts after loading', async () => {
     (blogService.getLatestPosts as any).mockResolvedValue(mockPosts);
-    
+
     render(
       <MemoryRouter>
         <Blog />
@@ -77,8 +78,8 @@ describe('Blog Component Integration', () => {
     );
 
     await waitFor(() => {
-        expect(screen.getByText('Test Post 1')).toBeInTheDocument();
-        expect(screen.getByText('Test Post 2')).toBeInTheDocument();
+      expect(screen.getByText('Test Post 1')).toBeInTheDocument();
+      expect(screen.getByText('Test Post 2')).toBeInTheDocument();
     });
   });
 
@@ -98,29 +99,63 @@ describe('Blog Component Integration', () => {
     fireEvent.change(searchInput, { target: { value: 'Another' } });
 
     await waitFor(() => {
-        expect(screen.queryByText('Test Post 1')).not.toBeInTheDocument();
-        expect(screen.getByText('Test Post 2')).toBeInTheDocument();
+      expect(screen.queryByText('Test Post 1')).not.toBeInTheDocument();
+      expect(screen.getByText('Test Post 2')).toBeInTheDocument();
     });
   });
 
-  it.skip('filters posts by tag', async () => {
+  it('shows empty state when no posts are returned', async () => {
+    (blogService.getLatestPosts as any).mockResolvedValue([]);
+
+    render(
+      <MemoryRouter>
+        <Blog />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('No articles found matching your search.')).toBeInTheDocument();
+    });
+  });
+
+  it('shows error state when post loading fails', async () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    (blogService.getLatestPosts as any).mockRejectedValue(new Error('network'));
+
+    render(
+      <MemoryRouter>
+        <Blog />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByRole('alert')).toHaveTextContent('Failed to load blog posts. Please try again later.');
+    });
+
+    expect(consoleSpy).toHaveBeenCalled();
+  });
+
+  it('composes search and tag filters correctly', async () => {
     (blogService.getLatestPosts as any).mockResolvedValue(mockPosts);
 
     render(
-        <MemoryRouter>
-            <Blog />
-        </MemoryRouter>
+      <MemoryRouter>
+        <Blog />
+      </MemoryRouter>
     );
 
-    // Wait for tags to load (derived from posts)
-    await waitFor(() => expect(screen.getByText('AI')).toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'AI' })).toBeInTheDocument()
+    );
 
     const aiTagButton = screen.getByRole('button', { name: 'AI' });
+    const searchInput = screen.getByPlaceholderText('Search articles...');
     fireEvent.click(aiTagButton);
+    fireEvent.change(searchInput, { target: { value: 'Test Post 1' } });
 
     await waitFor(() => {
-        expect(screen.getByText('Test Post 1')).toBeInTheDocument();
-        expect(screen.queryByText('Test Post 2')).not.toBeInTheDocument();
+      expect(screen.getByText('Test Post 1')).toBeInTheDocument();
+      expect(screen.queryByText('Test Post 2')).not.toBeInTheDocument();
     });
   });
 });

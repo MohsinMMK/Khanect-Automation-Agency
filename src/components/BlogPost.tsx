@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Calendar, User, Clock, Share2, Tag } from 'lucide-react';
 import EmailCapture from './EmailCapture';
@@ -8,6 +8,12 @@ import Navbar from './Navbar';
 import Footer from './Footer';
 import { blogService } from '../services/blogService';
 import { BlogPost as BlogPostType } from '../types';
+import { useStructuredData } from '../hooks/useStructuredData';
+import {
+  combineSchemas,
+  generateArticleSchema,
+  generateOrganizationSchema,
+} from '../utils/structuredData';
 
 // Use same background as LandingPage
 const BackgroundGradient = () => (
@@ -17,95 +23,250 @@ const BackgroundGradient = () => (
   </div>
 );
 
-// Helper to render simple markdown content
-const SimpleMarkdown = ({ content }: { content: string }) => {
-  const lines = content.split('\n');
-  const elements: React.ReactNode[] = [];
-  
-  let currentList: React.ReactNode[] = [];
-  let inList = false;
+const SAFE_LINK_PROTOCOLS = new Set(['http:', 'https:', 'mailto:', 'tel:']);
 
-  const flushList = (keyPrefix: number) => {
-    if (inList && currentList.length > 0) {
-      elements.push(
-        <ul key={`list-${keyPrefix}`} className="list-disc pl-6 mb-6 space-y-2 text-gray-300">
-          {[...currentList]}
-        </ul>
+function getSafeHref(rawHref: string): string | null {
+  const href = rawHref.trim();
+  if (!href) return null;
+  if (href.startsWith('/') || href.startsWith('#')) return href;
+
+  try {
+    const parsed = new URL(href);
+    return SAFE_LINK_PROTOCOLS.has(parsed.protocol) ? href : null;
+  } catch {
+    return null;
+  }
+}
+
+function renderInlineMarkdown(text: string, keyPrefix: string): React.ReactNode[] {
+  const nodes: React.ReactNode[] = [];
+  const tokenPattern = /(\[([^\]]+)\]\(([^)\s]+)\)|\*\*([^*]+)\*\*)/g;
+
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = tokenPattern.exec(text)) !== null) {
+    const fullMatch = match[0];
+    const linkText = match[2];
+    const rawHref = match[3];
+    const boldText = match[4];
+
+    if (match.index > lastIndex) {
+      nodes.push(text.slice(lastIndex, match.index));
+    }
+
+    if (linkText && rawHref) {
+      const safeHref = getSafeHref(rawHref);
+      if (safeHref) {
+        const isExternal = /^https?:\/\//i.test(safeHref);
+        nodes.push(
+          <a
+            key={`${keyPrefix}-link-${match.index}`}
+            href={safeHref}
+            className="text-brand-lime hover:underline"
+            {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+          >
+            {linkText}
+          </a>
+        );
+      } else {
+        nodes.push(fullMatch);
+      }
+    } else if (boldText) {
+      nodes.push(
+        <strong key={`${keyPrefix}-bold-${match.index}`} className="text-white">
+          {boldText}
+        </strong>
       );
+    } else {
+      nodes.push(fullMatch);
+    }
+
+    lastIndex = match.index + fullMatch.length;
+  }
+
+  if (lastIndex < text.length) {
+    nodes.push(text.slice(lastIndex));
+  }
+
+  return nodes;
+}
+
+// Helper to render simple markdown content without HTML injection.
+const SimpleMarkdown = ({ content }: { content: string }) => {
+  if (typeof content !== 'string' || content.trim() === '') {
+    return (
+      <p className="text-gray-300 leading-relaxed mb-6 text-lg">
+        Content unavailable.
+      </p>
+    );
+  }
+
+  try {
+    const lines = content.split('\n');
+    const elements: React.ReactNode[] = [];
+
+    let currentList: React.ReactNode[] = [];
+    let inList = false;
+    let listType: 'ul' | 'ol' = 'ul';
+
+    const flushList = (keyPrefix: number) => {
+      if (!inList || currentList.length === 0) return;
+
+      const sharedClass = 'pl-6 mb-6 space-y-2 text-gray-300';
+      elements.push(
+        listType === 'ol' ? (
+          <ol key={`list-${keyPrefix}`} className={`list-decimal ${sharedClass}`}>
+            {[...currentList]}
+          </ol>
+        ) : (
+          <ul key={`list-${keyPrefix}`} className={`list-disc ${sharedClass}`}>
+            {[...currentList]}
+          </ul>
+        )
+      );
+
       currentList = [];
       inList = false;
-    }
-  };
+      listType = 'ul';
+    };
 
-  lines.forEach((line, index) => {
-    const trimmed = line.trim();
-    
-    // Skip empty lines, but flush list if we see one
-    if (!trimmed) {
-      flushList(index);
-      return;
-    }
+    lines.forEach((line, index) => {
+      const trimmed = line.trim();
 
-    // Headers
-    if (trimmed.startsWith('# ')) {
-      flushList(index);
-      elements.push(<h1 key={index} className="text-3xl md:text-4xl font-bold text-white mt-12 mb-6">{trimmed.substring(2)}</h1>);
-    } else if (trimmed.startsWith('## ')) {
-      flushList(index);
-      elements.push(<h2 key={index} className="text-2xl md:text-3xl font-semibold text-white mt-10 mb-5">{trimmed.substring(3)}</h2>);
-    } else if (trimmed.startsWith('### ')) {
-      flushList(index);
-      elements.push(<h3 key={index} className="text-xl font-semibold text-brand-lime mt-8 mb-4">{trimmed.substring(4)}</h3>);
-    } 
-    // List Items
-    else if (trimmed.startsWith('* ') || trimmed.startsWith('- ') || /^\d+\./.test(trimmed)) {
-      inList = true;
-      const content = trimmed.replace(/^(\* |- |\d+\. )/, '');
-      // Handle bolding in list items
-      const bolded = content.replace(/\*\*(.*?)\*\*/g, '<strong class="text-white">$1</strong>');
-      
-      currentList.push(
-        <li key={index} dangerouslySetInnerHTML={{ __html: bolded }} />
-      );
-    } 
-    // Paragraphs
-    else {
-      flushList(index);
-      // Handle bolding/links in paragraphs
-      let processed = trimmed
-        .replace(/\*\*(.*?)\*\*/g, '<strong class="text-white">$1</strong>')
-        .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" class="text-brand-lime hover:underline">$1</a>');
+      if (!trimmed) {
+        flushList(index);
+        return;
+      }
 
+      if (trimmed.startsWith('# ')) {
+        flushList(index);
+        elements.push(
+          <h1 key={index} className="text-3xl md:text-4xl font-bold text-white mt-12 mb-6">
+            {renderInlineMarkdown(trimmed.substring(2), `h1-${index}`)}
+          </h1>
+        );
+        return;
+      }
+
+      if (trimmed.startsWith('## ')) {
+        flushList(index);
+        elements.push(
+          <h2 key={index} className="text-2xl md:text-3xl font-semibold text-white mt-10 mb-5">
+            {renderInlineMarkdown(trimmed.substring(3), `h2-${index}`)}
+          </h2>
+        );
+        return;
+      }
+
+      if (trimmed.startsWith('### ')) {
+        flushList(index);
+        elements.push(
+          <h3 key={index} className="text-xl font-semibold text-brand-lime mt-8 mb-4">
+            {renderInlineMarkdown(trimmed.substring(4), `h3-${index}`)}
+          </h3>
+        );
+        return;
+      }
+
+      const unorderedMatch = /^[-*]\s+(.+)/.exec(trimmed);
+      const orderedMatch = /^\d+\.\s+(.+)/.exec(trimmed);
+      if (unorderedMatch || orderedMatch) {
+        const nextListType: 'ul' | 'ol' = orderedMatch ? 'ol' : 'ul';
+        if (!inList) {
+          inList = true;
+          listType = nextListType;
+        } else if (listType !== nextListType) {
+          flushList(index);
+          inList = true;
+          listType = nextListType;
+        }
+
+        const listContent = (orderedMatch?.[1] ?? unorderedMatch?.[1] ?? '').trim();
+        currentList.push(
+          <li key={`li-${index}`}>
+            {renderInlineMarkdown(listContent, `li-${index}`)}
+          </li>
+        );
+        return;
+      }
+
+      flushList(index);
       elements.push(
-        <p key={index} className="text-gray-300 leading-relaxed mb-6 text-lg" dangerouslySetInnerHTML={{ __html: processed }} />
+        <p key={index} className="text-gray-300 leading-relaxed mb-6 text-lg">
+          {renderInlineMarkdown(trimmed, `p-${index}`)}
+        </p>
       );
-    }
-  });
+    });
 
-  flushList(lines.length);
-
-  return <div className="markdown-content">{elements}</div>;
+    flushList(lines.length);
+    return <div className="markdown-content">{elements}</div>;
+  } catch (error) {
+    console.error('Failed to render markdown content safely', error);
+    return (
+      <pre className="whitespace-pre-wrap break-words text-gray-300 leading-relaxed mb-6 text-lg">
+        {content}
+      </pre>
+    );
+  }
 };
 
 export default function BlogPost() {
   const { slug } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [post, setPost] = useState<BlogPostType | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!slug) return;
     const fetchPost = async () => {
-      setLoading(true);
-      const data = await blogService.getPostBySlug(slug);
-      setPost(data);
-      setLoading(false);
+      try {
+        setLoading(true);
+        setLoadError(null);
+        const data = await blogService.getPostBySlug(slug);
+        setPost(data);
+      } catch (error) {
+        console.error('Failed to load blog post', error);
+        setLoadError('Unable to load post. Please try again later.');
+        setPost(null);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchPost();
   }, [slug]);
 
+  const canonicalUrl = `https://khanect.com${location.pathname}`;
+
+  const structuredData = useMemo(() => {
+    if (!post) return null;
+
+    return combineSchemas(
+      generateOrganizationSchema(),
+      generateArticleSchema(post, location.pathname)
+    );
+  }, [post, location.pathname]);
+
+  useStructuredData(structuredData, `blog-post-${slug || 'unknown'}`);
+
   if (loading) {
      return <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center">Loading...</div>;
+  }
+
+  if (loadError) {
+    return (
+      <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-4xl font-bold mb-4">Unable to Load Post</h1>
+          <p className="text-gray-400 mb-6">{loadError}</p>
+          <button onClick={() => navigate('/blog')} className="text-brand-lime hover:underline">
+            Back to Blog
+          </button>
+        </div>
+      </div>
+    );
   }
 
   if (!post) {
@@ -145,6 +306,7 @@ export default function BlogPost() {
       <SEO 
         title={`${post.title} | Khanect AI Blog`}
         description={post.excerpt}
+        canonical={canonicalUrl}
         type="article"
         image={post.coverImage}
       />

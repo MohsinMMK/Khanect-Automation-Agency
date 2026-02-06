@@ -21,6 +21,7 @@ export default function Blog() {
   const navigate = useNavigate();
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
@@ -28,10 +29,12 @@ export default function Blog() {
     async function loadPosts() {
       try {
         setLoading(true);
+        setError(null);
         const data = await blogService.getLatestPosts();
         setPosts(data);
       } catch (err) {
         console.error("Failed to load blog posts", err);
+        setError('Failed to load blog posts. Please try again later.');
       } finally {
         setLoading(false);
       }
@@ -55,6 +58,7 @@ export default function Blog() {
       <SEO 
         title="Insights & Strategy | Khanect AI Blog"
         description="Expert insights on AI automation, agency growth algorithms, and the future of work. Read our latest articles."
+        canonical="https://khanect.com/blog"
       />
 
       <div className="min-h-screen bg-gray-950 text-white relative flex flex-col pt-24">
@@ -126,6 +130,10 @@ export default function Blog() {
              <div className="flex justify-center py-20">
                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-lime"></div>
              </div>
+          ) : error ? (
+            <div role="alert" className="text-center py-20 text-red-400">
+              {error}
+            </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-20">
               {filteredPosts.map((post, index) => (
@@ -180,7 +188,7 @@ export default function Blog() {
             </div>
           )}
 
-          {!loading && filteredPosts.length === 0 && (
+          {!loading && !error && filteredPosts.length === 0 && (
             <div className="text-center py-20 text-gray-500">
               No articles found matching your search.
             </div>

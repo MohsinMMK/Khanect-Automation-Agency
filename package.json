@@ -11,6 +11,7 @@
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
     "generate:sitemap": "bun run scripts/generate-sitemap.ts",
+    "content:workflow": "bun run scripts/run-content-workflow.ts",
     "docs:update": "bun run scripts/reflect-docs.ts",
     "retry:pending-leads": "bun run scripts/retry-pending-leads.ts"
   },

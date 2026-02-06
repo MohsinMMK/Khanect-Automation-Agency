@@ -1,4 +1,4 @@
-import type { FAQ, ProcessStep, PricingPackage, Service, Industry } from '../types';
+import type { FAQ, ProcessStep, PricingPackage, Service, Industry, BlogPost } from '../types';
 
 const BASE_URL = 'https://khanect.com';
 const ORG_NAME = 'Khanect AI';
@@ -195,6 +195,39 @@ export function generateWebSiteSchema() {
       },
       'query-input': 'required name=search_term_string'
     }
+  };
+}
+
+// Article Schema - for blog post detail pages
+export function generateArticleSchema(post: BlogPost, pathOrUrl: string) {
+  const canonicalUrl = pathOrUrl.startsWith('http') ? pathOrUrl : `${BASE_URL}${pathOrUrl}`;
+  const publishedAt = post.created_at || new Date().toISOString();
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: post.title,
+    description: post.excerpt,
+    articleBody: post.content,
+    datePublished: publishedAt,
+    dateModified: publishedAt,
+    mainEntityOfPage: canonicalUrl,
+    author: {
+      '@type': 'Organization',
+      name: post.author || ORG_NAME
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: ORG_NAME,
+      logo: {
+        '@type': 'ImageObject',
+        url: `${BASE_URL}/logo-full.png`
+      }
+    },
+    image: post.cover_image || post.coverImage || `${BASE_URL}/og-image.png`,
+    articleSection: 'Blog',
+    keywords: Array.isArray(post.tags) ? post.tags.join(', ') : undefined,
+    url: canonicalUrl
   };
 }
 
