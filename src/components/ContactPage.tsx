@@ -115,7 +115,7 @@ function ContactPage() {
   const [rateLimitCooldown, setRateLimitCooldown] = useState(0);
 
   // Form action using React 19 useActionState
-  const [formState, formAction, isPending] = useActionState<FormState, globalThis.FormData>(
+  const [, formAction, isPending] = useActionState<FormState, globalThis.FormData>(
     async (prevState, submittedFormData) => {
       // Check rate limiting
       const lastSubmission = sessionStorage.getItem(RATE_LIMIT_KEY);
@@ -617,7 +617,7 @@ function ContactPage() {
                       aria-invalid={touchedFields.has('privacyConsent') && !!formErrors.privacyConsent}
                     />
                     <label htmlFor="privacyConsent" className="text-sm text-gray-500 dark:text-gray-400 cursor-pointer select-none">
-                      I agree to the <a href="#" className="underline hover:text-gray-700 dark:hover:text-gray-200">privacy policy</a> and consent to receiving communications from Khanect AI.
+                      I agree to the <a href="/privacy-policy" className="underline hover:text-gray-700 dark:hover:text-gray-200">privacy policy</a> and consent to receiving communications from Khanect AI.
                     </label>
                   </div>
                   {touchedFields.has('privacyConsent') && formErrors.privacyConsent && (

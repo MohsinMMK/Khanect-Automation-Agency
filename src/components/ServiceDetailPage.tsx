@@ -163,15 +163,7 @@ function ServiceDetailPage() {
               </p>
               
               <Link 
-                to="/#contact" 
-                onClick={(e) => {
-                    // Start navigation to home
-                    // We'll rely on the Home page to check the hash and scroll
-                    // But standard anchor links on different routes might just jump.
-                    // Ideally, we navigate to home then scroll.
-                    // For now, simple to="/#contact" usually requires handling on the landing page if it's SPA
-                    // But react-router-hash-link is better, or a simple useEffect in LandingPage
-                }}
+                to="/contact" 
                 className="inline-block bg-gray-900 text-white px-6 py-3 rounded-xl font-semibold hover:bg-black transition-colors shadow-lg relative z-10"
               >
                 Get Started

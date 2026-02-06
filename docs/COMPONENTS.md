@@ -52,7 +52,7 @@ Root component managing routing and global state.
 
 **Location:** `src/components/LandingPage.tsx`
 
-Main marketing page with hero, services, process, FAQ, and contact form.
+Main marketing page with hero, services, process, and FAQ. The contact form lives on the dedicated `ContactPage` route (`/contact`).
 
 **Props:**
 ```typescript
@@ -77,7 +77,7 @@ interface LandingPageProps {
 2. Solutions Section (Services/Industries tabs)
 3. Process Section (6-step timeline)
 4. FAQ Section
-5. Contact Form Section
+5. Contact CTA Section (routes to `/contact`)
 
 ---
 

@@ -34,11 +34,7 @@ function Pricing() {
   );
 
   const handleStartFreeTrial = () => {
-    navigate('/');
-    // Wait for navigation and DOM update, then scroll to contact form
-    setTimeout(() => {
-      document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
-    }, 200);
+    navigate('/contact');
   };
 
   const pricingFAQs = [
