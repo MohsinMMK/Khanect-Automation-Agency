@@ -1,11 +1,15 @@
 
 import { readdir, readFile, writeFile } from "node:fs/promises";
-import { join } from "node:path";
+import { basename, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 const ROOT_DIR = join(__dirname, "..");
-const CLAUDE_MD_PATH = join(ROOT_DIR, "CLAUDE.md");
+const DOC_PATHS = [
+    join(ROOT_DIR, "CLAUDE.md"),
+    join(ROOT_DIR, "AGENTS.md"),
+    join(ROOT_DIR, "GEMINI.md"),
+];
 
 // Helper to count lines in a file
 async function countLines(filePath: string): Promise<number> {
@@ -146,19 +150,19 @@ async function getScripts() {
 }
 
 
-async function updateClaudeMd() {
+async function updateDocs() {
     try {
-        const currentContent = await readFile(CLAUDE_MD_PATH, "utf-8");
         const stats = await getProjectStats();
         const skills = await getSkills();
         const scripts = await getScripts();
+        const timestamp = new Date().toISOString();
         
         // Construct new sections
         const statsSection = `
 ## Project Stats (Auto-generated)
 - **Total Source Files**: ${stats.tsFiles}
 - **Total Lines of Code**: ${stats.totalLines}
-- **Last Updated**: ${new Date().toISOString()}
+- **Last Updated**: ${timestamp}
 `;
 
         const skillsSection = `
@@ -171,8 +175,6 @@ ${skills.map(s => `- **[${s.name}](${s.path}/SKILL.md)**: ${s.description}`).joi
 ${scripts.map(s => `- **[${s.name.split('/').pop()}](${s.name})**: ${s.description}`).join("\n")}
 `;
 
-        let newContent = currentContent;
-
         // Helper to replace or append section
         const updateSection = (title: string, content: string, source: string) => {
              const regex = new RegExp(`## ${title}[\\s\\S]*?(?=\\n## |$)`);
@@ -183,16 +185,20 @@ ${scripts.map(s => `- **[${s.name.split('/').pop()}](${s.name})**: ${s.descripti
              }
         };
 
-        newContent = updateSection("Project Stats \\(Auto-generated\\)", statsSection, newContent);
-        newContent = updateSection("Active Skills \\(Auto-generated\\)", skillsSection, newContent);
-        newContent = updateSection("Available Scripts \\(Auto-generated\\)", scriptsSection, newContent);
+        for (const docPath of DOC_PATHS) {
+            const currentContent = await readFile(docPath, "utf-8");
+            let newContent = currentContent;
 
-        await writeFile(CLAUDE_MD_PATH, newContent, "utf-8");
-        console.log("CLAUDE.md updated successfully with stats, skills, and scripts.");
+            newContent = updateSection("Project Stats \\(Auto-generated\\)", statsSection, newContent);
+            newContent = updateSection("Active Skills \\(Auto-generated\\)", skillsSection, newContent);
+            newContent = updateSection("Available Scripts \\(Auto-generated\\)", scriptsSection, newContent);
 
+            await writeFile(docPath, newContent, "utf-8");
+            console.log(`${basename(docPath)} updated successfully with stats, skills, and scripts.`);
+        }
     } catch (error) {
-        console.error("Error updating CLAUDE.md:", error);
+        console.error("Error updating docs:", error);
     }
 }
 
-updateClaudeMd();
+updateDocs();

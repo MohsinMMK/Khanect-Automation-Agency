@@ -53,10 +53,31 @@ Multi-channel AI chatbot for Khanect Automation Agency, handling customer inquir
 |----------|-------|
 | **Name** | Khanect Chatbot |
 | **ID** | `BgaY3sr0dqC90XuQ` |
-| **Status** | Active |
+| **Status** | ✅ Active & Working |
 | **Webhook** | `https://n8n.srv1222580.hstgr.cloud/webhook/3262e459-1150-47ae-ba85-51fe0efd609e` |
+| **Last Verified** | 2026-02-06 |
 
-### 2. Calendar API Workflow
+### 2. Check Availability Sub-workflow
+
+| Property | Value |
+|----------|-------|
+| **Name** | Khanect Check Availability (Sub-workflow) |
+| **ID** | `1FNxxC3fJp2XrGXG` |
+| **Status** | Active |
+| **Trigger** | Execute Workflow Trigger (called internally by main chatbot) |
+| **Input** | `{ date: "YYYY-MM-DD" }` |
+
+### 3. Book Call Sub-workflow
+
+| Property | Value |
+|----------|-------|
+| **Name** | Khanect Book Call (Sub-workflow) |
+| **ID** | `ccjaaG5Rbmf5Lccc` |
+| **Status** | Active |
+| **Trigger** | Execute Workflow Trigger (called internally by main chatbot) |
+| **Input** | `{ date, slot_start, name, phone, email }` |
+
+### 4. Calendar API Workflow (Legacy - kept for external API access)
 
 | Property | Value |
 |----------|-------|
@@ -66,7 +87,7 @@ Multi-channel AI chatbot for Khanect Automation Agency, handling customer inquir
 | **Check Availability** | `POST /webhook/khanect-check-availability` |
 | **Book Call** | `POST /webhook/khanect-book-call` |
 
-### 3. Escalation Handler Workflow
+### 5. Escalation Handler Workflow
 
 | Property | Value |
 |----------|-------|
@@ -91,9 +112,15 @@ Response Mode: responseNode
 
 ### Message Normalizer
 
-Extracts unified message format from WhatsApp, Instagram, and Messenger payloads:
+Extracts unified message format from WhatsApp, Instagram, and Messenger payloads.
+
+**Important:** The normalizer must access `webhookData.body` to get the actual payload from Meta's webhook format.
 
 ```javascript
+// Normalizer Code (first two lines are critical)
+const webhookData = items[0].json.payload || items[0].json;
+const body = webhookData.body || webhookData;  // Access the nested body field
+
 // Output format
 {
   channel: "whatsapp" | "messenger" | "instagram",
@@ -113,7 +140,7 @@ Extracts unified message format from WhatsApp, Instagram, and Messenger payloads
 | **Model** | GPT-4o-mini |
 | **Memory** | Postgres Chat Memory (10 messages) |
 | **Knowledge Base** | Pinecone Vector Store |
-| **Tools** | 4 HTTP Request Tools |
+| **Tools** | 2 HTTP Request Tools + 2 Call Workflow Tools |
 
 ### System Prompt
 
@@ -159,9 +186,10 @@ Saves qualified leads to Supabase after collecting information through conversat
 
 Checks available 30-minute slots for discovery calls.
 
-**Endpoint:** `POST https://n8n.srv1222580.hstgr.cloud/webhook/khanect-check-availability`
+**Type:** `toolWorkflow` (Call n8n Workflow Tool - synchronous internal call)
+**Sub-workflow:** `1FNxxC3fJp2XrGXG` (Khanect Check Availability)
 
-**Request Body:**
+**Input (via $fromAI):**
 ```json
 {
   "date": "YYYY-MM-DD"
@@ -183,9 +211,10 @@ Checks available 30-minute slots for discovery calls.
 
 Books a confirmed discovery call on Google Calendar.
 
-**Endpoint:** `POST https://n8n.srv1222580.hstgr.cloud/webhook/khanect-book-call`
+**Type:** `toolWorkflow` (Call n8n Workflow Tool - synchronous internal call)
+**Sub-workflow:** `ccjaaG5Rbmf5Lccc` (Khanect Book Call)
 
-**Request Body:**
+**Input (via $fromAI):**
 ```json
 {
   "date": "YYYY-MM-DD",
@@ -316,6 +345,18 @@ CREATE TABLE chatbot_escalations (
 
 **Verify Token:** `Khanect`
 
+### WhatsApp-Specific Configuration
+
+**Important:** WhatsApp requires webhook configuration in TWO places:
+
+1. **Webhooks section** (developers.facebook.com → App → Webhooks)
+   - Subscribe to WhatsApp Business Account → "messages" field
+
+2. **WhatsApp Configuration** (developers.facebook.com → App → WhatsApp → Configuration)
+   - Set Callback URL to the webhook URL above
+   - Set Verify Token to `Khanect`
+   - Subscribe to "messages" webhook field
+
 ### Subscribed Events
 
 | Product | Events |
@@ -380,6 +421,13 @@ Content-Type: application/json
 }
 ```
 
+**N8N HTTP Request Body (uses JSON.stringify for proper escaping):**
+```javascript
+{{ JSON.stringify({ "messaging_product": "whatsapp", "to": $node['normalize message'].json.from, "type": "text", "text": { "body": $json.output } }) }}
+```
+
+**Note:** Using `JSON.stringify()` is required to properly escape special characters (newlines, quotes) in the AI response.
+
 ### Messenger Reply
 
 ```
@@ -412,11 +460,13 @@ Content-Type: application/json
 
 ### Before Activating
 
-- [ ] Google Drive OAuth credential refreshed
-- [ ] OpenAI API key valid and has credits
-- [ ] Pinecone index exists and has embeddings
-- [ ] Supabase tables created
-- [ ] Meta webhook verified
+- [x] Google Drive OAuth credential refreshed
+- [x] OpenAI API key valid and has credits
+- [x] Pinecone index exists and has embeddings
+- [x] Supabase tables created
+- [x] Meta webhook verified (messages field subscribed)
+- [x] WhatsApp webhook configured in Meta → WhatsApp → Configuration
+- [x] Permanent access token created and saved in N8N Bearer Auth credential
 - [ ] Calendar API workflow active
 - [ ] Escalation Handler workflow active
 
@@ -477,8 +527,28 @@ Content-Type: application/json
 ### No Response to Messages
 
 1. Check webhook is receiving requests (N8N executions)
-2. Verify Meta app webhook subscription
+2. Verify Meta app webhook subscription (must subscribe to "messages" field)
 3. Check message normalizer output
+4. **If executions complete in 0s:** The normalizer returns empty - check that it accesses `webhookData.body`
+
+### WhatsApp Reply Error: "messaging_product is required"
+
+**Cause:** Special characters in AI output (newlines, quotes) break the JSON body.
+
+**Solution:** Use `JSON.stringify()` in the HTTP Request body:
+```javascript
+{{ JSON.stringify({ "messaging_product": "whatsapp", "to": $node['normalize message'].json.from, "type": "text", "text": { "body": $json.output } }) }}
+```
+
+### Webhook Receives Requests But Normalizer Returns Empty
+
+**Cause:** The webhook payload structure nests the actual data inside a `body` field.
+
+**Solution:** Update normalizer's first lines:
+```javascript
+const webhookData = items[0].json.payload || items[0].json;
+const body = webhookData.body || webhookData;  // This line is critical
+```
 
 ### AI Gives Wrong Answers
 
@@ -550,9 +620,11 @@ Content-Type: application/json
 ### Workflow IDs
 
 ```
-Main Chatbot:     BgaY3sr0dqC90XuQ
-Calendar API:     pMqmIcIkI5jxmgvi
-Escalation:       naNC0gUEZJpZ24sq
+Main Chatbot:           BgaY3sr0dqC90XuQ
+Check Availability:     1FNxxC3fJp2XrGXG  (sub-workflow)
+Book Call:              ccjaaG5Rbmf5Lccc  (sub-workflow)
+Calendar API (legacy):  pMqmIcIkI5jxmgvi
+Escalation:             naNC0gUEZJpZ24sq
 ```
 
 ### Webhook URLs
@@ -580,4 +652,4 @@ URL:              https://ddmbekdbwuolpsjdhgub.supabase.co
 
 ---
 
-*Last Updated: 2026-02-05*
+*Last Updated: 2026-02-06*

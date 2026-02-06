@@ -70,18 +70,18 @@ Errors are learning opportunities. When something breaks:
 - `.tmp/` - All intermediate files (dossiers, scraped data, temp exports). Never commit, always regenerated.
 - `execution/` - TypeScript tools (the deterministic layer)
 - `directives/` - SOPs in Markdown (the instruction set)
-- `.env` - Environment variables and API keys
+- `.env.local` - Environment variables and API keys
 - `credentials.json`, `token.json` - Google OAuth credentials (required files, in `.gitignore`)
 
 **Key principle:** Local files are only for processing. Deliverables live in cloud services (Google Sheets, Slides, etc.) where the user can access them. Everything in `.tmp/` can be deleted and regenerated.
 
 ## Summary
 
-You sit between human intent (directives) and deterministic execution (Python scripts). Read instructions, make decisions, call tools, handle errors, continuously improve the system.
+You sit between human intent (directives) and deterministic execution (TypeScript/Bun tools). Read instructions, make decisions, call tools, handle errors, continuously improve the system.
 
 Be pragmatic. Be reliable. Self-anneal.
 
-## Current Status (Jan 2026)
+## Current Status (Feb 2026)
 
 - **AI Content Agent**: ✅ Live. Automated daily curation (RSS -> OpenAI -> Supabase).
 - **Blog**: ✅ Verified. Dynamic content with SEO optimization (Meta tags, Sitemap).
@@ -361,13 +361,13 @@ Logo files in `public/`:
 
 ## Project Stats (Auto-generated)
 - **Total Source Files**: 137
-- **Total Lines of Code**: 16289
-- **Last Updated**: 2026-02-05T12:48:42.204Z
+- **Total Lines of Code**: 16282
+- **Last Updated**: 2026-02-05T19:38:53.837Z
 ## Active Skills (Auto-generated)
 - **[Automated Content Pipeline](/skills/automated_content_pipeline/SKILL.md)**: A reuseable skill for setting up an automated AI content agent using RSS feeds, OpenAI, and Supabase.
 - **[Social Media Repurposing](/skills/social-media-repurposing/SKILL.md)**: Automatically generates social media captions for blog posts using AI.
 ## Available Scripts (Auto-generated)
 - **[create_invite.js](/scripts/create_invite.js)**: Invite Script - Create new client user
 - **[generate-sitemap.ts](/scripts/generate-sitemap.ts)**: Load environment variables from .env.local
-- **[reflect-docs.ts](/scripts/reflect-docs.ts)**: Helper to count lines in a file
+- **[reflect-docs.ts](/scripts/reflect-docs.ts)**: No description.
 - **[run-content-workflow.ts](/scripts/run-content-workflow.ts)**: Configuration (Mirroring the Directive)
