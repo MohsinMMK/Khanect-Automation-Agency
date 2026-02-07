@@ -1,6 +1,6 @@
-import React, { ReactNode, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
-import { motion, useReducedMotion } from 'framer-motion';
+import { useReducedMotion } from 'framer-motion';
 import { ArrowLeft, Calendar, Clock3, Share2, User } from 'lucide-react';
 import { toast } from 'sonner';
 import EmailCapture from './EmailCapture';
@@ -180,26 +180,10 @@ function parseMarkdownContent(content: unknown): { blocks: MarkdownBlock[]; toc:
   return { blocks, toc };
 }
 
-function SimpleMarkdown({ blocks, inlineCta }: { blocks: MarkdownBlock[]; inlineCta?: ReactNode }) {
-  const blockIndexesForInsert = blocks
-    .map((block, index) => (block.type === 'p' || block.type === 'h2' || block.type === 'h3' ? index : -1))
-    .filter((index) => index >= 0);
-  const insertIndex =
-    blockIndexesForInsert.length > 0 ? blockIndexesForInsert[Math.floor(blockIndexesForInsert.length * 0.4)] : -1;
-
+function SimpleMarkdown({ blocks }: { blocks: MarkdownBlock[] }) {
   const content: React.ReactNode[] = [];
-  let inserted = false;
 
   blocks.forEach((block, index) => {
-    if (!inserted && inlineCta && index === insertIndex) {
-      content.push(
-        <div key="inline-cta" className="my-10">
-          {inlineCta}
-        </div>
-      );
-      inserted = true;
-    }
-
     if (block.type === 'h1') {
       content.push(
         <h1 key={`h1-${index}`} className="mb-6 mt-12 text-xl font-bold text-white sm:text-2xl md:text-3xl">
@@ -259,14 +243,6 @@ function SimpleMarkdown({ blocks, inlineCta }: { blocks: MarkdownBlock[]; inline
       </p>
     );
   });
-
-  if (!inserted && inlineCta) {
-    content.push(
-      <div key="inline-cta-fallback" className="my-10">
-        {inlineCta}
-      </div>
-    );
-  }
 
   return <div className="markdown-content">{content}</div>;
 }
@@ -466,16 +442,6 @@ export default function BlogPost() {
     }
   };
 
-  const inlineCta = (
-    <BlogCtaPanel
-      eyebrow="Operator Shortcut"
-      title="Want this strategy installed in your stack?"
-      description="Get a tailored action plan and implementation sequence for your agency workflows."
-      primary={{ label: 'Book audit', href: '/contact' }}
-      secondary={{ label: 'Browse more', href: '/blog' }}
-    />
-  );
-
   return (
     <>
       <SEO
@@ -487,7 +453,7 @@ export default function BlogPost() {
       />
 
       <BlogShell>
-        <div className="fixed left-0 right-0 top-0 z-[70] h-1 bg-black/40">
+        <div className="fixed left-0 right-0 top-0 z-[70] h-0.5 bg-white/5">
           <div
             className="h-full bg-brand-lime"
             style={{
@@ -497,37 +463,32 @@ export default function BlogPost() {
           />
         </div>
 
-        <div className="relative z-10 pt-28 pb-20 md:pt-32">
+        <div className="relative z-10 pt-24 pb-20 md:pt-28">
           <article className="mx-auto w-full max-w-6xl px-6">
-            <Link to="/blog" className="mb-8 inline-flex items-center text-gray-300 hover:text-brand-lime">
+            <Link to="/blog" className="mb-8 inline-flex items-center gap-2 text-sm text-gray-300 hover:text-brand-lime">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Articles
             </Link>
 
-            <header className="blog-surface mb-8 rounded-3xl border p-6 md:p-10">
-              <div className="mb-5 flex flex-wrap gap-2">
+            <header className="mb-8 border-b border-white/10 pb-8">
+              <div className="mb-4 flex flex-wrap gap-2">
                 {(post.tags || []).map((tag) => (
                   <span
                     key={tag}
-                    className="rounded-full border border-brand-lime/25 bg-brand-lime/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.08em] text-brand-lime"
+                    className="rounded-full border border-white/10 px-2 py-0.5 text-[11px] uppercase tracking-[0.08em] text-gray-300"
                   >
                     {tag}
                   </span>
                 ))}
               </div>
 
-              <motion.h1
-                initial={prefersReducedMotion ? false : { opacity: 0, y: 10 }}
-                animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
-                transition={{ duration: 0.45, ease: 'easeOut' }}
-                className="max-w-4xl text-xl font-bold leading-tight sm:text-2xl md:text-4xl lg:text-5xl"
-              >
+              <h1 className="max-w-4xl text-2xl font-semibold leading-tight text-white sm:text-3xl md:text-4xl">
                 {post.title}
-              </motion.h1>
+              </h1>
 
-              <p className="mt-5 max-w-3xl text-sm leading-relaxed text-gray-300 sm:text-base md:text-lg">{post.excerpt}</p>
+              <p className="mt-4 max-w-3xl text-sm leading-relaxed text-gray-300 sm:text-base">{post.excerpt}</p>
 
-              <div className="mt-8 flex flex-wrap items-center gap-4 border-t border-white/10 pt-6 text-xs text-gray-300 sm:text-sm">
+              <div className="mt-6 flex flex-wrap items-center gap-4 border-t border-white/10 pt-5 text-xs text-gray-300 sm:text-sm">
                 <div className="inline-flex items-center gap-2">
                   <User className="h-4 w-4" />
                   <span>{post.author || 'Khanect AI'}</span>
@@ -542,7 +503,7 @@ export default function BlogPost() {
                 </div>
                 <button
                   onClick={handleShare}
-                  className="ml-auto inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm font-medium text-gray-200 transition-colors hover:border-brand-lime/35 hover:text-brand-lime"
+                  className="ml-auto inline-flex items-center gap-2 rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm font-medium text-gray-200 transition-colors hover:border-brand-lime/35 hover:text-brand-lime"
                 >
                   <Share2 className="h-4 w-4" />
                   Share
@@ -551,44 +512,43 @@ export default function BlogPost() {
             </header>
 
             {post.coverImage && (
-              <div className="blog-surface mb-8 overflow-hidden rounded-3xl border">
+              <div className="mb-8 overflow-hidden rounded-2xl border border-white/10 bg-black/20">
                 <img src={post.coverImage} alt={post.title} className="h-auto w-full object-cover" loading="eager" />
               </div>
             )}
 
-            <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_300px] lg:gap-10">
+            <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_270px] lg:gap-10">
               <div className="space-y-8">
-                <div className="blog-surface-2 rounded-3xl p-6 md:p-10">
+                <div className="blog-surface rounded-2xl border p-6 md:p-8">
                   <div id="blog-article-body">
-                    <SimpleMarkdown blocks={parsedMarkdown.blocks} inlineCta={inlineCta} />
+                    <SimpleMarkdown blocks={parsedMarkdown.blocks} />
                   </div>
                 </div>
 
                 <BlogCtaPanel
                   eyebrow="Next Step"
-                  title="Ready to turn insight into pipeline?"
-                  description="Get implementation support from strategy to execution, with automation opportunities mapped for your exact funnel."
+                  title="Want help implementing this?"
+                  description="Get a focused audit and execution plan tailored to your current stack."
                   primary={{ label: 'Book an audit', href: '/contact' }}
-                  secondary={{ label: 'Explore more', href: '/blog' }}
                 >
                   <EmailCapture className="!bg-transparent !border-white/10" source="blog_post_footer" />
                 </BlogCtaPanel>
               </div>
 
-              <aside className="space-y-6 lg:blog-sticky-rail">
+              <aside className="space-y-5 lg:blog-sticky-rail">
                 {parsedMarkdown.toc.length > 0 && (
                   <>
-                    <details className="blog-surface rounded-2xl border p-4 lg:hidden">
+                    <details className="blog-surface rounded-xl border p-4 lg:hidden">
                       <summary className="cursor-pointer text-sm font-semibold uppercase tracking-[0.08em] text-brand-lime">
                         On this page
                       </summary>
-                      <nav className="mt-4 space-y-2">
+                      <nav className="mt-3 space-y-1.5">
                         {parsedMarkdown.toc.map((item) => (
                           <a
                             key={`mobile-${item.id}`}
                             href={`#${item.id}`}
                             className={cn(
-                              'block rounded-lg px-2 py-1 text-sm text-gray-300 transition-colors hover:text-brand-lime',
+                              'block rounded-md px-2 py-1 text-sm text-gray-300 transition-colors hover:text-brand-lime',
                               item.level === 3 && 'pl-5',
                               activeSectionId === item.id && 'bg-white/5 text-brand-lime'
                             )}
@@ -599,15 +559,15 @@ export default function BlogPost() {
                         ))}
                       </nav>
                     </details>
-                    <section className="blog-surface hidden rounded-2xl border p-5 lg:block" aria-label="Table of contents">
+                    <section className="blog-surface hidden rounded-xl border p-4 lg:block" aria-label="Table of contents">
                       <h2 className="text-xs font-semibold uppercase tracking-[0.1em] text-brand-lime">On this page</h2>
-                      <nav className="mt-4 space-y-2">
+                      <nav className="mt-3 space-y-1.5">
                         {parsedMarkdown.toc.map((item) => (
                           <a
                             key={item.id}
                             href={`#${item.id}`}
                             className={cn(
-                              'block rounded-lg px-2 py-1 text-sm text-gray-300 transition-colors hover:text-brand-lime',
+                              'block rounded-md px-2 py-1 text-sm text-gray-300 transition-colors hover:text-brand-lime',
                               item.level === 3 && 'pl-5',
                               activeSectionId === item.id && 'bg-white/5 text-brand-lime'
                             )}
@@ -621,15 +581,7 @@ export default function BlogPost() {
                   </>
                 )}
 
-                <BlogCtaPanel
-                  variant="rail"
-                  eyebrow="Fast path"
-                  title="Need this implemented?"
-                  description="Book a strategy call and get a concrete automation plan for your current stack."
-                  primary={{ label: 'Book call', href: '/contact' }}
-                />
-
-                <section className="blog-surface rounded-2xl border p-5" aria-label="Related articles">
+                <section className="blog-surface rounded-xl border p-4" aria-label="Related articles">
                   <h2 className="text-xs font-semibold uppercase tracking-[0.1em] text-brand-lime">Related articles</h2>
                   {loadingRelated ? (
                     <div className="mt-4 flex justify-center py-6">

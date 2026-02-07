@@ -35,7 +35,6 @@ export default defineConfig({
           vendor: ['react', 'react-dom'],
           charts: ['recharts'],
           supabase: ['@supabase/supabase-js'],
-          ui: ['lenis', 'gsap'],
         },
       },
     },

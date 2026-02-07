@@ -1,44 +1,70 @@
-import { useState } from 'react';
+import { Suspense, lazy, type ReactNode, useState } from 'react';
 import {
-  createBrowserRouter,
-  RouterProvider,
+  LoaderFunctionArgs,
   Outlet,
+  RouterProvider,
+  createBrowserRouter,
+  isRouteErrorResponse,
+  redirect,
   useLocation,
   useNavigate,
   useRouteError,
-  isRouteErrorResponse,
-  LoaderFunctionArgs,
-  redirect,
 } from 'react-router-dom';
-import Navbar from './components/Navbar';
-import LandingPage from './components/LandingPage';
-import Pricing from './components/Pricing';
 import Footer from './components/Footer';
-import ServiceDetailPage from './components/ServiceDetailPage';
-import ContactPage from './components/ContactPage';
-import DottedSurfaceDemo from './components/DottedSurfaceDemo';
-import ScrollToTop from './components/ScrollToTop';
-import AiAssistantCard from './components/ui/ai-assistant-card';
 import KhanectBoltIcon from './components/icons/KhanectBoltIcon';
-import { ViewState } from './types';
-import { useScrolled } from './hooks/useScrolled';
-import { useBodyOverflow } from './hooks/useBodyOverflow';
-
-import { Toaster } from '@/components/ui/sonner';
-import { services } from './data/services';
-import { industries } from './data/industries';
-
-// Auth and Portal imports
-import { AuthProvider } from './contexts/AuthContext';
+import Navbar from './components/Navbar';
+import ScrollToTop from './components/ScrollToTop';
 import { ProtectedRoute } from './components/ProtectedRoute';
-import {
-  PortalLayout,
-  LoginPage,
-  DashboardPage,
-  LeadsPage,
-  ActivityPage,
-  SettingsPage,
-} from './components/portal';
+import { Toaster } from '@/components/ui/sonner';
+import { AuthProvider } from './contexts/AuthContext';
+import { industries } from './data/industries';
+import { services } from './data/services';
+import { useBodyOverflow } from './hooks/useBodyOverflow';
+import { useScrolled } from './hooks/useScrolled';
+import { ViewState } from './types';
+
+const LandingPage = lazy(() => import('./components/LandingPage'));
+const Pricing = lazy(() => import('./components/Pricing'));
+const ServiceDetailPage = lazy(() => import('./components/ServiceDetailPage'));
+const ContactPage = lazy(() => import('./components/ContactPage'));
+const DottedSurfaceDemo = lazy(() => import('./components/DottedSurfaceDemo'));
+const Blog = lazy(() => import('./components/Blog'));
+const BlogPost = lazy(() => import('./components/BlogPost'));
+const PrivacyPolicy = lazy(() => import('./components/PrivacyPolicy'));
+const TermsAndConditions = lazy(() => import('./components/TermsAndConditions'));
+const UserDataDeletion = lazy(() => import('./components/UserDataDeletion'));
+const AiAssistantCard = lazy(() => import('./components/ui/ai-assistant-card'));
+
+const PortalLayout = lazy(() =>
+  import('./components/portal/PortalLayout').then((module) => ({ default: module.PortalLayout }))
+);
+const LoginPage = lazy(() =>
+  import('./components/portal/LoginPage').then((module) => ({ default: module.LoginPage }))
+);
+const DashboardPage = lazy(() =>
+  import('./components/portal/DashboardPage').then((module) => ({ default: module.DashboardPage }))
+);
+const LeadsPage = lazy(() =>
+  import('./components/portal/LeadsPage').then((module) => ({ default: module.LeadsPage }))
+);
+const ActivityPage = lazy(() =>
+  import('./components/portal/ActivityPage').then((module) => ({ default: module.ActivityPage }))
+);
+const SettingsPage = lazy(() =>
+  import('./components/portal/SettingsPage').then((module) => ({ default: module.SettingsPage }))
+);
+
+function RouteLoadingFallback() {
+  return (
+    <div className="flex min-h-[40vh] items-center justify-center">
+      <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-brand-lime" />
+    </div>
+  );
+}
+
+function withSuspense(node: ReactNode) {
+  return <Suspense fallback={<RouteLoadingFallback />}>{node}</Suspense>;
+}
 
 // Route error boundary component
 function RouteErrorBoundary() {
@@ -203,7 +229,9 @@ function RootLayout() {
             aria-hidden="true"
           />
           <div className="fixed bottom-6 right-6 z-[100] w-[380px] max-w-[calc(100vw-32px)] h-[600px] max-h-[calc(100vh-120px)] shadow-soft-xl rounded-2xl animate-fade-in-up overflow-hidden">
-            <AiAssistantCard onClose={() => setChatOpen(false)} />
+            <Suspense fallback={<div className="h-full w-full animate-pulse bg-black/40" />}>
+              <AiAssistantCard onClose={() => setChatOpen(false)} />
+            </Suspense>
           </div>
         </>
       )}
@@ -214,14 +242,6 @@ function RootLayout() {
   );
 }
 
-import Blog from './components/Blog';
-import BlogPost from './components/BlogPost';
-import PrivacyPolicy from './components/PrivacyPolicy';
-import TermsAndConditions from './components/TermsAndConditions';
-import UserDataDeletion from './components/UserDataDeletion';
-
-// ... existing imports ...
-
 // Create router with data patterns
 const router = createBrowserRouter([
   {
@@ -231,60 +251,60 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <LandingPage />,
+        element: withSuspense(<LandingPage />),
       },
       {
         path: 'pricing',
-        element: <Pricing />,
+        element: withSuspense(<Pricing />),
       },
       {
         path: 'contact',
-        element: <ContactPage />,
+        element: withSuspense(<ContactPage />),
       },
       {
         path: 'blog',
-        element: <Blog />,
+        element: withSuspense(<Blog />),
       },
       {
         path: 'blog/:slug',
-        element: <BlogPost />,
+        element: withSuspense(<BlogPost />),
       },
       {
         path: 'services/:slug',
-        element: <ServiceDetailPage />,
+        element: withSuspense(<ServiceDetailPage />),
         loader: serviceLoader,
       },
       {
         path: 'industries/:slug',
-        element: <ServiceDetailPage />,
+        element: withSuspense(<ServiceDetailPage />),
         loader: serviceLoader,
       },
       {
         path: 'demo/dotted-surface',
-        element: <DottedSurfaceDemo />,
+        element: withSuspense(<DottedSurfaceDemo />),
       },
       {
         path: 'privacy-policy',
-        element: <PrivacyPolicy />,
+        element: withSuspense(<PrivacyPolicy />),
       },
       {
         path: 'terms',
-        element: <TermsAndConditions />,
+        element: withSuspense(<TermsAndConditions />),
       },
       {
         path: 'data-deletion',
-        element: <UserDataDeletion />,
+        element: withSuspense(<UserDataDeletion />),
       },
     ],
   },
   // Portal routes - separate layout, protected by auth
   {
     path: '/portal/login',
-    element: <LoginPage />,
+    element: withSuspense(<LoginPage />),
   },
   {
     path: '/portal',
-    element: (
+    element: withSuspense(
       <ProtectedRoute>
         <PortalLayout />
       </ProtectedRoute>
@@ -293,19 +313,19 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <DashboardPage />,
+        element: withSuspense(<DashboardPage />),
       },
       {
         path: 'leads',
-        element: <LeadsPage />,
+        element: withSuspense(<LeadsPage />),
       },
       {
         path: 'activity',
-        element: <ActivityPage />,
+        element: withSuspense(<ActivityPage />),
       },
       {
         path: 'settings',
-        element: <SettingsPage />,
+        element: withSuspense(<SettingsPage />),
       },
     ],
   },
